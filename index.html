@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JI Industrial Platform — Asset, Service &amp; Utility Operations</title>
+<meta name="description" content="Bilingual operations platform for Jababeka Infrastructure: vacant asset register, one-stop service revenue, and water / waste utility performance.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230E1A2B'/%3E%3Ctext x='16' y='22' font-family='Georgia,serif' font-size='15' fill='%23D8A24A' text-anchor='middle'%3EJI%3C/text%3E%3C/svg%3E">
+<script src="https://fastly.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+:root{
+  --ink:#0E1A2B; --ink-2:#182A42; --paper:#F4F2ED; --card:#FFFFFF;
+  --line:#E1DCD3; --line-2:#EDEAE3; --text:#1B2430; --muted:#6C727C; --faint:#9AA0A8;
+  --amber:#A9701C; --amber-soft:#F3E7D2; --teal:#2C6E6A; --teal-soft:#DDEAE7;
+  --red:#A8452F; --red-soft:#F5E0DA; --blue:#2F4F7A;
+  --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  --sans:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",sans-serif;
+  --radius:2px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--paper);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-0.015em}
+::selection{background:var(--amber-soft)}
+
+/* ---------- shell ---------- */
+.app{display:grid;grid-template-columns:252px minmax(0,1fr);min-height:100vh}
+.side{background:var(--ink);color:#E8E6E1;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.brand{padding:26px 22px 22px;border-bottom:1px solid rgba(255,255,255,.08)}
+.brand-mark{display:flex;align-items:center;gap:10px}
+.monogram{width:34px;height:34px;border:1px solid rgba(216,162,74,.55);display:grid;place-items:center;font-family:Georgia,"Times New Roman",serif;font-size:16px;color:#D8A24A;letter-spacing:.02em}
+.brand-name{font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:#F3F1EC}
+.brand-sub{font-size:11px;color:#8C97A6;margin-top:4px;letter-spacing:.02em}
+.nav{padding:14px 0;overflow:auto;flex:1}
+.nav-label{padding:14px 22px 6px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#78849A}
+.nav-item{display:flex;align-items:center;gap:11px;padding:10px 20px 10px 22px;color:#AEB7C4;font-size:13px;cursor:pointer;border-left:2px solid transparent}
+.nav-item:hover{color:#F3F1EC;background:rgba(255,255,255,.04)}
+.nav-item.active{color:#F7F5F0;background:rgba(216,162,74,.10);border-left-color:#D8A24A}
+.nav-item svg{width:16px;height:16px;flex:0 0 16px;opacity:.85}
+.nav-item span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.side-foot{padding:16px 22px 20px;border-top:1px solid rgba(255,255,255,.08);font-size:10.5px;color:#78849A;line-height:1.6}
+.side-foot b{display:block;color:#AEB7C4;font-weight:500}
+
+.main{min-width:0;display:flex;flex-direction:column}
+.top{position:sticky;top:0;z-index:40;background:rgba(244,242,237,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:16px 30px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.top-title{font-size:19px;font-weight:600}
+.top-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.top-tools{margin-left:auto;display:flex;align-items:center;gap:10px}
+.search{display:flex;align-items:center;gap:8px;background:#FFF;border:1px solid var(--line);padding:7px 10px;min-width:230px}
+.search svg{width:14px;height:14px;color:var(--faint);flex:0 0 14px}
+.search input{border:0;outline:0;background:transparent;width:100%;font-size:12.5px}
+.lang{display:flex;border:1px solid var(--line);background:#FFF}
+.lang button{border:0;background:transparent;padding:7px 11px;font-size:11px;letter-spacing:.08em;cursor:pointer;color:var(--muted)}
+.lang button.on{background:var(--ink);color:#F3F1EC}
+.btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:#FFF;padding:7px 12px;font-size:12px;cursor:pointer;border-radius:var(--radius)}
+.btn:hover{border-color:#C9C2B6;background:#FDFCFA}
+.btn.primary{background:var(--ink);border-color:var(--ink);color:#F6F4EF}
+.btn.primary:hover{background:#1B2E49}
+.btn.ghost{background:transparent}
+.btn.danger{color:var(--red);border-color:#E4C6BE}
+.btn svg{width:14px;height:14px}
+
+.view{padding:26px 30px 60px;max-width:1500px;width:100%}
+.notice{display:flex;align-items:flex-start;gap:10px;border:1px solid #E4D6BC;background:#FBF4E6;padding:11px 14px;font-size:12px;color:#6B5325;margin-bottom:22px}
+.notice svg{width:15px;height:15px;flex:0 0 15px;margin-top:2px}
+.notice b{font-weight:600}
+
+/* ---------- cards / grid ---------- */
+.grid{display:grid;gap:16px}
+.g-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;min-width:0}
+.card.flat{padding:0;overflow:hidden}
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}
+.card-head h3{font-size:13px;letter-spacing:.01em}
+.card-head .hint{font-size:11px;color:var(--faint)}
+.kpi{position:relative;padding:18px 20px;background:#FFF;border:1px solid var(--line)}
+.kpi .k-label{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.kpi .k-value{font-size:33px;font-weight:600;letter-spacing:-.02em;margin-top:8px;font-variant-numeric:tabular-nums;line-height:1.1}
+.kpi .k-unit{font-size:11px;color:var(--muted);margin-left:6px;font-weight:400;letter-spacing:0}
+.kpi .k-foot{font-size:11px;color:var(--muted);margin-top:8px;display:flex;gap:6px;align-items:center}
+.kpi .bar{position:absolute;left:0;top:0;width:3px;height:100%;background:var(--amber)}
+.kpi.t .bar{background:var(--teal)}
+.kpi.r .bar{background:var(--red)}
+.delta{font-variant-numeric:tabular-nums}
+.pos{color:var(--teal)} .neg{color:var(--red)}
+
+.chart{width:100%;height:268px}
+.chart.tall{height:300px}
+.chart-note{font-size:11px;color:var(--faint);margin-top:6px}
+
+/* ---------- section ---------- */
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:30px 0 12px}
+.sec-head h2{font-size:15px;letter-spacing:-.01em}
+.sec-head p{margin:4px 0 0;font-size:12px;color:var(--muted);max-width:70ch}
+.hr{height:1px;background:var(--line);margin:26px 0}
+.termline{display:flex;align-items:center;gap:16px;flex-wrap:wrap;font-size:11.5px;color:var(--muted);margin:0 0 18px;padding-bottom:10px;border-bottom:1px dashed var(--line);min-height:26px}
+.termline b{font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-size:9.5px;color:var(--faint)}
+
+/* ---------- table ---------- */
+.toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:0;padding:12px 14px;border-bottom:1px solid var(--line);background:#FCFBF8}
+.toolbar .search{min-width:200px;flex:1;max-width:320px;background:#FFF}
+.toolbar select{border:1px solid var(--line);background:#FFF;padding:7px 9px;font-size:12px;border-radius:var(--radius)}
+.toolbar .count{margin-left:auto;font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--line);margin-bottom:18px}
+.tab{padding:10px 16px;font-size:12.5px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--ink);border-bottom-color:var(--amber);font-weight:600}
+.tab .n{font-variant-numeric:tabular-nums;color:var(--faint);margin-left:6px;font-size:11px}
+
+.tbl-wrap{overflow:auto;max-width:100%}
+table{width:100%;border-collapse:collapse;table-layout:fixed;min-width:880px}
+th,td{padding:9px 12px;text-align:left;vertical-align:middle;border-bottom:1px solid var(--line-2);overflow:hidden;text-overflow:ellipsis}
+th{position:sticky;top:0;background:#FCFBF8;z-index:2;font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600;border-bottom:1px solid var(--line);white-space:normal;line-height:1.3;overflow:visible}
+tbody tr{cursor:pointer}
+tbody tr:hover td{background:#FAF8F3}
+td.mono{font-family:var(--mono);font-size:11.5px;color:#3D4756}
+td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.date{white-space:nowrap;color:var(--muted);font-size:12px}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;font-size:10.5px;letter-spacing:.02em;border:1px solid transparent;white-space:nowrap;border-radius:1px}
+.chip i{width:5px;height:5px;background:currentColor;display:inline-block;border-radius:50%}
+.c-vacant{background:var(--red-soft);color:#7E3223}
+.c-partial{background:var(--amber-soft);color:#6B4C14}
+.c-stopped{background:#EDEBE6;color:#5A5F66}
+.c-operating{background:var(--teal-soft);color:#1F5450}
+.c-neutral{background:#EDEBE6;color:#4B5158}
+.c-teal{background:var(--teal-soft);color:#1F5450}
+.c-amber{background:var(--amber-soft);color:#6B4C14}
+.c-red{background:var(--red-soft);color:#7E3223}
+.pager{display:flex;align-items:center;gap:6px;padding:12px 14px;border-top:1px solid var(--line);background:#FCFBF8;flex-wrap:wrap}
+.pager .range{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums;margin-right:auto}
+.pg{min-width:28px;height:28px;border:1px solid var(--line);background:#FFF;font-size:12px;cursor:pointer;display:grid;place-items:center;padding:0 6px}
+.pg:hover{border-color:#C9C2B6}
+.pg.on{background:var(--ink);color:#F3F1EC;border-color:var(--ink)}
+.pg:disabled{opacity:.4;cursor:default}
+.empty{padding:46px 20px;text-align:center;color:var(--muted);font-size:12.5px}
+
+/* ---------- detail ---------- */
+.kv{display:grid;grid-template-columns:150px minmax(0,1fr);gap:8px 14px;font-size:12.5px}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;word-break:break-word}
+
+/* ---------- drawer / form ---------- */
+.scrim{position:fixed;inset:0;background:rgba(14,26,43,.42);z-index:60;opacity:0;pointer-events:none;transition:opacity .18s}
+.scrim.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100vh;width:min(560px,96vw);background:#FFF;z-index:70;transform:translateX(100%);transition:transform .22s ease;display:flex;flex-direction:column;border-left:1px solid var(--line)}
+.fgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:16px}
+.fgrid .full{grid-column:1/-1}
+.drawer.on{transform:none}
+.drawer-head{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;justify-content:space-between;gap:12px;background:#FCFBF8}
+.drawer-head h3{font-size:15px}
+.drawer-head p{margin:3px 0 0;font-size:11.5px;color:var(--muted)}
+.x{width:30px;height:30px;border:1px solid var(--line);background:#FFF;cursor:pointer;display:grid;place-items:center;flex:0 0 30px}
+.x svg{width:14px;height:14px}
+.drawer-body{padding:20px 22px;overflow:auto;flex:1}
+.drawer-foot{padding:14px 22px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end;background:#FCFBF8}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:11px;letter-spacing:.04em;color:var(--muted);margin-bottom:5px}
+.field label .req{color:var(--red);margin-left:3px}
+.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);background:#FFF;padding:8px 9px;font-size:12.5px;border-radius:1px;outline:0}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(47,79,122,.10)}
+.field textarea{min-height:70px;resize:vertical}
+.field .err{color:var(--red);font-size:11px;margin-top:4px;display:none}
+.field.bad input,.field.bad select{border-color:#D9A092}
+.field.bad .err{display:block}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+.help{font-size:11px;color:var(--faint);margin-top:3px}
+
+/* ---------- term tooltip ---------- */
+.term{border-bottom:1px dotted #8A9099;cursor:help;position:relative}
+.term:hover{border-bottom-color:var(--amber);color:var(--ink)}
+.tip{position:fixed;z-index:90;max-width:320px;background:var(--ink);color:#F3F1EC;padding:10px 12px;font-size:11.5px;line-height:1.55;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:opacity .12s;border-left:2px solid #D8A24A}
+.tip.on{opacity:1}
+.tip .t{font-weight:600;color:#E8C989;display:block;margin-bottom:4px;font-size:11.5px;letter-spacing:.02em}
+.tip .d{color:#D5DAE2}
+
+/* ---------- misc ---------- */
+.list{display:flex;flex-direction:column;gap:0}
+.li{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--line-2);font-size:12.5px}
+.li:last-child{border-bottom:0}
+.li .tag{font-family:var(--mono);font-size:11px;color:var(--muted);flex:0 0 92px}
+.li .body{min-width:0;flex:1}
+.li .body b{font-weight:600}
+.li .body span{color:var(--muted);display:block;font-size:11.5px;margin-top:2px}
+.li .act{flex:0 0 auto}
+.gloss-item{padding:14px 0;border-bottom:1px solid var(--line-2)}
+.gloss-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:34px}
+.gloss-grid .gloss-item:nth-last-child(-n+2){border-bottom:0}
+.gloss-item:last-child{border-bottom:0}
+.gloss-item h4{font-size:13px}
+.gloss-item .en{font-size:11px;color:var(--faint);margin:2px 0 6px;font-family:var(--mono)}
+.gloss-item p{margin:0;font-size:12.5px;color:#3C4552}
+.gloss-item .id{margin-top:6px;padding-top:6px;border-top:1px dashed var(--line)}
+.settings-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 0;border-bottom:1px solid var(--line-2)}
+.settings-row:last-child{border-bottom:0}
+.settings-row .txt{max-width:60ch}
+.settings-row .txt b{display:block;font-size:13px;margin-bottom:3px}
+.settings-row .txt span{font-size:11.5px;color:var(--muted)}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#F3F1EC;padding:10px 18px;font-size:12px;opacity:0;pointer-events:none;transition:.2s;z-index:95;border-left:2px solid #D8A24A}
+.toast.on{opacity:1;transform:translateX(-50%)}
+
+@media (max-width:1180px){.g-4{grid-template-columns:repeat(2,minmax(0,1fr))}.g-3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:980px){
+  .app{grid-template-columns:1fr}
+  .side{position:relative;height:auto;flex-direction:row;align-items:center;overflow-x:auto}
+  .brand{border:0;padding:14px 16px;flex:0 0 auto}
+  .brand-sub{display:none}
+  .nav{display:flex;padding:0 8px;flex:0 0 auto}
+  .nav-label,.side-foot{display:none}
+  .nav-item{border-left:0;border-bottom:2px solid transparent;padding:12px 12px}
+  .nav-item.active{border-left:0;border-bottom-color:#D8A24A}
+  .top{padding:12px 16px;gap:10px}
+  .view{padding:18px 16px 50px}
+  .top-tools{width:100%;margin-left:0}
+  .search{min-width:0;flex:1}
+  .g-2,.g-3,.g-4{grid-template-columns:1fr}
+  .gloss-grid{grid-template-columns:1fr}
+  .chart{height:240px}
+}
+@media print{
+  .side,.top,.drawer,.scrim,.toolbar,.pager{display:none}
+  .app{display:block}
+  .view{max-width:none;padding:0}
+  body{background:#FFF}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <div class="brand-mark">
+        <div class="monogram">JI</div>
+        <div>
+          <div class="brand-name" id="brandName">JI Platform</div>
+          <div class="brand-sub" id="brandSub">Industrial operations</div>
+        </div>
+      </div>
+    </div>
+    <nav class="nav" id="nav"></nav>
+    <div class="side-foot">
+      <b>Jababeka Infrastructure</b>
+      <span id="sideFoot">Internal operating system · 2026</span>
+    </div>
+  </aside>
+  <div class="main">
+    <header class="top">
+      <div>
+        <div class="top-title" id="topTitle">Dashboard</div>
+        <div class="top-sub" id="topSub"></div>
+      </div>
+      <div class="top-tools">
+        <div class="search" id="searchBox">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
+          <input id="globalSearch" type="search" autocomplete="off">
+        </div>
+        <div class="lang" id="langSwitch"></div>
+        <button class="btn" id="btnExport"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg><span id="btnExportTxt">Export</span></button>
+        <button class="btn primary" id="btnNew"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5v14M5 12h14"/></svg><span id="btnNewTxt">New</span></button>
+      </div>
+    </header>
+    <section class="view" id="view"></section>
+  </div>
+</div>
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-head">
+    <div><h3 id="drawerTitle">Record</h3><p id="drawerSub"></p></div>
+    <button class="x" id="drawerClose" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6l-12 12"/></svg></button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+  <div class="drawer-foot" id="drawerFoot"></div>
+</aside>
+<div class="tip" id="tip"><span class="t"></span><span class="d"></span></div>
+<div class="toast" id="toast"></div>
+<script>
+/* ================= APP ================= */
+/* Every UI string exists in exactly two languages in one record: [English, Indonesian].
+   Missing translation is structurally impossible, and data values are stored as codes
+   so that switching language never leaves a mixed sentence behind. */
+const STR = {
+  'app.name': ['JI Platform', 'JI Platform'],
+  'app.brandSub': ['Industrial operations', 'Operasi kawasan industri'],
+  'app.foot': ['Internal operating system · 2026', 'Sistem operasi internal · 2026'],
+  'app.docTitle': ['JI Industrial Platform — Asset, Service & Utility Operations', 'JI Industrial Platform — Aset, Layanan & Utilitas'],
+
+  'nav.g1': ['Operations', 'Operasional'],
+  'nav.g2': ['Reference', 'Referensi'],
+  'nav.dashboard': ['Overview', 'Ringkasan'],
+  'nav.assets': ['Asset register', 'Register aset'],
+  'nav.services': ['Service revenue', 'Pendapatan layanan'],
+  'nav.utilities': ['Water & waste', 'Air & limbah'],
+  'nav.glossary': ['Glossary', 'Glosarium'],
+  'nav.settings': ['Settings', 'Pengaturan'],
+
+  'c.save': ['Save record', 'Simpan catatan'],
+  'c.cancel': ['Cancel', 'Batal'],
+  'c.close': ['Close', 'Tutup'],
+  'c.search': ['Search', 'Cari'],
+  'c.all': ['All', 'Semua'],
+  'c.export': ['Export', 'Ekspor'],
+  'c.new': ['New record', 'Catatan baru'],
+  'c.edit': ['Edit', 'Ubah'],
+  'c.delete': ['Delete', 'Hapus'],
+  'c.total': ['records', 'catatan'],
+  'c.prev': ['Previous', 'Sebelumnya'],
+  'c.next': ['Next', 'Berikutnya'],
+  'c.none': ['No records match the current filters.', 'Tidak ada catatan yang cocok dengan filter saat ini.'],
+  'c.required': ['Required', 'Wajib'],
+  'c.select': ['Select', 'Pilih'],
+  'c.demo': ['Demo dataset', 'Data contoh'],
+  'c.demoText': ['Records below are illustrative samples for workflow testing. Replace them with live records before operational use.', 'Catatan di bawah adalah contoh untuk menguji alur kerja. Ganti dengan data sebenarnya sebelum digunakan secara operasional.'],
+  'c.saved': ['Record saved', 'Catatan tersimpan'],
+  'c.deleted': ['Record deleted', 'Catatan dihapus'],
+  'c.exported': ['JSON file exported', 'Berkas JSON diekspor'],
+  'c.imported': ['Data imported', 'Data diimpor'],
+  'c.import': ['Import JSON', 'Impor JSON'],
+  'c.perMonth': ['/mo', '/bln'],
+  'c.sqmMonth': ['/m²·mo', '/m²·bln'],
+  'c.resetDone': ['Demo data restored', 'Data contoh dipulihkan'],
+  'c.badFile': ['File could not be read', 'Berkas tidak dapat dibaca'],
+  'c.confirmReset': ['Replace all local records with demo data?', 'Ganti semua catatan lokal dengan data contoh?'],
+  'c.confirmDelete': ['Delete this record?', 'Hapus catatan ini?'],
+  'c.emptyChart': ['Chart library unavailable. Tables remain usable.', 'Pustaka grafik tidak tersedia. Tabel tetap dapat digunakan.'],
+  'c.showing': ['Showing', 'Menampilkan'],
+  'c.of': ['of', 'dari'],
+
+  'v.dashboard.title': ['Operations overview', 'Ringkasan operasional'],
+  'v.dashboard.sub': ['Asset portfolio, matching pipeline, service revenue and utility performance in one view.', 'Portofolio aset, alur pencocokan, pendapatan layanan, dan kinerja utilitas dalam satu tampilan.'],
+  'v.assets.title': ['Asset register', 'Register aset'],
+  'v.assets.sub': ['Vacant and underused factories, owner terms and matched demand in one record chain.', 'Pabrik kosong dan kurang termanfaatkan, persyaratan pemilik, dan permintaan yang cocok dalam satu rantai catatan.'],
+  'v.services.title': ['Service revenue', 'Pendapatan layanan'],
+  'v.services.sub': ['Paid services sold through the one-stop office, and the survey leads that feed them.', 'Layanan berbayar yang dijual melalui kantor layanan terpadu, dan prospek survei yang menyuplainya.'],
+  'v.utilities.title': ['Water & waste performance', 'Kinerja air & limbah'],
+  'v.utilities.sub': ['Energy intensity, effluent compliance, reuse rate and sludge output by plant and month.', 'Intensitas energi, kepatuhan efluen, tingkat daur ulang, dan lumpur menurut instalasi dan bulan.'],
+  'v.glossary.title': ['Glossary', 'Glosarium'],
+  'v.glossary.sub': ['Regulatory and technical terms used across the platform, in both languages.', 'Istilah regulasi dan teknis yang dipakai di seluruh platform, dalam dua bahasa.'],
+  'v.settings.title': ['Settings', 'Pengaturan'],
+  'v.settings.sub': ['Language, data portability and record ownership.', 'Bahasa, portabilitas data, dan kepemilikan catatan.'],
+
+  'k.assets': ['Registered assets', 'Aset terdaftar'],
+  'k.assets.foot': ['{n} active in the register', '{n} aktif dalam daftar'],
+  'k.vacant': ['Vacant or idle', 'Kosong atau idle'],
+  'k.vacant.foot': ['{n} share of the portfolio', '{n} dari portofolio'],
+  'k.pipeline': ['Demand in pipeline', 'Permintaan dalam alur'],
+  'k.pipeline.foot': ['{n} already matched to an asset', '{n} sudah cocok dengan aset'],
+  'k.revenue': ['Service revenue booked', 'Pendapatan layanan tercatat'],
+  'k.revenue.foot': ['{n} contracts signed', '{n} kontrak ditandatangani'],
+  'k.quality': ['Data completeness', 'Kelengkapan data'],
+  'k.quality.foot': ['Average record score, 0–100', 'Skor rata-rata catatan, 0–100'],
+  'k.util': ['Effluent reuse rate', 'Tingkat daur ulang efluen'],
+  'k.util.foot': ['2026 target: 20%', 'Target 2026: 20%'],
+
+  'd.status': ['Asset status mix', 'Komposisi status aset'],
+  'd.stage': ['Demand by stage', 'Permintaan menurut tahap'],
+  'd.line': ['Revenue by service line', 'Pendapatan menurut lini layanan'],
+  'd.trend': ['Energy intensity and reuse', 'Intensitas energi dan daur ulang'],
+  'd.trend.unit': ['kWh per m³ · reuse %', 'kWh per m³ · daur ulang %'],
+  'd.attention': ['Needs attention', 'Perlu perhatian'],
+  'd.stale': ['records not verified in the last 90 days', 'catatan tidak diverifikasi dalam 90 hari terakhir'],
+  'd.noDemand': ['A-class assets with no matched demand', 'Aset kelas A tanpa permintaan yang cocok'],
+  'd.belowTarget': ['plants below the reuse target', 'instalasi di bawah target daur ulang'],
+  'd.pipelineValue': ['Weighted pipeline value', 'Nilai alur tertimbang'],
+
+  'a.tab.assets': ['Assets', 'Aset'],
+  'a.tab.owners': ['Owners', 'Pemilik'],
+  'a.tab.demands': ['Demand', 'Permintaan'],
+  'a.addAsset': ['New asset', 'Aset baru'],
+  'a.addOwner': ['New owner', 'Pemilik baru'],
+  'a.addDemand': ['New demand', 'Permintaan baru'],
+  'a.descAssets': ['One row per factory. The quality score decides whether a record can be shown outside JI; records below 60 stay in the internal pool.', 'Satu baris per pabrik. Skor kualitas menentukan apakah catatan boleh ditampilkan di luar JI; catatan di bawah 60 tetap di kolam internal.'],
+  'a.descOwners': ['Owner terms are stored separately from the asset so that price concessions and decision authority can change without rewriting the physical record. Both price columns are per m²: a sale figure is one-off, a lease figure is monthly.', 'Persyaratan pemilik disimpan terpisah dari aset agar konsesi harga dan kewenangan keputusan dapat berubah tanpa menulis ulang catatan fisik. Kedua kolom harga dihitung per m²: angka jual bersifat sekali bayar, angka sewa bersifat bulanan.'],
+  'a.descDemands': ['Demand records carry the matching score and every stage change, so the pipeline can be audited rather than remembered.', 'Catatan permintaan memuat skor pencocokan dan setiap perubahan tahap, sehingga alur dapat diaudit, bukan diingat.'],
+  'a.filterStatus': ['Status', 'Status'],
+  'a.filterKawasan': ['Estate', 'Kawasan'],
+  'a.filterClass': ['Class', 'Kelas'],
+  'a.col.build': ['Build m²', 'Bangunan m²'],
+  'a.col.power': ['Power kVA', 'Daya kVA'],
+  'a.col.price': ['Price Rp/m²', 'Harga Rp/m²'],
+  'a.col.quality': ['Quality', 'Kualitas'],
+
+  's.tab.deals': ['Service contracts', 'Kontrak layanan'],
+  's.tab.leads': ['Survey leads', 'Prospek survei'],
+  's.addDeal': ['New contract', 'Kontrak baru'],
+  's.addLead': ['New lead', 'Prospek baru'],
+  's.descDeals': ['Each contract is tied to a service line and a tenant, so revenue can be read by product rather than by department.', 'Setiap kontrak terikat pada lini layanan dan penyewa, sehingga pendapatan dapat dibaca per produk, bukan per departemen.'],
+  's.descLeads': ['The lead score multiplies pain, budget, decision authority and time window. Scores above 70 must be contacted within 48 hours.', 'Skor prospek mengalikan rasa sakit, anggaran, kewenangan keputusan, dan jendela waktu. Skor di atas 70 harus dihubungi dalam 48 jam.'],
+  's.kpi.revenue': ['Revenue booked', 'Pendapatan tercatat'],
+  's.kpi.active': ['Active contracts', 'Kontrak aktif'],
+  's.kpi.avg': ['Average contract value', 'Nilai kontrak rata-rata'],
+  's.kpi.hot': ['Hot leads (70+)', 'Prospek panas (70+)'],
+  's.kpi.promoters': ['Promoters, NPS 9–10', 'Promotor, NPS 9–10'],
+  's.kpi.newleads': ['Untouched new leads', 'Prospek baru belum disentuh'],
+  's.kpi.converted': ['Converted to contract', 'Terkonversi jadi kontrak'],
+  's.foot.rev': ['{n} signed, {m} quoted', '{n} ditandatangani, {m} dikutip'],
+  's.foot.active': ['of {n} contracts in the register', 'dari {n} kontrak dalam register'],
+  's.foot.avg': ['average across signed contracts', 'rata-rata kontrak ditandatangani'],
+  's.foot.hot': ['score 70 and above, not dropped', 'skor 70 ke atas, belum dihentikan'],
+
+  'u.addMetric': ['New reading', 'Pembacaan baru'],
+  'u.desc': ['Monthly readings per plant. Baselines must come from metered data, not design values, or savings cannot be settled.', 'Pembacaan bulanan per instalasi. Basis harus dari data meter, bukan nilai desain, jika tidak penghematan tidak dapat diselesaikan.'],
+  'u.kpi.energy': ['Energy intensity', 'Intensitas energi'],
+  'u.kpi.compliance': ['Effluent compliance', 'Kepatuhan efluen'],
+  'u.kpi.reuse': ['Reuse rate', 'Tingkat daur ulang'],
+  'u.kpi.sludge': ['Sludge output', 'Produksi lumpur'],
+
+  'g.intro': ['Terms are explained once, at first use, and again here. Hover any dotted term to see its definition.', 'Istilah dijelaskan sekali, saat pertama dipakai, dan lagi di sini. Arahkan kursor ke istilah bergaris putus-putus untuk melihat definisinya.'],
+  'g.note': ['Definitions are operational summaries, not legal advice. Binding wording follows the regulation cited in each entry.', 'Definisi adalah ringkasan operasional, bukan nasihat hukum. Rumusan yang mengikat mengikuti regulasi yang dikutip di setiap entri.'],
+
+  'st.lang': ['Interface language', 'Bahasa antarmuka'],
+  'st.langDesc': ['English is the default. Every label, table header, status and message switches together; data values are stored as codes so no field can remain in the other language.', 'Bahasa Inggris adalah bawaan. Setiap label, tajuk tabel, status, dan pesan berganti bersamaan; nilai data disimpan sebagai kode sehingga tidak ada bidang yang tertinggal dalam bahasa lain.'],
+  'st.data': ['Data portability', 'Portabilitas data'],
+  'st.dataDesc': ['Records live in this browser only. Export a JSON snapshot for backup or to hand the dataset to another device; import replaces the current dataset.', 'Catatan hanya tersimpan di peramban ini. Ekspor cuplikan JSON untuk cadangan atau memindahkan data ke perangkat lain; impor menggantikan dataset saat ini.'],
+  'st.reset': ['Restore demo data', 'Pulihkan data contoh'],
+  'st.resetDesc': ['Removes local edits and reloads the sample portfolio.', 'Menghapus perubahan lokal dan memuat ulang portofolio contoh.'],
+  'st.storage': ['Storage status', 'Status penyimpanan'],
+  'st.storageDesc': ['Local browser storage, no server and no account. Clearing browser data removes records.', 'Penyimpanan peramban lokal, tanpa server dan tanpa akun. Menghapus data peramban akan menghapus catatan.'],
+  'st.about': ['About this build', 'Tentang versi ini'],
+  'st.aboutDesc': ['Static single-page build for GitHub Pages. Charts use ECharts; no analytics, no external calls except the chart library.', 'Versi statis satu halaman untuk GitHub Pages. Grafik memakai ECharts; tanpa analitik, tanpa panggilan eksternal selain pustaka grafik.'],
+  'st.version': ['Version', 'Versi'],
+  'st.own.title': ['Record ownership', 'Kepemilikan catatan'],
+  'st.own.desc': ['Each table has one accountable owner. Edit rights follow that owner, not the reporting line.', 'Setiap tabel memiliki satu pemilik yang bertanggung jawab. Hak edit mengikuti pemilik tersebut, bukan jalur pelaporan.'],
+  'st.own.assets': ['Asset register and owner terms', 'Register aset dan persyaratan pemilik'],
+  'st.own.services': ['Service contracts and survey leads', 'Kontrak layanan dan prospek survei'],
+  'st.own.utilities': ['Plant readings and compliance', 'Pembacaan instalasi dan kepatuhan'],
+  'st.own.teamAssets': ['Asset management', 'Manajemen aset'],
+  'st.own.teamServices': ['One-stop service office', 'Kantor layanan terpadu'],
+  'st.own.teamUtilities': ['Plant operations', 'Operasi instalasi'],
+  'st.own.edit': ['Edit', 'Ubah'],
+  'st.rules.title': ['Data rules', 'Aturan data'],
+  'st.rules.1': ['Record IDs are generated once per table and stay stable after save. Leaving an ID blank on a new record lets the system assign it.', 'ID catatan dibuat sekali per tabel dan tetap stabil setelah disimpan. Membiarkan ID kosong pada catatan baru membuat sistem menetapkannya.'],
+  'st.rules.2': ['Status, stage and category are stored as codes, so switching language never leaves half a record in the other tongue.', 'Status, tahap, dan kategori disimpan sebagai kode, sehingga berganti bahasa tidak pernah menyisakan separuh catatan dalam bahasa lain.'],
+  'st.rules.3': ['Required fields are validated before anything is written; the record stays unsaved until the missing field is filled.', 'Kolom wajib divalidasi sebelum apa pun ditulis; catatan tetap belum tersimpan sampai kolom yang kosong diisi.'],
+  'st.rules.4': ['Export a JSON snapshot before restoring demo data, before clearing browser storage, and at the end of each reporting month.', 'Ekspor snapshot JSON sebelum memulihkan data contoh, sebelum menghapus penyimpanan peramban, dan pada akhir setiap bulan pelaporan.'],
+
+  'f.asset': ['Asset record', 'Catatan aset'],
+  'f.owner': ['Owner record', 'Catatan pemilik'],
+  'f.demand': ['Demand record', 'Catatan permintaan'],
+  'f.deal': ['Service contract', 'Kontrak layanan'],
+  'f.lead': ['Survey lead', 'Prospek survei'],
+  'f.metric': ['Utility reading', 'Pembacaan utilitas'],
+  'f.editTitle': ['Edit record', 'Ubah catatan'],
+  'f.newTitle': ['New record', 'Catatan baru'],
+  'f.assetSub': ['Physical, compliance and commercial fields in one record.', 'Bidang fisik, kepatuhan, dan komersial dalam satu catatan.'],
+  'f.ownerSub': ['Terms, decision authority and know-your-counterparty status.', 'Persyaratan, kewenangan keputusan, dan status kenali-mitra.'],
+  'f.demandSub': ['Requirement, score and stage of a matched buyer or tenant.', 'Kebutuhan, skor, dan tahap pembeli atau penyewa yang cocok.'],
+  'f.dealSub': ['A billable service tied to a tenant and a service line.', 'Layanan yang dapat ditagih, terikat pada penyewa dan lini layanan.'],
+  'f.leadSub': ['Survey answer converted into a scored commercial lead.', 'Jawaban survei yang diubah menjadi prospek komersial berskor.'],
+  'f.metricSub': ['One monthly reading for one plant and one indicator.', 'Satu pembacaan bulanan untuk satu instalasi dan satu indikator.'],
+  'f.requiredHint': ['Fields marked', 'Bidang bertanda'],
+  'f.requiredHint2': ['are required.', 'wajib diisi.'],
+  'f.numberHint': ['Numbers only. Water in m³/day, power in kVA, price in Rp per m².', 'Angka saja. Air dalam m³/hari, daya dalam kVA, harga dalam Rp per m².'],
+  'f.ownerLink': ['Owner ID must exist in the owner table.', 'ID pemilik harus ada di tabel pemilik.'],
+  'f.assetLink': ['Asset ID must exist in the asset table.', 'ID aset harus ada di tabel aset.'],
+
+  'F.asset_id': ['Asset ID', 'ID aset'],
+  'F.kawasan': ['Estate', 'Kawasan'],
+  'F.blok': ['Block / lot', 'Blok / kavling'],
+  'F.alamat': ['Address', 'Alamat'],
+  'F.owner_id': ['Owner ID', 'ID pemilik'],
+  'F.land': ['Land area (m²)', 'Luas tanah (m²)'],
+  'F.build': ['Building area (m²)', 'Luas bangunan (m²)'],
+  'F.floors': ['Floors', 'Jumlah lantai'],
+  'F.clearance': ['Clear height (m)', 'Tinggi bersih (m)'],
+  'F.power': ['Power (kVA)', 'Daya (kVA)'],
+  'F.water': ['Water (m³/day)', 'Air (m³/hari)'],
+  'F.wwtp': ['Wastewater connection', 'Sambungan air limbah'],
+  'F.gas': ['Gas or steam', 'Gas atau uap'],
+  'F.permits': ['Permits held', 'Perizinan yang dimiliki'],
+  'F.status': ['Status', 'Status'],
+  'F.intent': ['Owner intent', 'Maksud pemilik'],
+  'F.price': ['Price', 'Harga'],
+  'F.condition': ['Condition', 'Kondisi'],
+  'F.retrofit': ['Retrofit estimate (Rp)', 'Perkiraan renovasi (Rp)'],
+  'F.quality': ['Data quality score', 'Skor kualitas data'],
+  'F.verified': ['Last verified', 'Verifikasi terakhir'],
+  'F.access': ['Disclosure tier', 'Tingkat pengungkapan'],
+  'F.notes': ['Notes', 'Catatan'],
+  'F.name': ['Owner name', 'Nama pemilik'],
+  'F.legal': ['Legal form', 'Bentuk hukum'],
+  'F.ubo': ['Beneficial owner', 'Pemilik manfaat'],
+  'F.structure': ['Ownership structure', 'Struktur kepemilikan'],
+  'F.motive': ['Motive', 'Motif'],
+  'F.floorPrice': ['Owner floor price', 'Harga dasar pemilik'],
+  'F.askPrice': ['Asking price', 'Harga penawaran'],
+  'F.pressure': ['Time pressure', 'Tekanan waktu'],
+  'F.liens': ['Encumbrances', 'Beban jaminan'],
+  'F.pref': ['Transaction preference', 'Preferensi transaksi'],
+  'F.commission': ['Commission tolerance (%)', 'Toleransi komisi (%)'],
+  'F.authority': ['Decision authority', 'Kewenangan keputusan'],
+  'F.kyb': ['Know-your-counterparty', 'Kenali mitra'],
+  'F.kybShort': ['KYB', 'KYB'],
+  'F.commissionShort': ['Commission', 'Komisi'],
+  'F.floorPriceShort': ['Floor', 'Dasar'],
+  'F.askPriceShort': ['Asking', 'Penawaran'],
+  'F.demand_id': ['Demand ID', 'ID permintaan'],
+  'F.company': ['Company', 'Perusahaan'],
+  'F.industry': ['Industry', 'Industri'],
+  'F.area': ['Required area (m²)', 'Luas dibutuhkan (m²)'],
+  'F.powerReq': ['Power required (kVA)', 'Daya dibutuhkan (kVA)'],
+  'F.waterReq': ['Water required (m³/day)', 'Air dibutuhkan (m³/hari)'],
+  'F.steam': ['Steam requirement', 'Kebutuhan uap'],
+  'F.location': ['Location preference', 'Preferensi lokasi'],
+  'F.timeline': ['Decision window', 'Jendela keputusan'],
+  'F.budget': ['Monthly budget (Rp)', 'Anggaran bulanan (Rp)'],
+  'F.budgetBand': ['Budget band', 'Rentang anggaran'],
+  'F.score': ['Matching score', 'Skor pencocokan'],
+  'F.assetLink': ['Matched asset', 'Aset yang cocok'],
+  'F.stage': ['Stage', 'Tahap'],
+  'F.offer': ['Offer (Rp)', 'Penawaran (Rp)'],
+  'F.commissionAmt': ['Commission (Rp)', 'Komisi (Rp)'],
+  'F.lost': ['Reason lost', 'Alasan gagal'],
+  'F.svc_id': ['Contract ID', 'ID kontrak'],
+  'F.tenant': ['Tenant', 'Penyewa'],
+  'F.category': ['Service line', 'Lini layanan'],
+  'F.sku': ['Service', 'Layanan'],
+  'F.value': ['Contract value (Rp)', 'Nilai kontrak (Rp)'],
+  'F.svcStatus': ['Contract status', 'Status kontrak'],
+  'F.ownerMgr': ['Account manager', 'Manajer akun'],
+  'F.start': ['Start date', 'Tanggal mulai'],
+  'F.lead_id': ['Lead ID', 'ID prospek'],
+  'F.nps': ['NPS (0–10)', 'NPS (0–10)'],
+  'F.pain': ['Top pain point', 'Masalah utama'],
+  'F.spend': ['Annual spend on the issue (Rp)', 'Belanja tahunan untuk masalah ini (Rp)'],
+  'F.willing': ['Willingness to pay', 'Kesediaan membayar'],
+  'F.decision': ['Decision maker', 'Pengambil keputusan'],
+  'F.channel': ['Preferred channel', 'Kanal yang disukai'],
+  'F.leadScore': ['Lead score (0–135)', 'Skor prospek (0–135)'],
+  'F.leadStatus': ['Lead status', 'Status prospek'],
+  'F.metric_id': ['Reading ID', 'ID pembacaan'],
+  'F.plant': ['Plant', 'Instalasi'],
+  'F.metric': ['Indicator', 'Indikator'],
+  'F.period': ['Month', 'Bulan'],
+  'F.unit': ['Unit', 'Satuan'],
+  'F.valueNum': ['Value', 'Nilai'],
+};
+
+const ENUM = {
+  status: { operating: ['Operating', 'Beroperasi'], partial: ['Partially idle', 'Sebagian idle'], stopped: ['Production stopped', 'Produksi berhenti'], vacant: ['Vacant', 'Kosong'] },
+  intent: { lease: ['Lease', 'Sewa'], sale: ['Sale', 'Jual'], jv: ['Joint venture', 'Usaha patungan'], operate: ['Managed operation', 'Operasi terkelola'] },
+  condition: { A: ['A — ready', 'A — siap'], B: ['B — light retrofit', 'B — renovasi ringan'], C: ['C — heavy retrofit', 'C — renovasi berat'], D: ['D — shell only', 'D — struktur saja'] },
+  access: { public: ['Public summary', 'Ringkasan publik'], member: ['Member only', 'Hanya anggota'], deal: ['Deal room', 'Ruang transaksi'], restricted: ['Restricted', 'Terbatas'] },
+  legal: { pt: ['Limited company', 'Perseroan terbatas'], individual: ['Individual', 'Perorangan'], family: ['Family holding', 'Kepemilikan keluarga'], fund: ['Fund', 'Dana'] },
+  motive: { cash: ['Cash flow', 'Arus kas'], exit: ['Exit', 'Keluar'], inheritance: ['Inheritance', 'Warisan'], debt: ['Debt pressure', 'Tekanan utang'], restructuring: ['Portfolio restructuring', 'Restrukturisasi portofolio'] },
+  pressure: { m1: ['Within 1 month', 'Dalam 1 bulan'], m3: ['Within 3 months', 'Dalam 3 bulan'], m6: ['Within 6 months', 'Dalam 6 bulan'], m12: ['Within 12 months', 'Dalam 12 bulan'], none: ['No deadline', 'Tanpa tenggat'] },
+  pref: { full: ['Whole sale', 'Jual keseluruhan'], split: ['Split sale', 'Jual sebagian'], longlease: ['Long lease', 'Sewa jangka panjang'], salelease: ['Sale and leaseback', 'Jual dan sewa balik'] },
+  kyb: { notdone: ['Not started', 'Belum dimulai'], passed: ['Passed', 'Lulus'], high: ['High risk', 'Risiko tinggi'] },
+  industry: { electronics: ['Electronics', 'Elektronik'], machinery: ['Machinery', 'Mesin'], chemical: ['Chemical', 'Kimia'], food: ['Food and beverage', 'Makanan dan minuman'], logistics: ['Logistics', 'Logistik'], other: ['Other', 'Lainnya'] },
+  stage: { lead: ['Lead', 'Prospek'], viewing: ['Viewing', 'Kunjungan'], offer: ['Offer', 'Penawaran'], loi: ['LOI', 'LOI'], dd: ['Due diligence', 'Uji tuntas'], closed: ['Closed', 'Selesai'], lost: ['Lost', 'Gagal'] },
+  category: { permit: ['Permits and compliance', 'Perizinan dan kepatuhan'], energy: ['Energy', 'Energi'], environment: ['Environment', 'Lingkungan'], hr: ['People', 'Sumber daya manusia'], supply: ['Supply chain', 'Rantai pasok'], finance: ['Finance and insurance', 'Keuangan dan asuransi'] },
+  svcStatus: { quoted: ['Quoted', 'Dikutip'], active: ['Active', 'Aktif'], delivered: ['Delivered', 'Selesai'], lost: ['Lost', 'Gagal'] },
+  leadStatus: { new: ['New', 'Baru'], contacted: ['Contacted', 'Dihubungi'], qualified: ['Qualified', 'Terkualifikasi'], converted: ['Converted', 'Terkonversi'], dropped: ['Dropped', 'Dihentikan'] },
+  metric: { energy: ['Energy intensity', 'Intensitas energi'], compliance: ['Effluent compliance', 'Kepatuhan efluen'], reuse: ['Reuse rate', 'Tingkat daur ulang'], sludge: ['Sludge output', 'Produksi lumpur'], cost: ['Unit cost', 'Biaya unit'] },
+  wwtp: { yes: ['Connected', 'Tersambung'], no: ['Not connected', 'Tidak tersambung'], partial: ['Partial', 'Sebagian'] },
+  yesno: { yes: ['Yes', 'Ya'], no: ['No', 'Tidak'] },
+  willing: { yes: ['Ready to pay', 'Siap membayar'], price: ['Price sensitive', 'Peka harga'], no: ['Not willing', 'Tidak bersedia'] },
+  budgetBand: { lt50: ['Below Rp 50 m', 'Di bawah Rp 50 jt'], '50_150': ['Rp 50–150 m', 'Rp 50–150 jt'], '150_500': ['Rp 150–500 m', 'Rp 150–500 jt'], gt500: ['Above Rp 500 m', 'Di atas Rp 500 jt'] },
+  decision: { owner: ['Owner', 'Pemilik'], gm: ['General manager', 'Manajer umum'], finance: ['Finance', 'Keuangan'], plant: ['Plant manager', 'Manajer pabrik'] },
+};
+
+/* Glossary: term and definition in both languages. */
+const GLOSS = {
+  occupancy: { t: ['Occupancy rate', 'Tingkat keterisian'], d: ['Share of approved industrial land that is actually taken up by operating tenants. National average was 57.2% in mid-2026, which is why vacant stock matters.', 'Porsi lahan industri yang disetujui dan benar-benar terpakai oleh penyewa aktif. Rata-rata nasional 57,2% pada pertengahan 2026, karena itu stok kosong menjadi penting.'] },
+  oss: { t: ['One-stop service (OSS)', 'Layanan terpadu (OSS)'], d: ['A single office that handles permits, utilities and complaints for tenants instead of routing them across departments. It becomes a revenue line only when services are productised and priced.', 'Satu kantor yang menangani perizinan, utilitas, dan keluhan penyewa alih-alih meneruskannya antar departemen. Menjadi lini pendapatan hanya bila layanan diproduktisasi dan diberi harga.'] },
+  sla: { t: ['Service level agreement (SLA)', 'Perjanjian tingkat layanan (SLA)'], d: ['A written response and resolution commitment with a remedy if missed. Without a remedy it is a target, not an agreement.', 'Komitmen tertulis atas respons dan penyelesaian, dengan ganti rugi bila gagal. Tanpa ganti rugi itu hanya target, bukan perjanjian.'] },
+  rba: { t: ['Risk-based approach (RBA)', 'Pendekatan berbasis risiko (RBA)'], d: ['The permit route where inspection intensity follows the operator risk rating rather than being uniform. It rewards documented compliance systems.', 'Jalur perizinan di mana intensitas pengawasan mengikuti peringkat risiko operator, bukan seragam. Pendekatan ini menghargai sistem kepatuhan yang terdokumentasi.'] },
+  skklh: { t: ['SKKLH', 'SKKLH'], d: ['Statement of environmental management commitment, the baseline environmental approval for a business activity. It is distinct from AMDAL, which applies to higher-impact activities.', 'Pernyataan komitmen pengelolaan lingkungan hidup, persetujuan lingkungan dasar untuk kegiatan usaha. Berbeda dari AMDAL yang berlaku untuk kegiatan berdampak besar.'] },
+  permenperin26: { t: ['Permenperin 26/2025', 'Permenperin 26/2025'], d: ['Ministerial regulation on industrial estate standards and accreditation. In force 23 January 2026; existing estates must apply within one year; pass mark 150 points, valid five years.', 'Peraturan menteri tentang standar dan akreditasi kawasan industri. Berlaku 23 Januari 2026; kawasan yang sudah ada harus mengajukan dalam satu tahun; ambang lulus 150 poin, berlaku lima tahun.'] },
+  accreditation: { t: ['Estate accreditation', 'Akreditasi kawasan'], d: ['A scored assessment weighting infrastructure 50%, environment 25% and management services 25%. Accreditation is a public signal, not a land title.', 'Penilaian berskor dengan bobot infrastruktur 50%, lingkungan 25%, dan layanan manajemen 25%. Akreditasi adalah sinyal publik, bukan bukti kepemilikan tanah.'] },
+  tkdn: { t: ['TKDN', 'TKDN'], d: ['Local content requirement. Government and state-owned projects typically require at least 25% domestic content, which affects equipment sourcing for utility upgrades.', 'Persyaratan kandungan lokal. Proyek pemerintah dan BUMN umumnya mensyaratkan minimal 25% kandungan dalam negeri, yang memengaruhi pengadaan peralatan untuk peningkatan utilitas.'] },
+  ifas: { t: ['IFAS', 'IFAS'], d: ['Integrated fixed-film activated sludge: suspended biomass plus fixed media in the same tank, used to raise capacity within an existing footprint.', 'Lumpur aktif dengan film tetap terintegrasi: biomassa tersuspensi plus media tetap dalam tangki yang sama, dipakai menaikkan kapasitas pada lahan yang ada.'] },
+  reuse: { t: ['Effluent reuse', 'Daur ulang efluen'], d: ['Treated wastewater sent back to cooling, boiler feed or site washing. Above 20% earns the top environment score in accreditation.', 'Air limbah terolah yang dikembalikan ke pendinginan, air umpan boiler, atau pencucian area. Di atas 20% memperoleh skor lingkungan tertinggi dalam akreditasi.'] },
+  rdf: { t: ['RDF', 'RDF'], d: ['Refuse-derived fuel: sorted municipal or industrial waste processed into a fuel substitute for cement kilns or boilers.', 'Bahan bakar turunan sampah: sampah kota atau industri yang disortir dan diolah menjadi pengganti bahan bakar untuk kiln semen atau boiler.'] },
+  perf: { t: ['Performance contract', 'Kontrak kinerja'], d: ['An EPC plus operations contract with guaranteed savings or compliance, penalties for shortfall and a metered baseline. It avoids taking asset risk onto the balance sheet.', 'Kontrak EPC plus operasi dengan jaminan penghematan atau kepatuhan, penalti bila gagal, dan basis terukur. Menghindari risiko aset masuk ke neraca.'] },
+  leadscore: { t: ['Lead score', 'Skor prospek'], d: ['Pain (1–5) multiplied by budget (1–3), decision authority (1–3) and time window (1–3); 135 is the maximum. It ranks follow-up order, not credit quality.', 'Rasa sakit (1–5) dikalikan anggaran (1–3), kewenangan keputusan (1–3), dan jendela waktu (1–3); maksimum 135. Skor ini mengurutkan prioritas tindak lanjut, bukan kualitas kredit.'] },
+  arpu: { t: ['ARPU', 'ARPU'], d: ['Average revenue per paying tenant per year. Used here to model service revenue without assuming every tenant buys.', 'Pendapatan rata-rata per penyewa berbayar per tahun. Dipakai untuk memodelkan pendapatan layanan tanpa mengasumsikan semua penyewa membeli.'] },
+};
+
+/* ================= STATE & HELPERS ================= */
+const LS_KEY = 'ji_platform_v1';
+let LANG = 'en';
+let STATE = null;
+let VIEW = 'dashboard';
+let TAB = { assets: 'assets', services: 'deals' };
+let PAGE = {};
+let FILTER = {};
+let SEEN = {};
+
+const el = (id) => document.getElementById(id);
+const esc = (s) => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const t = (k, vars) => {
+  const rec = STR[k];
+  let s = rec ? rec[LANG === 'en' ? 0 : 1] : k;
+  if (vars) Object.keys(vars).forEach(v => { s = s.replace(new RegExp('\\{' + v + '\\}', 'g'), vars[v]); });
+  return s;
+};
+const E = (group, code) => {
+  const rec = (ENUM[group] || {})[code];
+  return rec ? rec[LANG === 'en' ? 0 : 1] : (code == null ? '—' : String(code));
+};
+const nf = () => (LANG === 'en' ? 'en-US' : 'id-ID');
+const fmtInt = (n) => Number(n || 0).toLocaleString(nf(), { maximumFractionDigits: 0 });
+const fmtDec = (n, d) => Number(n || 0).toLocaleString(nf(), { minimumFractionDigits: d, maximumFractionDigits: d });
+const fmtRp = (n) => 'Rp ' + fmtInt(n);
+const fmtRpShort = (n) => {
+  const v = Number(n || 0);
+  if (LANG === 'id' && Math.abs(v) >= 1e12) return 'Rp ' + fmtDec(v / 1e12, 2) + ' triliun';
+  if (Math.abs(v) >= 1e12) return 'Rp ' + fmtDec(v / 1e12, 2) + ' tn';
+  if (LANG === 'id' && Math.abs(v) >= 1e9) return 'Rp ' + fmtDec(v / 1e9, 2) + ' miliar';
+  if (Math.abs(v) >= 1e9) return 'Rp ' + fmtDec(v / 1e9, 2) + ' bn';
+  if (Math.abs(v) >= 1e6) return 'Rp ' + fmtDec(v / 1e6, 1) + (LANG === 'en' ? ' m' : ' jt');
+  return fmtRp(v);
+};
+const fmtDate = (iso) => {
+  if (!iso) return '—';
+  const d = new Date(iso + (iso.length === 10 ? 'T00:00:00' : ''));
+  if (isNaN(d)) return '—';
+  return new Intl.DateTimeFormat(LANG === 'en' ? 'en-GB' : 'id-ID', { day: '2-digit', month: 'short', year: 'numeric' }).format(d);
+};
+const pct = (n, d) => fmtDec(n, d == null ? 1 : d) + '%';
+const daysAgo = (iso) => Math.round((Date.now() - new Date(iso + 'T00:00:00').getTime()) / 86400000);
+const uid = (prefix) => prefix.replace(/-$/, '') + '-' + String(Math.floor(Math.random() * 9000) + 1000);
+const ESTATE_CODE = { Cikarang: 'CKR', Bekasi: 'BKS', Karawang: 'KRW', Kendal: 'KDL' };
+function nextAssetId(kawasan) {
+  const code = ESTATE_CODE[kawasan] || 'NEW';
+  const yy = String(new Date().getFullYear()).slice(2);
+  const seq = (STATE.assets || []).filter((a) => String(a.asset_id).indexOf('-' + code + '-' + yy + '-') > -1)
+    .map((a) => Number(String(a.asset_id).split('-').pop()) || 0);
+  const next = (seq.length ? Math.max.apply(null, seq) : 0) + 1;
+  return 'JI-' + code + '-' + yy + '-' + String(next).padStart(4, '0');
+}
+
+/* term helper: tooltip only on first use within the current view */
+function gl(key, plain) {
+  const g = GLOSS[key];
+  if (!g) return esc(plain || key);
+  const label = plain || g.t[LANG === 'en' ? 0 : 1];
+  if (SEEN[key]) return esc(label);
+  SEEN[key] = 1;
+  return '<span class="term" data-g="' + key + '">' + esc(label) + '</span>';
+}
+/* ================= SEED DATA (clearly marked as demo) ================= */
+function seedData() {
+  const OWNERS = [
+    { id: 'OWN-001', name: 'PT Nusantara Presisi', legal: 'pt', ubo: 'Wijaya family', structure: 'Two-tier holding, no nominee', motive: 'exit', floorPrice: 46000, askPrice: 55000, pressure: 'm6', liens: 'Equipment lien Rp 2.1 bn', pref: 'longlease', commission: 3, authority: 'Chairman signs, CFO reviews', kyb: 'passed', notes: 'Owner prefers a single tenant with a five-year term.' },
+    { id: 'OWN-002', name: 'PT Sinar Kemasan', legal: 'pt', ubo: 'Halim family', structure: 'Direct holding', motive: 'cash', floorPrice: 4200000, askPrice: 4700000, pressure: 'm12', liens: 'None declared', pref: 'full', commission: 1.5, authority: 'President director', kyb: 'passed', notes: 'Packaging line moved to Surabaya in 2024.' },
+    { id: 'OWN-003', name: 'Keluarga Darmawan', legal: 'family', ubo: 'Darmawan heirs', structure: 'Six heirs, two signatures required', motive: 'inheritance', floorPrice: 3900000, askPrice: 4400000, pressure: 'm12', liens: 'Estate in probate', pref: 'full', commission: 2, authority: 'Two of six heirs', kyb: 'high', notes: 'Probate must close before any sale.' },
+    { id: 'OWN-004', name: 'PT Andalan Logistik', legal: 'pt', ubo: 'Santoso', structure: 'Single shareholder', motive: 'restructuring', floorPrice: 48000, askPrice: 58000, pressure: 'm3', liens: 'Bank mortgage Rp 6.4 bn', pref: 'salelease', commission: 3.5, authority: 'Board, three members', kyb: 'passed', notes: 'Wants to stay as tenant after sale.' },
+    { id: 'OWN-005', name: 'PT Bumi Tekstil', legal: 'pt', ubo: 'Chandra family', structure: 'Family plus one institutional investor', motive: 'debt', floorPrice: 3500000, askPrice: 4100000, pressure: 'm3', liens: 'Tax arrears under review', pref: 'split', commission: 2, authority: 'Creditor committee', kyb: 'high', notes: 'Split sale of two blocks is under discussion.' },
+    { id: 'OWN-006', name: 'PT Global Food Works', legal: 'pt', ubo: 'Ng family', structure: 'Holding company in Singapore', motive: 'exit', floorPrice: 5200000, askPrice: 5900000, pressure: 'none', liens: 'None', pref: 'full', commission: 1.5, authority: 'Regional CFO', kyb: 'passed', notes: 'Cold storage still in use; sale only with leaseback.' },
+    { id: 'OWN-007', name: 'PT Cikarang Mandiri', legal: 'pt', ubo: 'Local investors', structure: 'Twelve shareholders', motive: 'cash', floorPrice: 44000, askPrice: 52000, pressure: 'm6', liens: 'None', pref: 'longlease', commission: 3, authority: 'Majority vote', kyb: 'notdone', notes: 'Needs a tenant before refinancing.' },
+    { id: 'OWN-008', name: 'Dana Investasi Nusantara', legal: 'fund', ubo: 'Fund LP', structure: 'Fund vehicle, asset manager appointed', motive: 'exit', floorPrice: 4900000, askPrice: 5600000, pressure: 'm12', liens: 'Fund-level leverage', pref: 'full', commission: 1, authority: 'Investment committee', kyb: 'passed', notes: 'Five-year hold ending 2027.' },
+  ];
+
+  const ESTATES = [
+    { k: 'Cikarang', n: 18, code: 'CKR' },
+    { k: 'Bekasi', n: 5, code: 'BKS' },
+    { k: 'Karawang', n: 5, code: 'KRW' },
+    { k: 'Kendal', n: 4, code: 'KDL' },
+  ];
+  const STATUS = ['vacant', 'vacant', 'vacant', 'partial', 'partial', 'stopped', 'operating'];
+  const INTENT = ['lease', 'lease', 'lease', 'sale', 'sale', 'jv'];
+  const COND = ['A', 'B', 'B', 'C', 'C', 'D'];
+  const PERMITS = [
+    'PBG, SLF, SKKLH, KBLI complete',
+    'PBG, SKKLH, KBLI; SLF pending',
+    'PBG, KBLI; SKKLH renewal due',
+    'PBG only; SLF and SKKLH missing',
+    'PBG, SLF, KBLI; SKKLH in process',
+  ];
+  const ACCESS = ['public', 'member', 'member', 'deal', 'restricted'];
+  const ASSETS = [];
+  let seq = 0;
+  ESTATES.forEach((es) => {
+    for (let i = 0; i < es.n; i++) {
+      seq++;
+      const build = [1200, 1500, 1800, 2200, 2600, 3200, 4200][(seq + i) % 7];
+      const land = Math.round(build * (1.6 + ((seq % 5) / 10)));
+      const status = STATUS[(seq * 3 + i) % STATUS.length];
+      const intent = INTENT[(seq + i * 2) % INTENT.length];
+      const cond = COND[(seq + i) % COND.length];
+      const price = intent === 'sale' ? 3600000 + (seq % 9) * 220000 : 44000 + (seq % 8) * 2200;
+      ASSETS.push({
+        asset_id: 'JI-' + es.code + '-26-' + String(seq).padStart(4, '0'),
+        kawasan: es.k, blok: String.fromCharCode(65 + (i % 6)) + '-' + String(10 + i).padStart(2, '0'),
+        alamat: 'Kawasan Industri ' + es.k + ', Blok ' + String.fromCharCode(65 + (i % 6)) + ', ' + es.k,
+        owner_id: OWNERS[(seq + i) % OWNERS.length].id,
+        land: land, build: build, floors: build > 2600 ? 2 : 1,
+        clearance: [6.2, 6.8, 7.5, 8.2][seq % 4],
+        power: [800, 1200, 1500, 2000, 2500][(seq + i) % 5],
+        water: [60, 100, 120, 180][(seq + i) % 4],
+        wwtp: ['yes', 'yes', 'partial', 'no'][seq % 4],
+        gas: seq % 3 === 0 ? 'yes' : 'no',
+        permits: PERMITS[(seq + i) % PERMITS.length],
+        status: status, intent: intent, price: price, condition: cond,
+        retrofit: cond === 'A' ? 0 : (cond === 'B' ? 180000000 : 620000000),
+        quality: 44 + ((seq * 7 + i * 5) % 52),
+        verified: '2026-' + String(6 + (seq % 5)).padStart(2, '0') + '-' + String(3 + (seq % 24)).padStart(2, '0'),
+        access: ACCESS[seq % ACCESS.length],
+        notes: status === 'vacant' ? 'Empty since the previous tenant left; utilities disconnected.' : 'Partially used; remaining space available.',
+      });
+    }
+  });
+
+  const DEMAND_NAMES = ['PT Prima Elektronika', 'PT Karya Presisi', 'PT Sentosa Kemasan', 'PT Anugerah Pangan', 'PT Lintas Cargo', 'PT Multi Polimer', 'PT Baja Nusantara', 'PT Sinar Farmasi', 'PT Tex Global', 'PT Auto Komponen', 'PT Prima Plastik', 'PT Delta Mesin', 'PT Cahaya Furnitur', 'PT Bumi Kimia', 'PT Ritel Logistik', 'PT Nusa Semikonduktor', 'PT Global Tekstil', 'PT Andi Presisi', 'PT Sumber Pangan', 'PT Cepat Ekspres'];
+  const DEMANDS = DEMAND_NAMES.map((name, i) => {
+    const stage = ['lead', 'lead', 'viewing', 'offer', 'loi', 'dd', 'closed', 'lost'][i % 8];
+    const industry = ['electronics', 'machinery', 'chemical', 'food', 'logistics', 'other'][i % 6];
+    const area = [1200, 1500, 1800, 2200, 3000][i % 5];
+    return {
+      demand_id: 'DEM-26-' + String(i + 1).padStart(3, '0'),
+      company: name, industry: industry, area: area,
+      powerReq: [1000, 1500, 2000][i % 3],
+      waterReq: [80, 120, 160][i % 3],
+      steam: i % 4 === 0 ? 'Low-pressure steam, 2 t/h' : 'None',
+      location: ['Cikarang north', 'Cikarang south', 'Bekasi border', 'Karawang west'][i % 4],
+      timeline: ['m3', 'm6', 'm12', 'none'][i % 4],
+      budget: 60000000 + (i % 8) * 8000000,
+      score: 52 + ((i * 13) % 44),
+      assetLink: i % 3 === 0 ? ASSETS[i % ASSETS.length].asset_id : '',
+      stage: stage,
+      offer: stage === 'offer' || stage === 'loi' || stage === 'dd' || stage === 'closed' ? 58000000 + (i % 6) * 5000000 : 0,
+      commissionAmt: stage === 'closed' ? 58000000 + (i % 6) * 5000000 : 0,
+      lost: stage === 'lost' ? ['price', 'compliance', 'facility', 'timing', 'competition'][i % 5] : '',
+      notes: '',
+    };
+  });
+
+  const TENANTS = ['PT Prima Elektronika', 'PT Karya Presisi', 'PT Sentosa Kemasan', 'PT Anugerah Pangan', 'PT Lintas Cargo', 'PT Multi Polimer', 'PT Baja Nusantara', 'PT Sinar Farmasi', 'PT Tex Global', 'PT Auto Komponen', 'PT Prima Plastik', 'PT Delta Mesin'];
+  const SKUS = [
+    { c: 'permit', k: 'OSS/RBA permit handling', v: [15, 40] },
+    { c: 'permit', k: 'SKKLH / AMDAL amendment', v: [40, 120] },
+    { c: 'permit', k: 'PBG / SLF compliance', v: [25, 80] },
+    { c: 'permit', k: 'Fire inspection and remedy', v: [10, 30] },
+    { c: 'energy', k: 'Power bill diagnostic and demand management', v: [20, 60] },
+    { c: 'energy', k: 'Rooftop solar feasibility and PPA', v: [80, 300] },
+    { c: 'energy', k: 'Steam and gas optimisation', v: [20, 50] },
+    { c: 'environment', k: 'Wastewater pre-treatment and monitoring', v: [30, 90] },
+    { c: 'environment', k: 'Hazardous waste compliance', v: [20, 60] },
+    { c: 'environment', k: 'Carbon inventory and ESG report', v: [50, 150] },
+    { c: 'hr', k: 'Recruitment and onboarding', v: [8, 25] },
+    { c: 'supply', k: 'Chemical and packaging procurement', v: [10, 45] },
+    { c: 'supply', k: 'Warehousing and customs brokerage', v: [12, 50] },
+    { c: 'finance', k: 'Insurance brokerage', v: [10, 35] },
+  ];
+  const DEALS = Array.from({ length: 36 }, (_, i) => {
+    const sku = SKUS[i % SKUS.length];
+    const lo = sku.v[0], hi = sku.v[1];
+    const value = Math.round((lo + ((i * 7) % (hi - lo + 1))) * 1000000);
+    return {
+      svc_id: 'SVC-26-' + String(i + 1).padStart(3, '0'),
+      tenant: TENANTS[i % TENANTS.length],
+      category: sku.c, sku: sku.k, value: value,
+      svcStatus: ['active', 'active', 'active', 'delivered', 'quoted', 'lost'][i % 6],
+      ownerMgr: ['Ayu', 'Budi', 'Citra'][i % 3],
+      start: '2026-' + String(1 + (i % 10)).padStart(2, '0') + '-' + String(4 + (i % 20)).padStart(2, '0'),
+      notes: '',
+    };
+  });
+
+  const LEADS = Array.from({ length: 30 }, (_, i) => {
+    const pain = ['Power reliability', 'Permit delays', 'Wastewater compliance', 'Labour turnover', 'Customs clearance', 'Water quality'][i % 6];
+    const willingness = ['yes', 'yes', 'price', 'no'][i % 4];
+    const budget = ['lt50', '50_150', '150_500', 'gt500'][i % 4];
+    const decision = ['owner', 'gm', 'finance', 'plant'][i % 4];
+    const timeline = ['m1', 'm3', 'm6', 'm12'][i % 4];
+    const score = [3, 4, 5][i % 3] * [2, 3, 1][i % 3] * [2, 3, 1][i % 3] * [3, 2, 1][i % 3] * 3;
+    return {
+      lead_id: 'LEAD-26-' + String(i + 1).padStart(3, '0'),
+      company: TENANTS[i % TENANTS.length], industry: ['electronics', 'machinery', 'chemical', 'food', 'logistics'][i % 5],
+      nps: [9, 8, 7, 6, 5, 8, 9, 4][i % 8],
+      pain: pain, spend: [120, 340, 780, 1500][i % 4] * 1000000,
+      willing: willingness, budget: budget, decision: decision, timeline: timeline,
+      channel: ['WhatsApp', 'Site visit', 'Email', 'Account manager'][i % 4],
+      leadScore: Math.min(135, Math.max(12, score)),
+      leadStatus: ['new', 'new', 'contacted', 'qualified', 'converted', 'dropped'][i % 6],
+      notes: '',
+    };
+  });
+
+  const PLANTS = ['WTP Cikarang', 'WWTP 1', 'WWTP 2', 'Solid waste'];
+  const MONTHS = ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06', '2026-07', '2026-08', '2026-09', '2026-10'];
+  const METRICS = [];
+  let mseq = 0;
+  PLANTS.forEach((p) => {
+    MONTHS.forEach((m, mi) => {
+      const inds = p === 'WTP Cikarang' ? ['energy', 'cost'] : p === 'Solid waste' ? ['sludge', 'cost'] : ['energy', 'compliance', 'reuse'];
+      inds.forEach((ind) => {
+        mseq++;
+        let v, unit;
+        if (ind === 'energy') { v = (p === 'WWTP 2' ? 0.305 : p === 'WWTP 1' ? 0.342 : 0.118) + (mi * -0.0022) + ((mseq % 5) / 1000); unit = 'kWh/m³'; }
+        if (ind === 'compliance') { v = 94 + (mi % 5) * 1.1 + (mseq % 3) / 10; unit = '%'; }
+        if (ind === 'reuse') { v = 4 + mi * 0.55 + (mseq % 4) / 10; unit = '%'; }
+        if (ind === 'sludge') { v = 31 - mi * 0.25 + (mseq % 5) / 10; unit = 't/day'; }
+        if (ind === 'cost') { v = 11800 - mi * 40 + (mseq % 6) * 15; unit = 'Rp/m³'; }
+        METRICS.push({ metric_id: 'M-' + String(mseq).padStart(4, '0'), plant: p, metric: ind, period: m, value: Math.round(v * 100) / 100, unit: unit });
+      });
+    });
+  });
+
+  return { owners: OWNERS, assets: ASSETS, demands: DEMANDS, deals: DEALS, leads: LEADS, metrics: METRICS };
+}
+
+/* ================= STORAGE ================= */
+function loadData() {
+  let stored = null;
+  try { stored = localStorage.getItem(LS_KEY); } catch (e) { stored = null; }
+  if (stored) {
+    try {
+      const parsed = JSON.parse(stored);
+      if (parsed && parsed.assets && parsed.owners) return parsed;
+    } catch (e) { /* fall through to demo */ }
+  }
+  const seeded = seedData();
+  try { localStorage.setItem(LS_KEY, JSON.stringify(seeded)); } catch (e) { /* private mode or file:// */ }
+  return seeded;
+}
+function save() {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(STATE)); } catch (e) { toast(t('c.badFile')); }
+}
+
+/* ================= SHARED UI ================= */
+function openDrawer(title, sub, body, foot) {
+  el('drawerTitle').textContent = title;
+  el('drawerSub').textContent = sub || '';
+  el('drawerBody').innerHTML = body;
+  el('drawerFoot').innerHTML = foot || '';
+  el('scrim').classList.add('on');
+  el('drawer').classList.add('on');
+}
+function closeDrawer() {
+  el('scrim').classList.remove('on');
+  el('drawer').classList.remove('on');
+}
+function toast(msg) {
+  const x = el('toast');
+  x.textContent = msg;
+  x.classList.add('on');
+  clearTimeout(x._t);
+  x._t = setTimeout(() => x.classList.remove('on'), 2200);
+}
+
+function chipFor(group, code) {
+  const tone = code === 'vacant' ? 'c-vacant' : code === 'partial' ? 'c-partial' : code === 'stopped' ? 'c-stopped' : code === 'operating' ? 'c-operating'
+    : code === 'closed' || code === 'delivered' || code === 'converted' ? 'c-teal'
+      : code === 'lost' || code === 'dropped' || code === 'high' ? 'c-red'
+        : code === 'offer' || code === 'loi' || code === 'active' || code === 'qualified' ? 'c-amber' : 'c-neutral';
+  return '<span class="chip ' + tone + '"><i></i>' + esc(E(group, code)) + '</span>';
+}
+
+function pagerHtml(key, total, page, size) {
+  const pages = Math.max(1, Math.ceil(total / size));
+  const start = total === 0 ? 0 : (page - 1) * size + 1;
+  const end = Math.min(total, page * size);
+  let btns = '';
+  for (let p = 1; p <= pages; p++) {
+    if (p === 1 || p === pages || Math.abs(p - page) <= 1) {
+      btns += '<button class="pg ' + (p === page ? 'on' : '') + '" data-pg="' + key + '" data-to="' + p + '">' + p + '</button>';
+    } else if (Math.abs(p - page) === 2) {
+      btns += '<span style="color:#9AA0A8;padding:0 2px">…</span>';
+    }
+  }
+  return '<div class="pager"><div class="range">' + t('c.showing') + ' ' + start + '–' + end + ' ' + t('c.of') + ' ' + total + ' ' + t('c.total') + '</div>'
+    + '<button class="pg" data-pg="' + key + '" data-to="' + Math.max(1, page - 1) + '"' + (page === 1 ? ' disabled' : '') + '>‹</button>'
+    + btns
+    + '<button class="pg" data-pg="' + key + '" data-to="' + Math.min(pages, page + 1) + '"' + (page === pages ? ' disabled' : '') + '>›</button></div>';
+}
+
+function paginate(key, rows, size) {
+  size = size || 12;
+  const pages = Math.max(1, Math.ceil(rows.length / size));
+  let page = PAGE[key] || 1;
+  if (page > pages) page = pages;
+  PAGE[key] = page;
+  return { slice: rows.slice((page - 1) * size, page * size), pager: pagerHtml(key, rows.length, page, size) };
+}
+
+function filterRows(rows, key, fields) {
+  const f = FILTER[key] || {};
+  let out = rows;
+  Object.keys(f).forEach((k) => {
+    if (k !== 'q' && f[k]) out = out.filter((r) => String(r[k]) === String(f[k]));
+  });
+  const q = (f.q || '').toLowerCase().trim();
+  if (q) out = out.filter((r) => fields.some((fl) => String(r[fl] == null ? '' : r[fl]).toLowerCase().includes(q)));
+  return out;
+}
+
+/* glossary strip: terms shown at their first appearance on a page, hover to explain */
+function termLine(keys) {
+  const items = keys.map((k) => gl(k)).join('');
+  return '<div class="termline"><b>' + esc(LANG === 'en' ? 'Terms' : 'Istilah') + '</b>' + items + '</div>';
+}
+
+/* ================= METRICS ================= */
+const OPEN_STAGES = ['lead', 'viewing', 'offer', 'loi', 'dd'];
+function kpis() {
+  const a = STATE.assets;
+  const idle = a.filter((x) => x.status === 'vacant' || x.status === 'stopped').length;
+  const open = STATE.demands.filter((d) => OPEN_STAGES.includes(d.stage));
+  const matched = open.filter((d) => d.assetLink).length;
+  const signed = STATE.deals.filter((d) => d.svcStatus === 'active' || d.svcStatus === 'delivered');
+  const revenue = signed.reduce((s, d) => s + Number(d.value || 0), 0);
+  const quality = a.length ? a.reduce((s, x) => s + Number(x.quality || 0), 0) / a.length : 0;
+  const latest = latestMonth();
+  const ww = STATE.metrics.filter((m) => m.period === latest && m.metric === 'reuse');
+  const reuse = ww.length ? ww.reduce((s, m) => s + Number(m.value), 0) / ww.length : 0;
+  return { total: a.length, idle, idleShare: a.length ? (idle / a.length) * 100 : 0, open: open.length, matched, delivered: signed.length, revenue, quality, reuse, latest };
+}
+function latestMonth() {
+  const periods = STATE.metrics.map((m) => m.period).sort();
+  return periods.length ? periods[periods.length - 1] : '';
+}
+function monthLabel(p) {
+  const d = new Date(p + '-01T00:00:00');
+  return new Intl.DateTimeFormat(LANG === 'en' ? 'en-GB' : 'id-ID', { month: 'short', year: '2-digit' }).format(d);
+}
+function metricSeries(plant, ind) {
+  const rows = STATE.metrics.filter((m) => m.plant === plant && m.metric === ind).sort((x, y) => x.period < y.period ? -1 : 1);
+  return rows;
+}
+
+/* ================= DASHBOARD ================= */
+let CH = [];
+function clearCharts() { CH.forEach((c) => { try { c.dispose(); } catch (e) {} }); CH = []; }
+function chart(id, option) {
+  if (typeof echarts === 'undefined') return;
+  const dom = el(id);
+  if (!dom) return;
+  const c = echarts.init(dom, null, { renderer: 'canvas' });
+  c.setOption(option);
+  CH.push(c);
+}
+const AXIS = { axisLine: { lineStyle: { color: '#E1DCD3' } }, axisTick: { show: false }, axisLabel: { color: '#6C727C', fontSize: 11 }, splitLine: { lineStyle: { color: '#EFECE5' } } };
+
+function viewDashboard() {
+  const k = kpis();
+  const statusOrder = ['operating', 'partial', 'stopped', 'vacant'];
+  const statusData = statusOrder.map((s) => ({ name: E('status', s), value: STATE.assets.filter((a) => a.status === s).length, itemStyle: { color: s === 'operating' ? '#2C6E6A' : s === 'partial' ? '#C8861A' : s === 'stopped' ? '#8A8F98' : '#A8452F' } }));
+  const stages = ['lead', 'viewing', 'offer', 'loi', 'dd', 'closed', 'lost'];
+  const stageData = stages.map((s) => STATE.demands.filter((d) => d.stage === s).length);
+  const cats = ['permit', 'energy', 'environment', 'hr', 'supply', 'finance'];
+  const catData = cats.map((c) => STATE.deals.filter((d) => d.category === c && d.svcStatus !== 'quoted' && d.svcStatus !== 'lost').reduce((s, d) => s + Number(d.value), 0));
+  const months = Array.from(new Set(STATE.metrics.map((m) => m.period))).sort();
+  const e2 = metricSeries('WWTP 2', 'energy').map((m) => m.value);
+  const r2 = metricSeries('WWTP 2', 'reuse').map((m) => m.value);
+
+  const stale = STATE.assets.filter((a) => daysAgo(a.verified) > 90);
+  const noDemand = STATE.assets.filter((a) => a.quality >= 75 && !STATE.demands.some((d) => d.assetLink === a.asset_id && OPEN_STAGES.includes(d.stage)));
+  const lowReuse = ['WWTP 1', 'WWTP 2'].map((p) => {
+    const s = metricSeries(p, 'reuse');
+    return { plant: p, v: s.length ? s[s.length - 1].value : 0 };
+  }).filter((x) => x.v < 10);
+
+  el('view').innerHTML = `
+  <div class="notice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg><div><b>${esc(t('c.demo'))}</b> — ${esc(t('c.demoText'))}</div></div>
+
+  ${termLine(['occupancy', 'leadscore', 'reuse'])}
+
+  <div class="grid g-3" style="margin-bottom:16px">
+    ${kpiCard(t('k.assets'), fmtInt(k.total), t('k.assets.foot', { n: fmtInt(k.total) }), '')}
+    ${kpiCard(t('k.vacant'), fmtInt(k.idle), t('k.vacant.foot', { n: pct(k.idleShare, 1) }), 'r')}
+    ${kpiCard(t('k.pipeline'), fmtInt(k.open), t('k.pipeline.foot', { n: fmtInt(k.matched) }), '')}
+    ${kpiCard(t('k.revenue'), fmtRpShort(k.revenue), t('k.revenue.foot', { n: fmtInt(k.delivered) }), 't')}
+    ${kpiCard(t('k.quality'), fmtDec(k.quality, 0) + '<span class="k-unit">/ 100</span>', t('k.quality.foot'), '')}
+    ${kpiCard(t('k.util'), pct(k.reuse, 1), t('k.util.foot') + ' · ' + fmtDate(k.latest + '-01'), 't')}
+  </div>
+
+  <div class="grid g-2">
+    <div class="card"><div class="card-head"><h3>${esc(t('d.status'))}</h3><span class="hint">${fmtInt(k.total)} ${esc(t('c.total'))}</span></div><div id="ch-status" class="chart"></div></div>
+    <div class="card"><div class="card-head"><h3>${esc(t('d.stage'))}</h3><span class="hint">${fmtInt(STATE.demands.length)} ${esc(t('c.total'))}</span></div><div id="ch-stage" class="chart"></div></div>
+  </div>
+
+  <div class="grid g-2" style="margin-top:16px">
+    <div class="card"><div class="card-head"><h3>${esc(t('d.line'))}</h3><span class="hint">${esc(t('s.kpi.revenue'))} · ${fmtRpShort(k.revenue)}</span></div><div id="ch-line" class="chart tall"></div></div>
+    <div class="card"><div class="card-head"><h3>${esc(t('d.trend'))}</h3><span class="hint">${esc(t('d.trend.unit'))}</span></div><div id="ch-trend" class="chart tall"></div></div>
+  </div>
+
+  <div class="sec-head"><div><h2>${esc(t('d.attention'))}</h2><p>${esc(t('d.stale'))} · ${esc(t('d.noDemand'))}</p></div></div>
+  <div class="card flat">
+    <div class="list" style="padding:0 20px">
+      <div class="li"><span class="tag">A / DEMAND</span><div class="body"><b>${fmtInt(noDemand.length)} ${esc(t('d.noDemand'))}</b><span>${noDemand.slice(0, 4).map((a) => esc(a.asset_id)).join(' · ') || '—'}</span></div><div class="act"><button class="btn ghost" data-goto="assets">${esc(t('c.new'))}</button></div></div>
+      <div class="li"><span class="tag">DATA</span><div class="body"><b>${fmtInt(stale.length)} ${esc(t('d.stale'))}</b><span>${stale.slice(0, 4).map((a) => esc(a.asset_id + ' · ' + fmtDate(a.verified))).join('  |  ') || '—'}</span></div><div class="act"><button class="btn ghost" data-goto="assets">${esc(t('a.tab.assets'))}</button></div></div>
+      <div class="li"><span class="tag">REUSE</span><div class="body"><b>${fmtInt(lowReuse.length)} ${esc(t('d.belowTarget'))}</b><span>${lowReuse.map((x) => esc(x.plant + ' · ' + pct(x.v, 1))).join('  |  ') || '—'}</span></div><div class="act"><button class="btn ghost" data-goto="utilities">${esc(t('nav.utilities'))}</button></div></div>
+    </div>
+  </div>`;
+
+  chart('ch-status', {
+    tooltip: { trigger: 'item', formatter: (p) => p.name + ': ' + fmtInt(p.value) + ' (' + pct(p.percent, 1) + ')' },
+    legend: { orient: 'vertical', right: 6, top: 'middle', itemWidth: 9, itemHeight: 9, textStyle: { fontSize: 11, color: '#3C4552' } },
+    series: [{ type: 'pie', radius: ['46%', '68%'], center: ['36%', '52%'], avoidLabelOverlap: true, label: { show: false }, itemStyle: { borderColor: '#FFF', borderWidth: 2 }, data: statusData }],
+  });
+  chart('ch-stage', {
+    grid: { left: 92, right: 24, top: 10, bottom: 22 },
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: (ps) => ps[0].name + ': ' + fmtInt(ps[0].value) },
+    xAxis: Object.assign({ type: 'value' }, AXIS),
+    yAxis: Object.assign({ type: 'category', data: stages.map((s) => E('stage', s)), inverse: true }, AXIS, { splitLine: { show: false } }),
+    series: [{ type: 'bar', data: stageData, barWidth: 13, itemStyle: { color: '#182A42' }, label: { show: true, position: 'right', fontSize: 11, color: '#6C727C' } }],
+  });
+  chart('ch-line', {
+    grid: { left: 164, right: 74, top: 10, bottom: 16 },
+    tooltip: { trigger: 'axis', formatter: (ps) => ps[0].name + ': ' + fmtRpShort(ps[0].value) },
+    xAxis: Object.assign({}, AXIS, { type: 'value', axisLabel: { show: false }, axisLine: { show: false }, splitLine: { show: false } }),
+    yAxis: Object.assign({}, AXIS, { type: 'category', data: cats.map((c) => E('category', c)), inverse: true, axisLabel: { color: '#3C4552', fontSize: 11, width: 152, overflow: 'truncate' }, splitLine: { show: false } }),
+    series: [{ type: 'bar', data: catData, barWidth: 13, itemStyle: { color: '#A9701C' }, label: { show: true, position: 'right', fontSize: 10.5, color: '#6C727C', formatter: (p) => fmtRpShort(p.value) } }],
+  });
+  chart('ch-trend', {
+    grid: { left: 48, right: 52, top: 22, bottom: 44 },
+    tooltip: { trigger: 'axis' },
+    legend: { bottom: 0, left: 0, itemWidth: 10, itemHeight: 8, textStyle: { fontSize: 10.5, color: '#3C4552' } },
+    xAxis: Object.assign({ type: 'category', data: months.map(monthLabel), boundaryGap: false }, AXIS),
+    yAxis: [Object.assign({ type: 'value', name: 'kWh/m³', nameTextStyle: { fontSize: 10, color: '#9AA0A8' }, scale: true }, AXIS), Object.assign({ type: 'value', name: '%', nameTextStyle: { fontSize: 10, color: '#9AA0A8' }, max: 20, min: 0 }, AXIS)],
+    series: [
+      { name: 'kWh/m³', type: 'line', smooth: true, symbolSize: 5, data: e2, itemStyle: { color: '#182A42' }, lineStyle: { width: 2 } },
+      { name: 'Reuse %', type: 'line', smooth: true, symbolSize: 5, yAxisIndex: 1, data: r2, itemStyle: { color: '#A9701C' }, lineStyle: { width: 2, type: 'dashed' } },
+    ],
+  });
+}
+function kpiCard(label, value, foot, tone) {
+  return `<div class="kpi ${tone || ''}"><div class="bar"></div><div class="k-label">${esc(label)}</div><div class="k-value">${value}</div><div class="k-foot">${esc(foot)}</div></div>`;
+}
+
+/* ================= TABLE PRIMITIVE ================= */
+function tableHtml(cols, bodyHtml, pager, minWidth) {
+  const cg = cols.map((c) => '<col style="width:' + c.w + '">').join('');
+  const th = cols.map((c) => '<th style="text-align:' + (c.align || 'left') + '">' + esc(c.label) + '</th>').join('');
+  return '<div class="tbl-wrap"><table style="min-width:' + (minWidth || 900) + 'px"><colgroup>' + cg + '</colgroup><thead><tr>' + th + '</tr></thead><tbody>' + bodyHtml + '</tbody></table></div>' + pager;
+}
+function emptyRow(cols) { return '<tr><td colspan="' + cols + '"><div class="empty">' + esc(t('c.none')) + '</div></td></tr>'; }
+
+/* ================= ASSETS VIEW ================= */
+function viewAssets() {
+  const tab = TAB.assets;
+  const counts = { assets: STATE.assets.length, owners: STATE.owners.length, demands: STATE.demands.length };
+  const tabs = `<div class="tabs">
+    <div class="tab ${tab === 'assets' ? 'active' : ''}" data-tab="assets" data-t="assets">${esc(t('a.tab.assets'))}<span class="n">${fmtInt(counts.assets)}</span></div>
+    <div class="tab ${tab === 'owners' ? 'active' : ''}" data-tab="assets" data-t="owners">${esc(t('a.tab.owners'))}<span class="n">${fmtInt(counts.owners)}</span></div>
+    <div class="tab ${tab === 'demands' ? 'active' : ''}" data-tab="assets" data-t="demands">${esc(t('a.tab.demands'))}<span class="n">${fmtInt(counts.demands)}</span></div>
+  </div>`;
+  if (tab === 'assets') {
+    const cols = [
+      { w: '13%', label: 'ID' }, { w: '9%', label: t('F.kawasan') }, { w: '6%', label: t('F.blok') },
+      { w: '12%', label: t('F.owner_id') }, { w: '8%', label: t('a.col.build'), align: 'right' },
+      { w: '8%', label: t('a.col.power'), align: 'right' }, { w: '14%', label: t('F.status') },
+      { w: '9%', label: t('F.intent') }, { w: '13%', label: t('a.col.price'), align: 'right' },
+      { w: '8%', label: t('a.col.quality'), align: 'right' },
+    ];
+    const statusOpts = ['operating', 'partial', 'stopped', 'vacant'];
+    const estOpts = ['Cikarang', 'Bekasi', 'Karawang', 'Kendal'];
+    const f = FILTER.assets || {};
+    const rows = filterRows(STATE.assets, 'assets', ['asset_id', 'kawasan', 'blok', 'alamat', 'owner_id', 'status', 'intent', 'permits']);
+    const p = paginate('assets', rows, 12);
+    const body = p.slice.map((a) => `<tr data-entity="asset" data-id="${esc(a.asset_id)}">
+      <td class="mono">${esc(a.asset_id)}</td><td>${esc(a.kawasan)}</td><td class="mono">${esc(a.blok)}</td>
+      <td class="mono">${esc(a.owner_id)}</td><td class="num">${fmtInt(a.build)}</td><td class="num">${fmtInt(a.power)}</td>
+      <td>${chipFor('status', a.status)}</td><td>${esc(E('intent', a.intent))}</td>
+      <td class="num">${a.intent === 'sale' ? fmtRpShort(a.price) + '/m²' : fmtRp(a.price) + t('c.sqmMonth')}</td>
+      <td class="num">${fmtInt(a.quality)}</td></tr>`).join('') || emptyRow(cols.length);
+    el('view').innerHTML = tabs + termLine(['occupancy', 'rba', 'accreditation', 'tkdn']) + `<div class="sec-head" style="margin-top:0"><p>${esc(t('a.descAssets'))}</p><div><button class="btn primary" data-add="asset">${esc(t('a.addAsset'))}</button></div></div>
+      <div class="card flat">
+        <div class="toolbar">
+          <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg><input data-q="assets" placeholder="${esc(t('c.search'))}" value="${esc(f.q || '')}"></div>
+          <select data-sel="assets" data-f="status"><option value="">${esc(t('a.filterStatus'))}: ${esc(t('c.all'))}</option>${statusOpts.map((s) => `<option value="${s}" ${f.status === s ? 'selected' : ''}>${esc(E('status', s))}</option>`).join('')}</select>
+          <select data-sel="assets" data-f="kawasan"><option value="">${esc(t('a.filterKawasan'))}: ${esc(t('c.all'))}</option>${estOpts.map((s) => `<option value="${s}" ${f.kawasan === s ? 'selected' : ''}>${esc(s)}</option>`).join('')}</select>
+          <span class="count">${fmtInt(rows.length)} ${esc(t('c.total'))}</span>
+        </div>
+        ${tableHtml(cols, body, p.pager, 1040)}
+      </div>`;
+  } else if (tab === 'owners') {
+    const cols = [
+      { w: '9%', label: 'ID' }, { w: '18%', label: t('F.name') }, { w: '13%', label: t('F.legal') },
+      { w: '9%', label: t('F.motive') }, { w: '11%', label: t('F.floorPriceShort'), align: 'right' },
+      { w: '11%', label: t('F.askPriceShort'), align: 'right' }, { w: '10%', label: t('F.pressure') },
+      { w: '10%', label: t('F.kybShort') }, { w: '9%', label: t('F.commissionShort'), align: 'right' },
+    ];
+    const rows = filterRows(STATE.owners, 'owners', ['owner_id', 'name', 'ubo', 'structure', 'authority', 'notes']);
+    const p = paginate('owners', rows, 12);
+    const body = p.slice.map((o) => `<tr data-entity="owner" data-id="${esc(o.id)}">
+      <td class="mono">${esc(o.id)}</td><td>${esc(o.name)}</td><td>${esc(E('legal', o.legal))}</td>
+      <td>${esc(E('motive', o.motive))}</td><td class="num">${fmtRpShort(o.floorPrice)}</td>
+      <td class="num">${fmtRpShort(o.askPrice)}</td><td>${esc(E('pressure', o.pressure))}</td>
+      <td>${chipFor('kyb', o.kyb)}</td><td class="num">${fmtDec(o.commission, 1)}%</td></tr>`).join('') || emptyRow(cols.length);
+    el('view').innerHTML = tabs + `<div class="sec-head" style="margin-top:0"><p>${esc(t('a.descOwners'))}</p><div><button class="btn primary" data-add="owner">${esc(t('a.addOwner'))}</button></div></div>
+      <div class="card flat">
+        <div class="toolbar"><div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg><input data-q="owners" placeholder="${esc(t('c.search'))}" value="${esc((FILTER.owners || {}).q || '')}"></div><span class="count">${fmtInt(rows.length)} ${esc(t('c.total'))}</span></div>
+        ${tableHtml(cols, body, p.pager, 980)}
+      </div>`;
+  } else {
+    const cols = [
+      { w: '10%', label: 'ID' }, { w: '19%', label: t('F.company') }, { w: '10%', label: t('F.industry') },
+      { w: '8%', label: t('F.area'), align: 'right' }, { w: '10%', label: t('F.stage') },
+      { w: '9%', label: t('F.score'), align: 'right' }, { w: '14%', label: t('F.assetLink') },
+      { w: '9%', label: t('F.offer'), align: 'right' }, { w: '11%', label: t('F.timeline') },
+    ];
+    const rows = filterRows(STATE.demands, 'demands', ['demand_id', 'company', 'industry', 'stage', 'notes', 'assetLink']);
+    const p = paginate('demands', rows, 12);
+    const body = p.slice.map((d) => `<tr data-entity="demand" data-id="${esc(d.demand_id)}">
+      <td class="mono">${esc(d.demand_id)}</td><td>${esc(d.company)}</td><td>${esc(E('industry', d.industry))}</td>
+      <td class="num">${fmtInt(d.area)}</td><td>${chipFor('stage', d.stage)}</td>
+      <td class="num">${fmtInt(d.score)}</td><td class="mono">${esc(d.assetLink || '—')}</td>
+      <td class="num">${d.offer ? fmtRpShort(d.offer) : '—'}</td><td>${esc(E('pressure', d.timeline))}</td></tr>`).join('') || emptyRow(cols.length);
+    el('view').innerHTML = tabs + `<div class="sec-head" style="margin-top:0"><p>${esc(t('a.descDemands'))}</p><div><button class="btn primary" data-add="demand">${esc(t('a.addDemand'))}</button></div></div>
+      <div class="card flat">
+        <div class="toolbar"><div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg><input data-q="demands" placeholder="${esc(t('c.search'))}" value="${esc((FILTER.demands || {}).q || '')}"></div><span class="count">${fmtInt(rows.length)} ${esc(t('c.total'))}</span></div>
+        ${tableHtml(cols, body, p.pager, 1000)}
+      </div>`;
+  }
+}
+
+/* ================= SERVICES VIEW ================= */
+function viewServices() {
+  const tab = TAB.services;
+  const delivered = STATE.deals.filter((d) => d.svcStatus === 'delivered');
+  const active = STATE.deals.filter((d) => d.svcStatus === 'active');
+  const signed = delivered.concat(active);
+  const revenue = signed.reduce((s, d) => s + Number(d.value), 0);
+  const avg = signed.length ? revenue / signed.length : 0;
+  const hot = STATE.leads.filter((l) => l.leadScore >= 70 && l.leadStatus !== 'dropped').length;
+  const tabs = `<div class="tabs">
+    <div class="tab ${tab === 'deals' ? 'active' : ''}" data-tab="services" data-t="deals">${esc(t('s.tab.deals'))}<span class="n">${fmtInt(STATE.deals.length)}</span></div>
+    <div class="tab ${tab === 'leads' ? 'active' : ''}" data-tab="services" data-t="leads">${esc(t('s.tab.leads'))}<span class="n">${fmtInt(STATE.leads.length)}</span></div>
+  </div>`;
+  let html = tabs + termLine(['oss', 'sla', 'leadscore', 'arpu']);
+  if (tab === 'deals') {
+    const cols = [
+      { w: '10%', label: 'ID' }, { w: '18%', label: t('F.tenant') }, { w: '22%', label: t('F.sku') },
+      { w: '11%', label: t('F.category') }, { w: '11%', label: t('F.value'), align: 'right' },
+      { w: '9%', label: t('F.svcStatus') }, { w: '8%', label: t('F.ownerMgr') }, { w: '11%', label: t('F.start') },
+    ];
+    const rows = filterRows(STATE.deals, 'deals', ['svc_id', 'tenant', 'sku', 'category', 'ownerMgr', 'svcStatus']);
+    const p = paginate('deals', rows, 12);
+    const body = p.slice.map((d) => `<tr data-entity="deal" data-id="${esc(d.svc_id)}">
+      <td class="mono">${esc(d.svc_id)}</td><td>${esc(d.tenant)}</td><td>${esc(d.sku)}</td>
+      <td>${esc(E('category', d.category))}</td><td class="num">${fmtRpShort(d.value)}</td>
+      <td>${chipFor('svcStatus', d.svcStatus)}</td><td>${esc(d.ownerMgr)}</td><td class="date">${fmtDate(d.start)}</td></tr>`).join('') || emptyRow(cols.length);
+    html += `<div class="grid g-4" style="margin-bottom:16px">
+      ${kpiCard(t('s.kpi.revenue'), fmtRpShort(revenue), t('s.foot.rev', { n: fmtInt(signed.length), m: fmtInt(STATE.deals.filter((d) => d.svcStatus === 'quoted').length) }), 't')}
+      ${kpiCard(t('s.kpi.active'), fmtInt(active.length), t('s.foot.active', { n: fmtInt(STATE.deals.length) }), '')}
+      ${kpiCard(t('s.kpi.avg'), fmtRpShort(avg), t('s.foot.avg'), '')}
+      ${kpiCard(t('s.kpi.hot'), fmtInt(hot), t('s.foot.hot'), 'r')}
+    </div>
+    <div class="sec-head" style="margin-top:0"><p>${esc(t('s.descDeals'))}</p><div><button class="btn primary" data-add="deal">${esc(t('s.addDeal'))}</button></div></div>
+    <div class="card flat"><div class="toolbar"><div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg><input data-q="deals" placeholder="${esc(t('c.search'))}" value="${esc((FILTER.deals || {}).q || '')}"></div>
+    <select data-sel="deals" data-f="category"><option value="">${esc(t('F.category'))}: ${esc(t('c.all'))}</option>${['permit', 'energy', 'environment', 'hr', 'supply', 'finance'].map((c) => `<option value="${c}" ${(FILTER.deals || {}).category === c ? 'selected' : ''}>${esc(E('category', c))}</option>`).join('')}</select>
+    <span class="count">${fmtInt(rows.length)} ${esc(t('c.total'))}</span></div>
+    ${tableHtml(cols, body, p.pager, 980)}</div>`;
+  } else {
+    const cols = [
+      { w: '10%', label: 'ID' }, { w: '19%', label: t('F.company') }, { w: '22%', label: t('F.pain') },
+      { w: '11%', label: t('F.spend'), align: 'right' }, { w: '9%', label: t('F.leadScore'), align: 'right' },
+      { w: '10%', label: t('F.leadStatus') }, { w: '11%', label: t('F.channel') }, { w: '8%', label: t('F.nps'), align: 'right' },
+    ];
+    const rows = filterRows(STATE.leads, 'leads', ['lead_id', 'company', 'pain', 'channel', 'leadStatus', 'industry']);
+    const p = paginate('leads', rows, 12);
+    const body = p.slice.map((l) => `<tr data-entity="lead" data-id="${esc(l.lead_id)}">
+      <td class="mono">${esc(l.lead_id)}</td><td>${esc(l.company)}</td><td>${esc(l.pain)}</td>
+      <td class="num">${fmtRpShort(l.spend)}</td><td class="num" style="color:${l.leadScore >= 70 ? '#A8452F' : '#3C4552'};font-weight:${l.leadScore >= 70 ? '600' : '400'}">${fmtInt(l.leadScore)}</td>
+      <td>${chipFor('leadStatus', l.leadStatus)}</td><td>${esc(l.channel)}</td><td class="num">${fmtInt(l.nps)}</td></tr>`).join('') || emptyRow(cols.length);
+    html += `<div class="grid g-4" style="margin-bottom:16px">
+      ${kpiCard(t('s.kpi.hot'), fmtInt(hot), t('s.tab.leads'), 'r')}
+      ${kpiCard(t('s.kpi.promoters'), fmtInt(STATE.leads.filter((l) => l.nps >= 9).length), t('s.tab.leads'), 't')}
+      ${kpiCard(t('s.kpi.converted'), fmtInt(STATE.leads.filter((l) => l.leadStatus === 'converted').length), t('s.tab.leads'), 't')}
+      ${kpiCard(t('s.kpi.newleads'), fmtInt(STATE.leads.filter((l) => l.leadStatus === 'new').length), t('s.tab.leads'), '')}
+    </div>
+    <div class="sec-head" style="margin-top:0"><p>${esc(t('s.descLeads'))}</p><div><button class="btn primary" data-add="lead">${esc(t('s.addLead'))}</button></div></div>
+    <div class="card flat"><div class="toolbar"><div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg><input data-q="leads" placeholder="${esc(t('c.search'))}" value="${esc((FILTER.leads || {}).q || '')}"></div>
+    <select data-sel="leads" data-f="leadStatus"><option value="">${esc(t('F.leadStatus'))}: ${esc(t('c.all'))}</option>${['new', 'contacted', 'qualified', 'converted', 'dropped'].map((s) => `<option value="${s}" ${(FILTER.leads || {}).leadStatus === s ? 'selected' : ''}>${esc(E('leadStatus', s))}</option>`).join('')}</select>
+    <span class="count">${fmtInt(rows.length)} ${esc(t('c.total'))}</span></div>
+    ${tableHtml(cols, body, p.pager, 980)}</div>`;
+  }
+  el('view').innerHTML = html;
+}
+
+/* ================= UTILITIES VIEW ================= */
+function viewUtilities() {
+  const latest = latestMonth();
+  const energy = STATE.metrics.filter((m) => m.metric === 'energy' && m.period === latest);
+  const comp = STATE.metrics.filter((m) => m.metric === 'compliance' && m.period === latest);
+  const reuse = STATE.metrics.filter((m) => m.metric === 'reuse' && m.period === latest);
+  const sludge = STATE.metrics.filter((m) => m.metric === 'sludge' && m.period === latest);
+  const avg = (arr) => arr.length ? arr.reduce((s, m) => s + Number(m.value), 0) / arr.length : 0;
+  const cols = [
+    { w: '13%', label: 'ID' }, { w: '24%', label: t('F.plant') }, { w: '22%', label: t('F.metric') },
+    { w: '14%', label: t('F.period') }, { w: '15%', label: t('F.valueNum'), align: 'right' }, { w: '12%', label: t('F.unit') },
+  ];
+  const rows = filterRows(STATE.metrics, 'metrics', ['metric_id', 'plant', 'metric', 'period', 'unit']);
+  const p = paginate('metrics', rows, 14);
+  const body = p.slice.map((m) => `<tr data-entity="metric" data-id="${esc(m.metric_id)}">
+    <td class="mono">${esc(m.metric_id)}</td><td>${esc(m.plant)}</td><td>${esc(E('metric', m.metric))}</td>
+    <td class="date">${esc(m.period)}</td><td class="num">${fmtDec(m.value, 2)}</td><td>${esc(m.unit)}</td></tr>`).join('') || emptyRow(cols.length);
+  el('view').innerHTML = termLine(['reuse', 'ifas', 'rdf', 'perf']) + `<div class="grid g-4" style="margin-bottom:16px">
+      ${kpiCard(t('u.kpi.energy'), fmtDec(avg(energy), 2) + '<span class="k-unit">kWh/m³</span>', t('F.period') + ': ' + (latest || '—'), '')}
+      ${kpiCard(t('u.kpi.compliance'), pct(avg(comp), 1), t('F.period') + ': ' + (latest || '—'), 't')}
+      ${kpiCard(t('u.kpi.reuse'), pct(avg(reuse), 1), 'Target: 20%', 'r')}
+      ${kpiCard(t('u.kpi.sludge'), fmtDec(avg(sludge), 1) + '<span class="k-unit">t/day</span>', t('F.plant') + ': Solid waste', '')}
+    </div>
+    <div class="sec-head" style="margin-top:0"><p>${esc(t('u.desc'))}</p><div><button class="btn primary" data-add="metric">${esc(t('u.addMetric'))}</button></div></div>
+    <div class="card flat"><div class="toolbar">
+      <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg><input data-q="metrics" placeholder="${esc(t('c.search'))}" value="${esc((FILTER.metrics || {}).q || '')}"></div>
+      <select data-sel="metrics" data-f="plant"><option value="">${esc(t('F.plant'))}: ${esc(t('c.all'))}</option>${['WTP Cikarang', 'WWTP 1', 'WWTP 2', 'Solid waste'].map((x) => `<option value="${x}" ${(FILTER.metrics || {}).plant === x ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select>
+      <select data-sel="metrics" data-f="metric"><option value="">${esc(t('F.metric'))}: ${esc(t('c.all'))}</option>${['energy', 'compliance', 'reuse', 'sludge', 'cost'].map((x) => `<option value="${x}" ${(FILTER.metrics || {}).metric === x ? 'selected' : ''}>${esc(E('metric', x))}</option>`).join('')}</select>
+      <span class="count">${fmtInt(rows.length)} ${esc(t('c.total'))}</span></div>
+      ${tableHtml(cols, body, p.pager, 900)}</div>`;
+}
+
+/* ================= GLOSSARY ================= */
+function viewGlossary() {
+  const items = Object.keys(GLOSS).map((k) => {
+    const g = GLOSS[k];
+    return `<div class="gloss-item"><h4>${esc(g.t[0])}</h4><p>${esc(g.d[0])}</p>
+      <div class="id"><h4>${esc(g.t[1])}</h4><p>${esc(g.d[1])}</p></div></div>`;
+  }).join('');
+  el('view').innerHTML = `<div class="card" style="margin-bottom:16px"><p style="margin:0;font-size:12.5px;color:#3C4552">${esc(t('g.intro'))}</p>
+    <p style="margin:8px 0 0;font-size:11.5px;color:var(--muted)">${esc(t('g.note'))}</p></div>
+    <div class="card"><div class="gloss-grid">${items}</div></div>`;
+}
+
+/* ================= SETTINGS ================= */
+function viewSettings() {
+  const bytes = new Blob([JSON.stringify(STATE)]).size;
+  const ownRow = (label, team) => `<div class="settings-row"><div class="txt"><b>${esc(label)}</b></div><span style="font-size:12px;color:var(--muted);white-space:nowrap">${esc(team)}</span></div>`;
+  const ruleRow = (n) => `<div class="settings-row"><div class="txt"><span>${esc(t('st.rules.' + n))}</span></div></div>`;
+  el('view').innerHTML = `<div class="grid g-2" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+    <div class="card">
+      <div class="settings-row"><div class="txt"><b>${esc(t('st.lang'))}</b><span>${esc(t('st.langDesc'))}</span></div>
+        <div class="lang"><button data-lang="en" class="${LANG === 'en' ? 'on' : ''}">EN</button><button data-lang="id" class="${LANG === 'id' ? 'on' : ''}">ID</button></div></div>
+      <div class="settings-row"><div class="txt"><b>${esc(t('st.data'))}</b><span>${esc(t('st.dataDesc'))}</span></div>
+        <div style="display:flex;gap:8px;flex:0 0 auto"><button class="btn" data-act="import">${esc(t('c.import'))}</button><button class="btn primary" data-act="export">${esc(t('c.export'))}</button></div></div>
+      <div class="settings-row"><div class="txt"><b>${esc(t('st.reset'))}</b><span>${esc(t('st.resetDesc'))}</span></div>
+        <button class="btn danger" style="flex:0 0 auto" data-act="reset">${esc(t('st.reset'))}</button></div>
+    </div>
+    <div class="card"><div class="card-head" style="margin-bottom:4px"><h3>${esc(t('st.rules.title'))}</h3></div>
+      ${ruleRow(1)}${ruleRow(2)}${ruleRow(3)}${ruleRow(4)}
+    </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+      <div class="card">
+        <div class="settings-row"><div class="txt"><b>${esc(t('st.storage'))}</b><span>${esc(t('st.storageDesc'))}</span></div><div style="text-align:right;flex:0 0 auto"><div style="font-size:22px;font-weight:600;white-space:nowrap">${fmtDec(bytes / 1024, 1)} KB</div><div style="font-size:11px;color:#6C727C">localStorage</div></div></div>
+        <div class="settings-row"><div class="txt"><b>${esc(t('st.about'))}</b><span>${esc(t('st.aboutDesc'))}</span></div><div style="font-family:var(--mono);font-size:11px;color:#6C727C;white-space:nowrap;flex:0 0 auto">v1.0 · 2026-11</div></div>
+        <div class="settings-row"><div class="txt"><b>${esc(t('st.version'))}</b><span>JSON schema ji_platform_v1</span></div><div style="font-family:var(--mono);font-size:11px;color:#6C727C;white-space:nowrap;flex:0 0 auto">${fmtInt(STATE.assets.length)}A / ${fmtInt(STATE.owners.length)}O / ${fmtInt(STATE.demands.length)}D / ${fmtInt(STATE.deals.length)}S / ${fmtInt(STATE.leads.length)}L / ${fmtInt(STATE.metrics.length)}M</div></div>
+      </div>
+      <div class="card">
+        <div class="card-head" style="margin-bottom:6px"><h3>${esc(t('st.own.title'))}</h3></div>
+        <p style="margin:0 0 10px;font-size:11.5px;color:var(--muted)">${esc(t('st.own.desc'))}</p>
+        ${ownRow(t('st.own.assets'), t('st.own.teamAssets'))}
+        ${ownRow(t('st.own.services'), t('st.own.teamServices'))}
+        ${ownRow(t('st.own.utilities'), t('st.own.teamUtilities'))}
+      </div>
+    </div></div>`;
+}
+
+/* ================= FIELD SCHEMA ================= */
+const MONEY = ['price', 'retrofit', 'floorPrice', 'askPrice', 'budget', 'offer', 'commissionAmt', 'value', 'spend'];
+const E_TYPES = {
+  asset: {
+    coll: 'assets', idKey: 'asset_id', prefix: 'JI-NEW-', title: 'f.asset', sub: 'f.assetSub',
+    fields: [
+      { k: 'asset_id', t: 'text' }, { k: 'kawasan', t: 'select', opts: ['Cikarang', 'Bekasi', 'Karawang', 'Kendal'], req: 1 },
+      { k: 'blok', t: 'text' }, { k: 'alamat', t: 'text' }, { k: 'owner_id', t: 'text', req: 1, hint: 'f.ownerLink' },
+      { k: 'land', t: 'number' }, { k: 'build', t: 'number' }, { k: 'floors', t: 'number' }, { k: 'clearance', t: 'number' },
+      { k: 'power', t: 'number' }, { k: 'water', t: 'number' }, { k: 'wwtp', t: 'select', g: 'wwtp' }, { k: 'gas', t: 'select', g: 'yesno' },
+      { k: 'permits', t: 'text' }, { k: 'status', t: 'select', g: 'status', req: 1 }, { k: 'intent', t: 'select', g: 'intent', req: 1 },
+      { k: 'price', t: 'number' }, { k: 'condition', t: 'select', g: 'condition' }, { k: 'retrofit', t: 'number' },
+      { k: 'quality', t: 'number' }, { k: 'verified', t: 'date' }, { k: 'access', t: 'select', g: 'access' }, { k: 'notes', t: 'textarea' },
+    ],
+  },
+  owner: {
+    coll: 'owners', idKey: 'id', prefix: 'OWN-', title: 'f.owner', sub: 'f.ownerSub',
+    fields: [
+      { k: 'id', t: 'text' }, { k: 'name', t: 'text', req: 1 }, { k: 'legal', t: 'select', g: 'legal' },
+      { k: 'ubo', t: 'text' }, { k: 'structure', t: 'text' }, { k: 'motive', t: 'select', g: 'motive' },
+      { k: 'floorPrice', t: 'number' }, { k: 'askPrice', t: 'number' }, { k: 'pressure', t: 'select', g: 'pressure' },
+      { k: 'liens', t: 'text' }, { k: 'pref', t: 'select', g: 'pref' }, { k: 'commission', t: 'number' },
+      { k: 'authority', t: 'text' }, { k: 'kyb', t: 'select', g: 'kyb' }, { k: 'notes', t: 'textarea' },
+    ],
+  },
+  demand: {
+    coll: 'demands', idKey: 'demand_id', prefix: 'DEM-', title: 'f.demand', sub: 'f.demandSub',
+    fields: [
+      { k: 'demand_id', t: 'text' }, { k: 'company', t: 'text', req: 1 }, { k: 'industry', t: 'select', g: 'industry' },
+      { k: 'area', t: 'number' }, { k: 'powerReq', t: 'number' }, { k: 'waterReq', t: 'number' }, { k: 'steam', t: 'text' },
+      { k: 'location', t: 'text' }, { k: 'timeline', t: 'select', g: 'pressure' }, { k: 'budget', t: 'number' },
+      { k: 'score', t: 'number' }, { k: 'assetLink', t: 'text', hint: 'f.assetLink' }, { k: 'stage', t: 'select', g: 'stage', req: 1 },
+      { k: 'offer', t: 'number' }, { k: 'commissionAmt', t: 'number' }, { k: 'lost', t: 'text' }, { k: 'notes', t: 'textarea' },
+    ],
+  },
+  deal: {
+    coll: 'deals', idKey: 'svc_id', prefix: 'SVC-', title: 'f.deal', sub: 'f.dealSub',
+    fields: [
+      { k: 'svc_id', t: 'text' }, { k: 'tenant', t: 'text', req: 1 }, { k: 'category', t: 'select', g: 'category', req: 1 },
+      { k: 'sku', t: 'text', req: 1 }, { k: 'value', t: 'number', req: 1 }, { k: 'svcStatus', t: 'select', g: 'svcStatus', req: 1 },
+      { k: 'ownerMgr', t: 'text' }, { k: 'start', t: 'date' }, { k: 'notes', t: 'textarea' },
+    ],
+  },
+  lead: {
+    coll: 'leads', idKey: 'lead_id', prefix: 'LEAD-', title: 'f.lead', sub: 'f.leadSub',
+    fields: [
+      { k: 'lead_id', t: 'text' }, { k: 'company', t: 'text', req: 1 }, { k: 'industry', t: 'select', g: 'industry' },
+      { k: 'nps', t: 'number' }, { k: 'pain', t: 'text', req: 1 }, { k: 'spend', t: 'number' },
+      { k: 'willing', t: 'select', g: 'willing' }, { k: 'budget', t: 'select', g: 'budgetBand', label: 'F.budgetBand' }, { k: 'decision', t: 'select', g: 'decision' },
+      { k: 'timeline', t: 'select', g: 'pressure' }, { k: 'channel', t: 'text' }, { k: 'leadScore', t: 'number', req: 1 },
+      { k: 'leadStatus', t: 'select', g: 'leadStatus', req: 1 }, { k: 'notes', t: 'textarea' },
+    ],
+  },
+  metric: {
+    coll: 'metrics', idKey: 'metric_id', prefix: 'M-', title: 'f.metric', sub: 'f.metricSub',
+    fields: [
+      { k: 'metric_id', t: 'text' }, { k: 'plant', t: 'select', opts: ['WTP Cikarang', 'WWTP 1', 'WWTP 2', 'Solid waste'], req: 1 },
+      { k: 'metric', t: 'select', g: 'metric', req: 1 }, { k: 'period', t: 'text', req: 1 }, { k: 'value', t: 'number', req: 1, label: 'F.valueNum' }, { k: 'unit', t: 'text' },
+    ],
+  },
+};
+
+function recTitle(entity, r) {
+  if (!r) return '';
+  if (entity === 'asset') return r.asset_id + ' · ' + r.kawasan;
+  if (entity === 'owner') return r.name;
+  if (entity === 'demand') return r.company;
+  if (entity === 'deal') return r.sku;
+  if (entity === 'lead') return r.company;
+  if (entity === 'metric') return r.plant + ' · ' + r.period;
+  return '';
+}
+function showVal(rec, k, spec) {
+  const v = rec[k];
+  if (v === '' || v == null) return '—';
+  if (spec.g) return esc(E(spec.g, v));
+  if (k === 'verified' || k === 'start') return esc(fmtDate(v));
+  if (k === 'price') return esc(rec.intent === 'lease' ? fmtRp(v) + t('c.sqmMonth') : fmtRpShort(v) + '/m²');
+  if (MONEY.includes(k)) return esc(fmtRpShort(v));
+  if (spec.t === 'number') return esc(fmtInt(v));
+  return esc(v);
+}
+
+function openDetail(entity, id) {
+  const meta = E_TYPES[entity];
+  const rec = (STATE[meta.coll] || []).find((r) => String(r[meta.idKey]) === String(id));
+  if (!rec) return;
+  DRAWER = { entity: entity, id: id };
+  const body = '<dl class="kv">' + meta.fields.map((f) => '<dt>' + esc(t(f.label || ('F.' + f.k))) + '</dt><dd>' + showVal(rec, f.k, f) + '</dd>').join('') + '</dl>';
+  el('drawerTitle').textContent = t(meta.title);
+  el('drawerSub').textContent = recTitle(entity, rec);
+  el('drawerBody').innerHTML = body;
+  el('drawerFoot').innerHTML = '<button class="btn" data-close="1">' + esc(t('c.close')) + '</button>'
+    + '<button class="btn danger" data-del="' + esc(id) + '">' + esc(t('c.delete')) + '</button>'
+    + '<button class="btn primary" data-edit="' + esc(id) + '">' + esc(t('c.edit')) + '</button>';
+  el('scrim').classList.add('on');
+  el('drawer').classList.add('on');
+}
+
+function openForm(entity, id) {
+  const meta = E_TYPES[entity];
+  const isEdit = id != null;
+  const rec = isEdit ? (STATE[meta.coll] || []).find((r) => String(r[meta.idKey]) === String(id)) || {} : {};
+  const fields = meta.fields.map((f) => {
+    const val = rec[f.k] == null ? '' : rec[f.k];
+    let input = '';
+    if (f.t === 'select') {
+      const opts = f.opts || Object.keys(ENUM[f.g] || {});
+      input = '<select data-f="' + f.k + '"' + (f.req ? ' data-req="1"' : '') + '><option value="">' + esc(t('c.select')) + '</option>'
+        + opts.map((o) => '<option value="' + esc(o) + '"' + (String(val) === String(o) ? ' selected' : '') + '>' + esc(f.opts ? o : E(f.g, o)) + '</option>').join('') + '</select>';
+    } else if (f.t === 'textarea') {
+      input = '<textarea data-f="' + f.k + '">' + esc(val) + '</textarea>';
+    } else {
+      input = '<input data-f="' + f.k + '" type="' + (f.t === 'number' ? 'number' : f.t === 'date' ? 'date' : 'text') + '" value="' + esc(val) + '"' + (f.t === 'number' ? ' step="any"' : '') + (f.req ? ' data-req="1"' : '') + '>';
+    }
+    const full = f.t === 'textarea' || ['alamat', 'permits', 'authority', 'notes', 'pain', 'sku', 'ubo', 'structure', 'liens'].includes(f.k);
+    return '<div class="field' + (full ? ' full' : '') + '"><label>' + esc(t(f.label || ('F.' + f.k))) + (f.req ? '<span class="req">*</span>' : '') + '</label>' + input
+      + (f.hint ? '<div class="help">' + esc(t(f.hint)) + '</div>' : '') + '<div class="err">' + esc(t('c.required')) + '</div></div>';
+  }).join('');
+
+  el('drawerTitle').textContent = isEdit ? t('f.editTitle') : t('f.newTitle');
+  el('drawerSub').textContent = t(meta.title) + ' · ' + t(meta.sub);
+  el('drawerBody').innerHTML = '<div style="font-size:11.5px;color:var(--muted);margin-bottom:16px">' + esc(t('f.requiredHint')) + ' * ' + esc(t('f.requiredHint2')) + '</div>'
+    + '<div class="fgrid">' + fields + '</div>'
+    + (['asset', 'demand', 'owner'].includes(entity) ? '<div class="help">' + esc(t('f.numberHint')) + '</div>' : '');
+  el('drawerFoot').innerHTML = '<button class="btn" data-close="1">' + esc(t('c.cancel')) + '</button><button class="btn primary" data-save="' + entity + '">' + esc(t('c.save')) + '</button>';
+  el('scrim').classList.add('on');
+  el('drawer').classList.add('on');
+}
+
+function saveForm(entity) {
+  const meta = E_TYPES[entity];
+  const body = el('drawerBody');
+  const inputs = body.querySelectorAll('[data-f]');
+  let ok = true;
+  const rec = {};
+  inputs.forEach((inp) => {
+    const f = meta.fields.find((x) => x.k === inp.dataset.f);
+    const wrap = inp.closest('.field');
+    wrap.classList.remove('bad');
+    const raw = inp.value.trim();
+    if (f.req && raw === '') { wrap.classList.add('bad'); ok = false; return; }
+    if (f.t === 'number' && raw !== '' && isNaN(Number(raw))) { wrap.classList.add('bad'); ok = false; return; }
+    rec[f.k] = raw === '' ? '' : (f.t === 'number' ? Number(raw) : raw);
+  });
+  if (!ok) return;
+
+  /* referential checks */
+  if (entity === 'asset' && rec.owner_id && !STATE.owners.some((o) => o.id === rec.owner_id)) {
+    toast(t('f.ownerLink')); return;
+  }
+  if (entity === 'demand' && rec.assetLink && !STATE.assets.some((a) => a.asset_id === rec.assetLink)) {
+    toast(t('f.assetLink')); return;
+  }
+
+  const idKey = meta.idKey;
+  if (!rec[idKey]) rec[idKey] = entity === 'asset' ? nextAssetId(rec.kawasan) : uid(meta.prefix);
+  const existing = (STATE[meta.coll] || []).findIndex((r) => String(r[idKey]) === String(rec[idKey]));
+  if (existing >= 0) {
+    STATE[meta.coll][existing] = Object.assign({}, STATE[meta.coll][existing], rec);
+  } else {
+    (STATE[meta.coll] = STATE[meta.coll] || []).push(rec);
+  }
+  save();
+  closeDrawer();
+  toast(t('c.saved'));
+  renderView();
+}
+
+function deleteRecord() {
+  const meta = E_TYPES[DRAWER.entity];
+  if (!meta) return;
+  if (!confirm(t('c.confirmDelete'))) return;
+  STATE[meta.coll] = STATE[meta.coll].filter((r) => String(r[meta.idKey]) !== String(DRAWER.id));
+  save();
+  closeDrawer();
+  toast(t('c.deleted'));
+  renderView();
+}
+
+/* ================= EXPORT / IMPORT ================= */
+function exportJson() {
+  const blob = new Blob([JSON.stringify(STATE, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  const d = new Date();
+  a.href = URL.createObjectURL(blob);
+  a.download = 'ji-platform-' + d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0') + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+  toast(t('c.exported'));
+}
+function importJson(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const parsed = JSON.parse(String(reader.result));
+      if (!parsed || !parsed.assets || !parsed.owners) throw new Error('shape');
+      STATE = parsed;
+      save();
+      toast(t('c.imported'));
+      renderView();
+    } catch (e) { toast(t('c.badFile')); }
+  };
+  reader.readAsText(file);
+}
+
+/* ================= NAV & RENDER ================= */
+let DRAWER = { entity: null, id: null };
+const ICONS = {
+  dashboard: '<path d="M4 13h6V4H4v9zM14 20h6v-9h-6v9zM4 20h6v-4H4v4zM14 8h6V4h-6v4z"/>',
+  assets: '<path d="M3 21V8l6-4 6 4v13M15 21V11l6-4v14M3 21h18M7 12h2M7 16h2M17 14h2"/>',
+  services: '<path d="M4 7h16v13H4zM4 7l3-3h10l3 3M8 13h8"/>',
+  utilities: '<path d="M12 3c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11z"/>',
+  glossary: '<path d="M4 5h7a3 3 0 0 1 3 3v11a3 3 0 0 0-3-3H4zM20 5h-4a3 3 0 0 0-3 3v11a3 3 0 0 1 3-3h4z"/>',
+  settings: '<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/>',
+};
+function renderNav() {
+  const item = (v, k) => `<div class="nav-item ${VIEW === v ? 'active' : ''}" data-view="${v}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">${ICONS[v]}</svg><span>${esc(t(k))}</span></div>`;
+  el('nav').innerHTML = '<div class="nav-label">' + esc(t('nav.g1')) + '</div>'
+    + item('dashboard', 'nav.dashboard') + item('assets', 'nav.assets') + item('services', 'nav.services') + item('utilities', 'nav.utilities')
+    + '<div class="nav-label">' + esc(t('nav.g2')) + '</div>' + item('glossary', 'nav.glossary') + item('settings', 'nav.settings');
+  el('brandName').textContent = t('app.name');
+  el('brandSub').textContent = t('app.brandSub');
+  el('sideFoot').textContent = t('app.foot');
+  el('btnExportTxt').textContent = t('c.export');
+  el('btnNewTxt').textContent = t('c.new');
+  el('langSwitch').innerHTML = '<button data-lang="en" class="' + (LANG === 'en' ? 'on' : '') + '">EN</button><button data-lang="id" class="' + (LANG === 'id' ? 'on' : '') + '">ID</button>';
+  document.documentElement.lang = LANG;
+  document.title = t('app.docTitle');
+  el('globalSearch').placeholder = t('c.search');
+}
+
+function renderView() {
+  SEEN = {};
+  clearCharts();
+  const title = t('v.' + VIEW + '.title');
+  const sub = t('v.' + VIEW + '.sub');
+  el('topTitle').textContent = title;
+  el('topSub').textContent = sub;
+  if (VIEW === 'dashboard') viewDashboard();
+  else if (VIEW === 'assets') viewAssets();
+  else if (VIEW === 'services') viewServices();
+  else if (VIEW === 'utilities') viewUtilities();
+  else if (VIEW === 'glossary') viewGlossary();
+  else if (VIEW === 'settings') viewSettings();
+  const active = el('nav').querySelector('.nav-item.active');
+  if (!active) renderNav();
+  else {
+    el('nav').querySelectorAll('.nav-item').forEach((n) => n.classList.toggle('active', n.dataset.view === VIEW));
+  }
+  el('searchBox').style.display = ['glossary', 'settings'].includes(VIEW) ? 'none' : '';
+  el('btnNew').style.display = ['glossary', 'settings'].includes(VIEW) ? 'none' : '';
+}
+
+function go(view) {
+  VIEW = view;
+  SEEN = {};
+  renderNav();
+  renderView();
+}
+
+/* ================= EVENTS ================= */
+let qTimer = null;
+function bindEvents() {
+  document.addEventListener('click', (e) => {
+    const lang = e.target.closest('[data-lang]');
+    if (lang) { setLang(lang.dataset.lang); return; }
+    const nav = e.target.closest('[data-view]');
+    if (nav) { go(nav.dataset.view); return; }
+    const tab = e.target.closest('[data-tab]');
+    if (tab) { TAB[tab.dataset.tab] = tab.dataset.t; PAGE[tab.dataset.tab + '_' + tab.dataset.t] = 1; renderView(); return; }
+    const add = e.target.closest('[data-add]');
+    if (add) { openForm(add.dataset.add, null); return; }
+    const row = e.target.closest('tr[data-entity]');
+    if (row) { openDetail(row.dataset.entity, row.dataset.id); return; }
+    const pg = e.target.closest('[data-pg]');
+    if (pg) { PAGE[pg.dataset.pg] = Number(pg.dataset.to); renderView(); return; }
+    const goto = e.target.closest('[data-goto]');
+    if (goto) { go(goto.dataset.goto); return; }
+    const act = e.target.closest('[data-act]');
+    if (act) {
+      if (act.dataset.act === 'export') exportJson();
+      if (act.dataset.act === 'import') {
+        const inp = document.createElement('input');
+        inp.type = 'file'; inp.accept = 'application/json,.json';
+        inp.onchange = () => { if (inp.files && inp.files[0]) importJson(inp.files[0]); };
+        inp.click();
+      }
+      if (act.dataset.act === 'reset') {
+        if (confirm(t('c.confirmReset'))) { STATE = seedData(); save(); toast(t('c.resetDone')); renderView(); }
+      }
+      return;
+    }
+    const edit = e.target.closest('[data-edit]');
+    if (edit) { openForm(DRAWER.entity, edit.dataset.edit); return; }
+    const del = e.target.closest('[data-del]');
+    if (del) { deleteRecord(); return; }
+    const saveBtn = e.target.closest('[data-save]');
+    if (saveBtn) { saveForm(saveBtn.dataset.save); return; }
+    if (e.target.closest('[data-close]') || e.target.id === 'scrim' || e.target.id === 'drawerClose') { closeDrawer(); return; }
+  });
+
+  document.addEventListener('change', (e) => {
+    const sel = e.target.closest('[data-sel]');
+    if (sel) {
+      FILTER[sel.dataset.sel] = FILTER[sel.dataset.sel] || {};
+      FILTER[sel.dataset.sel][sel.dataset.f] = sel.value;
+      PAGE[sel.dataset.sel] = 1;
+      renderView();
+    }
+  });
+
+  document.addEventListener('input', (e) => {
+    const q = e.target.closest('[data-q]');
+    if (q) {
+      const key = q.dataset.q;
+      FILTER[key] = FILTER[key] || {};
+      FILTER[key].q = q.value;
+      PAGE[key] = 1;
+      clearTimeout(qTimer);
+      qTimer = setTimeout(() => {
+        renderView();
+        const again = document.querySelector('[data-q="' + key + '"]');
+        if (again) { again.focus(); const v = again.value; again.setSelectionRange(v.length, v.length); }
+      }, 320);
+      return;
+    }
+    if (e.target.id === 'globalSearch') {
+      const v = e.target.value;
+      const key = VIEW === 'utilities' ? 'metrics' : VIEW === 'services' ? (TAB.services === 'deals' ? 'deals' : 'leads') : VIEW === 'assets' ? TAB.assets : null;
+      if (!key) { if (v.trim()) { go('assets'); FILTER.assets = { q: v }; renderView(); } return; }
+      FILTER[key] = FILTER[key] || {};
+      FILTER[key].q = v;
+      clearTimeout(qTimer);
+      qTimer = setTimeout(() => { renderView(); if (el('globalSearch')) el('globalSearch').value = v; }, 320);
+    }
+  });
+
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
+
+  el('btnExport').addEventListener('click', exportJson);
+  el('btnNew').addEventListener('click', () => {
+    const entity = VIEW === 'services' ? (TAB.services === 'deals' ? 'deal' : 'lead') : VIEW === 'utilities' ? 'metric' : VIEW === 'assets' ? (TAB.assets === 'owners' ? 'owner' : TAB.assets === 'demands' ? 'demand' : 'asset') : 'asset';
+    openForm(entity, null);
+  });
+
+  /* glossary tooltip, first use only */
+  const tip = el('tip');
+  document.addEventListener('mouseover', (e) => {
+    const term = e.target.closest('.term');
+    if (!term) return;
+    const g = GLOSS[term.dataset.g];
+    if (!g) return;
+    tip.querySelector('.t').textContent = g.t[LANG === 'en' ? 0 : 1];
+    tip.querySelector('.d').textContent = g.d[LANG === 'en' ? 0 : 1];
+    const r = term.getBoundingClientRect();
+    tip.classList.add('on');
+    const tw = Math.min(320, tip.offsetWidth);
+    let left = Math.max(12, Math.min(r.left + r.width / 2 - tw / 2, window.innerWidth - tw - 12));
+    let top = r.bottom + 8;
+    if (top + tip.offsetHeight > window.innerHeight - 12) top = r.top - tip.offsetHeight - 8;
+    tip.style.left = left + 'px';
+    tip.style.top = top + 'px';
+  });
+  document.addEventListener('mouseout', (e) => { if (e.target.closest('.term')) tip.classList.remove('on'); });
+  document.addEventListener('scroll', () => tip.classList.remove('on'), true);
+
+  window.addEventListener('resize', () => { CH.forEach((c) => { try { c.resize(); } catch (e) {} }); });
+}
+
+/* ================= INIT ================= */
+function setLang(l) {
+  LANG = l === 'id' ? 'id' : 'en';
+  try { localStorage.setItem('ji_lang', LANG); } catch (e) { /* storage unavailable */ }
+  renderNav();
+  renderView();
+}
+
+let INITIALIZED = false;
+function init() {
+  if (INITIALIZED) return;
+  INITIALIZED = true;
+  /* parity check: every string record must carry exactly two non-empty entries */
+  const bad = Object.keys(STR).filter((k) => !Array.isArray(STR[k]) || STR[k].length !== 2 || !STR[k][0] || !STR[k][1]);
+  const badEnum = Object.keys(ENUM).filter((g) => Object.keys(ENUM[g]).some((c) => !ENUM[g][c] || ENUM[g][c].length !== 2));
+  const badGloss = Object.keys(GLOSS).filter((g) => GLOSS[g].t.length !== 2 || GLOSS[g].d.length !== 2);
+  if (bad.length || badEnum.length || badGloss.length) console.warn('i18n gaps', bad, badEnum, badGloss);
+
+  LANG = (function () { try { return localStorage.getItem('ji_lang') === 'id' ? 'id' : 'en'; } catch (e) { return 'en'; } })();
+  STATE = loadData();
+  try {
+    const qp = new URLSearchParams(location.search);
+    const v = qp.get('v');
+    if (['dashboard', 'assets', 'services', 'utilities', 'glossary', 'settings'].includes(v)) VIEW = v;
+    const tb = qp.get('tab');
+    if (tb && TAB[v] !== undefined) TAB[v] = tb;
+    if (qp.get('lang') === 'id') LANG = 'id';
+  } catch (e) { /* ignore */ }
+  bindEvents();
+  renderNav();
+  renderView();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+if (document.readyState !== 'loading') init();
+/* @@APPEND@@ */
+</script>
+</body>
+</html>
