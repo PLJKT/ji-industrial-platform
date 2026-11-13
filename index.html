@@ -611,6 +611,37 @@ const E = (group, code) => {
   const rec = (ENUM[group] || {})[code];
   return rec ? rec[LANG === 'en' ? 0 : 1] : (code == null ? '—' : String(code));
 };
+
+/* Free-text record values are stored in English and translated for display, so a
+   record never carries a half-translated label. Editing a record still writes the
+   key text; the Indonesian wording is supplied here rather than in the data. */
+const TX2 = {
+  'OSS/RBA permit handling': 'Penanganan izin OSS/RBA',
+  'SKKLH / AMDAL amendment': 'Perubahan SKKLH / AMDAL',
+  'PBG / SLF compliance': 'Kepatuhan PBG / SLF',
+  'Fire inspection and remedy': 'Inspeksi dan perbaikan kebakaran',
+  'Power bill diagnostic and demand management': 'Diagnosa tagihan listrik dan manajemen beban',
+  'Rooftop solar feasibility and PPA': 'Kelayakan PLTS atap dan PPA',
+  'Steam and gas optimisation': 'Optimasi uap dan gas',
+  'Wastewater pre-treatment and monitoring': 'Pra-olahan dan pemantauan air limbah',
+  'Hazardous waste compliance': 'Kepatuhan limbah B3',
+  'Carbon inventory and ESG report': 'Inventaris karbon dan laporan ESG',
+  'Recruitment and onboarding': 'Rekrutmen dan orientasi',
+  'Chemical and packaging procurement': 'Pengadaan bahan kimia dan kemasan',
+  'Warehousing and customs brokerage': 'Pergudangan dan kepabeanan',
+  'Insurance brokerage': 'Perantara asuransi',
+  'Power reliability': 'Keandalan listrik',
+  'Permit delays': 'Keterlambatan izin',
+  'Wastewater compliance': 'Kepatuhan air limbah',
+  'Labour turnover': 'Perputaran tenaga kerja',
+  'Customs clearance': 'Pengeluaran bea cukai',
+  'Water quality': 'Kualitas air',
+  'Site visit': 'Kunjungan lokasi',
+  'Account manager': 'Manajer akun',
+  Email: 'Surel',
+  WhatsApp: 'WhatsApp',
+};
+const tl = (v) => (LANG === 'id' && TX2[v]) ? TX2[v] : v;
 const nf = () => (LANG === 'en' ? 'en-US' : 'id-ID');
 const fmtInt = (n) => Number(n || 0).toLocaleString(nf(), { maximumFractionDigits: 0 });
 const fmtDec = (n, d) => Number(n || 0).toLocaleString(nf(), { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -1143,7 +1174,7 @@ function viewServices() {
     const rows = filterRows(STATE.deals, 'deals', ['svc_id', 'tenant', 'sku', 'category', 'ownerMgr', 'svcStatus']);
     const p = paginate('deals', rows, 12);
     const body = p.slice.map((d) => `<tr data-entity="deal" data-id="${esc(d.svc_id)}">
-      <td class="mono">${esc(d.svc_id)}</td><td>${esc(d.tenant)}</td><td>${esc(d.sku)}</td>
+      <td class="mono">${esc(d.svc_id)}</td><td>${esc(d.tenant)}</td><td>${esc(tl(d.sku))}</td>
       <td>${esc(E('category', d.category))}</td><td class="num">${fmtRpShort(d.value)}</td>
       <td>${chipFor('svcStatus', d.svcStatus)}</td><td>${esc(d.ownerMgr)}</td><td class="date">${fmtDate(d.start)}</td></tr>`).join('') || emptyRow(cols.length);
     html += `<div class="grid g-4" style="margin-bottom:16px">
@@ -1159,16 +1190,16 @@ function viewServices() {
     ${tableHtml(cols, body, p.pager, 980)}</div>`;
   } else {
     const cols = [
-      { w: '10%', label: 'ID' }, { w: '19%', label: t('F.company') }, { w: '22%', label: t('F.pain') },
+      { w: '10%', label: 'ID' }, { w: '19%', label: t('F.company') }, { w: '20%', label: t('F.pain') },
       { w: '11%', label: t('F.spend'), align: 'right' }, { w: '9%', label: t('F.leadScore'), align: 'right' },
-      { w: '10%', label: t('F.leadStatus') }, { w: '11%', label: t('F.channel') }, { w: '8%', label: t('F.nps'), align: 'right' },
+      { w: '12%', label: t('F.leadStatus') }, { w: '11%', label: t('F.channel') }, { w: '8%', label: t('F.nps'), align: 'right' },
     ];
     const rows = filterRows(STATE.leads, 'leads', ['lead_id', 'company', 'pain', 'channel', 'leadStatus', 'industry']);
     const p = paginate('leads', rows, 12);
     const body = p.slice.map((l) => `<tr data-entity="lead" data-id="${esc(l.lead_id)}">
-      <td class="mono">${esc(l.lead_id)}</td><td>${esc(l.company)}</td><td>${esc(l.pain)}</td>
+      <td class="mono">${esc(l.lead_id)}</td><td>${esc(l.company)}</td><td>${esc(tl(l.pain))}</td>
       <td class="num">${fmtRpShort(l.spend)}</td><td class="num" style="color:${l.leadScore >= 70 ? '#A8452F' : '#3C4552'};font-weight:${l.leadScore >= 70 ? '600' : '400'}">${fmtInt(l.leadScore)}</td>
-      <td>${chipFor('leadStatus', l.leadStatus)}</td><td>${esc(l.channel)}</td><td class="num">${fmtInt(l.nps)}</td></tr>`).join('') || emptyRow(cols.length);
+      <td>${chipFor('leadStatus', l.leadStatus)}</td><td>${esc(tl(l.channel))}</td><td class="num">${fmtInt(l.nps)}</td></tr>`).join('') || emptyRow(cols.length);
     html += `<div class="grid g-4" style="margin-bottom:16px">
       ${kpiCard(t('s.kpi.hot'), fmtInt(hot), t('s.tab.leads'), 'r')}
       ${kpiCard(t('s.kpi.promoters'), fmtInt(STATE.leads.filter((l) => l.nps >= 9).length), t('s.tab.leads'), 't')}
@@ -1343,7 +1374,7 @@ function showVal(rec, k, spec) {
   if (k === 'price') return esc(rec.intent === 'lease' ? fmtRp(v) + t('c.sqmMonth') : fmtRpShort(v) + '/m²');
   if (MONEY.includes(k)) return esc(fmtRpShort(v));
   if (spec.t === 'number') return esc(fmtInt(v));
-  return esc(v);
+  return esc(tl(v));
 }
 
 function openDetail(entity, id) {
