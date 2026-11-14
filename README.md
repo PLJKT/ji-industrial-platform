@@ -15,8 +15,8 @@ Data can be exported to a JSON snapshot and re-imported on another device.
 | Operations overview | Portfolio, pipeline, revenue and utility KPIs with four charts | derived |
 | Asset register | Vacant / idle factories, owner terms and matched demand | assets, owners, demands |
 | Service revenue | Paid services sold through the one-stop office, and survey leads | deals, leads |
-| Water & waste | Monthly plant readings: energy, compliance, reuse, sludge, unit cost | metrics |
-| Glossary | Regulatory and technical terms with definitions in both languages | 14 entries |
+| Water & waste | Two tabs: design capacity register by plant and phase, and monthly readings (loading, energy, compliance, reuse, sludge, unit cost) | plants, metrics |
+| Glossary | Regulatory and technical terms with definitions in both languages | 20 entries |
 | Settings | Language, import / export, storage status, record ownership, data rules | — |
 
 ## Language rules
@@ -33,13 +33,31 @@ Data can be exported to a JSON snapshot and re-imported on another device.
 
 ## Data model
 
-`owners`, `assets`, `demands`, `deals`, `leads`, `metrics`. Asset IDs follow
+`owners`, `assets`, `demands`, `deals`, `leads`, `plants`, `metrics`. Asset IDs follow
 `JI-<estate>-<yy>-<seq>` (`JI-CKR-26-0001`); new asset records inherit the estate code and the next
 sequence number. Owner terms are kept separate from the physical asset record so price concessions and
 decision authority can change without rewriting the property.
 
-Demo dataset sizes: 32 assets, 8 owners, 20 demands, 36 service contracts, 30 survey leads, 100 plant
-readings (January–October 2026). The banner marks these records as illustrative; replace them with
+`plants` holds design capacity as reported by the operator: estate, plant / unit, phase, treatment
+stream (WTP or WWTP), technology, design capacity with its original unit (`Lps` or `m³/day`), status.
+The register stores the reported unit and derives the equivalent once, at 1 Lps = 86.4 m³/day, so
+mixed units stay comparable without touching the source figure. Units reported separately from a
+declared total are flagged and excluded from the operating total until the reporting basis is confirmed.
+
+`metrics` holds one line per plant, indicator and month: flow (actual inflow), energy intensity
+(kWh/m³), effluent compliance (%), reuse rate (%), sludge and unit cost (Rp/m³). Loading rate is
+derived as actual flow ÷ design capacity; 60–80% is the normal band, above 80% is tight operation and
+above 100% is overloading.
+
+Recorded assets: 10 treatment units — Cikarang WTP 1+2 740 Lps; Cikarang WWTP 1+2 15,750 m³/day (IFAS)
+and an oxidation-ditch line of 12,000 m³/day reported separately; Kendal Phase 1 WTP 2×70 + 2×70 +
+2×100 Lps, WWTP 1A 1,000, 1B 4,000 (IFAS/FCR), 1B extension 16,200 (MBBR), new build 16,000 m³/day
+under technology review. Design totals: 1,220 Lps water, 36,950 m³/day wastewater operating, 16,000
+m³/day in delivery.
+
+Demo dataset sizes: 32 assets, 8 owners, 20 demands, 36 service contracts, 30 survey leads, 10 plants,
+260 plant readings (January–October 2026, derived from design capacity and flagged as illustrative
+until metered data is loaded). The banner marks these records as illustrative; replace them with
 live records before operational use.
 
 ## Run locally
