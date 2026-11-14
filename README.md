@@ -38,6 +38,26 @@ Data can be exported to a JSON snapshot and re-imported on another device.
 sequence number. Owner terms are kept separate from the physical asset record so price concessions and
 decision authority can change without rewriting the property.
 
+`assets` mirrors the intake workbook (`JI 闲置资产登记模板`, sheet `资产主表`) field for field: asset
+ID, estate, block / lot, address, owner ID, owner contact, land area, building area, floors, clear
+height, floor load, loading docks, power, water, wastewater connection, gas or steam, permits, land
+title, status, owner intent, asking price, condition, retrofit estimate, data quality, last verified,
+access tier and notes. All 37 fields are editable in the form, including the ID; renaming an asset
+keeps demand links pointing at the renamed record.
+
+Commercial fields follow industrial leasing practice: price basis (`Rp/m²/month` for lease,
+`Rp/m²` or `Rp total` for sale), service charge (Rp/m²/month), security deposit in months, minimum
+lease term, annual escalation, payment schedule, handover condition, fit-out cost (Rp/m²), VAT (PPN)
+included, and availability date. These are the parameters buyers and tenants actually compare;
+reference ranges observed in Greater Jakarta listings: rent Rp 13,500–81,000 per m² per month,
+service charge Rp 1,500–3,000 per m² per month, deposit two to three months, minimum term three years
+with 5–10% annual escalation, VAT excluded.
+
+Sorting covers the key metrics: recently verified, rent per m², asking price high to low and low to
+high, building area, land area, clear height, connected power, data quality and availability date.
+Asking price is normalised to Rp per m² using building area when the record is quoted as a total, so
+one ranking holds across both quoting conventions.
+
 `plants` holds design capacity as reported by the operator: estate, plant / unit, phase, treatment
 stream (WTP or WWTP), technology, design capacity with its original unit (`Lps` or `m³/day`), status.
 The register stores the reported unit and derives the equivalent once, at 1 Lps = 86.4 m³/day, so

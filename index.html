@@ -104,6 +104,7 @@ h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-0.015em}
 .toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:0;padding:12px 14px;border-bottom:1px solid var(--line);background:#FCFBF8}
 .toolbar .search{min-width:200px;flex:1;max-width:320px;background:#FFF}
 .toolbar select{border:1px solid var(--line);background:#FFF;padding:7px 9px;font-size:12px;border-radius:var(--radius)}
+.toolbar select[data-f="sort"]{max-width:280px}
 .toolbar .count{margin-left:auto;font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
 .tabs{display:flex;gap:0;border-bottom:1px solid var(--line);margin-bottom:18px}
 .tab{padding:10px 16px;font-size:12.5px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
@@ -155,6 +156,8 @@ td.date{white-space:nowrap;color:var(--muted);font-size:12px}
 .drawer{position:fixed;top:0;right:0;height:100vh;width:min(560px,96vw);background:#FFF;z-index:70;transform:translateX(100%);visibility:hidden;transition:transform .22s ease,visibility .22s ease;display:flex;flex-direction:column;border-left:1px solid var(--line)}
 .fgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:16px}
 .fgrid .full{grid-column:1/-1}
+.formsec{grid-column:1/-1;margin:18px 0 2px;padding:0 0 7px;border-bottom:1px solid var(--line);font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;color:var(--muted)}
+.formsec:first-child{margin-top:0}
 .drawer.on{transform:none;visibility:visible}
 .drawer-head{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;justify-content:space-between;gap:12px;background:#FCFBF8}
 .drawer-head h3{font-size:15px}
@@ -341,11 +344,12 @@ const STR = {
   'c.demoText': ['Records below are illustrative samples for workflow testing. Replace them with live records before operational use.', 'Catatan di bawah adalah contoh untuk menguji alur kerja. Ganti dengan data sebenarnya sebelum digunakan secara operasional.'],
   'c.saved': ['Record saved', 'Catatan tersimpan'],
   'c.deleted': ['Record deleted', 'Catatan dihapus'],
+  'c.dupId': ['That ID is already in use', 'ID tersebut sudah dipakai'],
   'c.exported': ['JSON file exported', 'Berkas JSON diekspor'],
   'c.imported': ['Data imported', 'Data diimpor'],
   'c.import': ['Import JSON', 'Impor JSON'],
   'c.perMonth': ['/mo', '/bln'],
-  'c.sqmMonth': ['/m²·mo', '/m²·bln'],
+  'c.sqmMonth': ['/m²/mo', '/m²/bln'],
   'c.resetDone': ['Demo data restored', 'Data contoh dipulihkan'],
   'c.badFile': ['File could not be read', 'Berkas tidak dapat dibaca'],
   'c.confirmReset': ['Replace all local records with demo data?', 'Ganti semua catatan lokal dengan data contoh?'],
@@ -405,7 +409,7 @@ const STR = {
   'a.filterClass': ['Class', 'Kelas'],
   'a.col.build': ['Build m²', 'Bangunan m²'],
   'a.col.power': ['Power kVA', 'Daya kVA'],
-  'a.col.price': ['Price Rp/m²', 'Harga Rp/m²'],
+  'a.col.price': ['Asking price', 'Harga penawaran'],
   'a.col.quality': ['Quality', 'Kualitas'],
 
   's.tab.deals': ['Service contracts', 'Kontrak layanan'],
@@ -509,7 +513,7 @@ const STR = {
   'f.metricSub': ['One monthly reading for one plant and one indicator.', 'Satu pembacaan bulanan untuk satu instalasi dan satu indikator.'],
   'f.requiredHint': ['Fields marked', 'Bidang bertanda'],
   'f.requiredHint2': ['are required.', 'wajib diisi.'],
-  'f.numberHint': ['Numbers only. Water in m³/day, power in kVA, price in Rp per m².', 'Angka saja. Air dalam m³/hari, daya dalam kVA, harga dalam Rp per m².'],
+  'f.numberHint': ['Numbers only. Water in m³/day, power in kVA, areas in m². Price is read against the basis you select: Rp per m² per month, Rp per m², or Rp total.', 'Angka saja. Air dalam m³/hari, daya dalam kVA, luas dalam m². Harga dibaca sesuai dasar yang Anda pilih: Rp per m² per bulan, Rp per m², atau Rp total.'],
   'f.ownerLink': ['Owner ID must exist in the owner table.', 'ID pemilik harus ada di tabel pemilik.'],
   'f.assetLink': ['Asset ID must exist in the asset table.', 'ID aset harus ada di tabel aset.'],
 
@@ -536,6 +540,39 @@ const STR = {
   'F.verified': ['Last verified', 'Verifikasi terakhir'],
   'F.access': ['Disclosure tier', 'Tingkat pengungkapan'],
   'F.notes': ['Notes', 'Catatan'],
+  'F.contact': ['Owner contact', 'Kontak pemilik'],
+  'F.floorLoad': ['Floor load (t/m²)', 'Beban lantai (t/m²)'],
+  'F.docks': ['Loading docks', 'Jumlah loading dock'],
+  'F.landTitle': ['Land title', 'Sertifikat tanah'],
+  'F.priceUnit': ['Price basis', 'Dasar harga'],
+  'F.serviceCharge': ['Service charge (Rp/m²/month)', 'Service charge (Rp/m²/bulan)'],
+  'F.depositMonths': ['Security deposit (months)', 'Deposit jaminan (bulan)'],
+  'F.leaseTermYears': ['Minimum lease term (years)', 'Jangka sewa minimum (tahun)'],
+  'F.escalationPct': ['Annual escalation (%)', 'Eskalasi tahunan (%)'],
+  'F.payment': ['Payment schedule', 'Jadwal pembayaran'],
+  'F.handover': ['Handover condition', 'Kondisi serah terima'],
+  'F.fitoutCost': ['Fit-out cost (Rp/m²)', 'Biaya fit-out (Rp/m²)'],
+  'F.vatIncluded': ['VAT (PPN) included', 'PPN termasuk'] ,
+  'F.availableFrom': ['Available from', 'Tersedia mulai'],
+  'sec.identity': ['Identity and location', 'Identitas dan lokasi'],
+  'sec.physical': ['Physical and utilities', 'Fisik dan utilitas'],
+  'sec.compliance': ['Permits and compliance', 'Perizinan dan kepatuhan'],
+  'sec.commercial': ['Commercial terms', 'Ketentuan komersial'],
+  'sec.quality': ['Data quality and disclosure', 'Kualitas data dan pengungkapan'],
+  'd.assetRent': ['Gross monthly rent at full building area', 'Sewa bruto bulanan pada luas bangunan penuh'],
+  'd.assetDeposit': ['Security deposit at quoted months', 'Deposit jaminan pada jumlah bulan yang tercantum'],
+  'd.assetFitout': ['Fit-out budget at quoted rate', 'Anggaran fit-out pada tarif yang tercantum'],
+  's.label': ['Sort', 'Urutkan'],
+  's.verified': ['Recently verified', 'Terverifikasi terbaru'],
+  's.rentDesc': ['Rent per m², high to low', 'Sewa per m², tinggi ke rendah'],
+  's.priceDesc': ['Asking price, high to low', 'Harga penawaran, tinggi ke rendah'],
+  's.priceAsc': ['Asking price, low to high', 'Harga penawaran, rendah ke tinggi'],
+  's.buildDesc': ['Building area, largest first', 'Luas bangunan, terbesar'],
+  's.landDesc': ['Land area, largest first', 'Luas tanah, terbesar'],
+  's.clearanceDesc': ['Clear height, highest first', 'Tinggi bersih, tertinggi'],
+  's.powerDesc': ['Power capacity, largest first', 'Daya listrik, terbesar'],
+  's.qualityDesc': ['Data quality, highest first', 'Kualitas data, tertinggi'],
+  's.availableAsc': ['Available date, soonest first', 'Tanggal tersedia, tercepat'],
   'F.name': ['Owner name', 'Nama pemilik'],
   'F.legal': ['Legal form', 'Bentuk hukum'],
   'F.ubo': ['Beneficial owner', 'Pemilik manfaat'],
@@ -627,6 +664,10 @@ const ENUM = {
   pstatus: { operating: ['Operating', 'Beroperasi'], construction: ['Under construction', 'Dalam pembangunan'], planned: ['Planned', 'Direncanakan'] },
   phase: { existing: ['Existing', 'Eksisting'], p1: ['Phase 1', 'Tahap 1'], p2: ['Phase 2', 'Tahap 2'] },
   wwtp: { yes: ['Connected', 'Tersambung'], no: ['Not connected', 'Tidak tersambung'], partial: ['Partial', 'Sebagian'] },
+  priceUnit: { m2mo: ['Rp per m² per month', 'Rp per m² per bulan'], m2: ['Rp per m²', 'Rp per m²'], tot: ['Rp total', 'Rp total'] },
+  payment: { monthly: ['Monthly', 'Bulanan'], quarterly: ['Quarterly in advance', 'Triwulan di muka'], semiannual: ['Semi-annual in advance', 'Semesteran di muka'], annual: ['Annual in advance', 'Tahunan di muka'] },
+  handover: { asis: ['As-is', 'Apa adanya'], clean: ['Cleaned', 'Sudah dibersihkan'], fitted: ['Fitted out', 'Siap pakai'] },
+  title: { hgb: ['HGB', 'HGB'], hgu: ['HGU', 'HGU'], shm: ['SHM', 'SHM'], other: ['Other', 'Lainnya'] },
   yesno: { yes: ['Yes', 'Ya'], no: ['No', 'Tidak'] },
   willing: { yes: ['Ready to pay', 'Siap membayar'], price: ['Price sensitive', 'Peka harga'], no: ['Not willing', 'Tidak bersedia'] },
   budgetBand: { lt50: ['Below Rp 50 m', 'Di bawah Rp 50 jt'], '50_150': ['Rp 50–150 m', 'Rp 50–150 jt'], '150_500': ['Rp 150–500 m', 'Rp 150–500 jt'], gt500: ['Above Rp 500 m', 'Di atas Rp 500 jt'] },
@@ -654,6 +695,10 @@ const GLOSS = {
   mbbr: { t: ['MBBR', 'MBBR'], d: ['Moving bed biofilm reactor: floating plastic carriers host the biofilm, so capacity can be raised by adding media rather than new tanks.', 'Moving bed biofilm reactor: media plastik mengapung menjadi tempat biofilm, sehingga kapasitas dapat dinaikkan dengan menambah media, bukan tangki baru.'] },
   od: { t: ['Oxidation ditch (OD)', 'Kolam oksidasi (OD)'], d: ['A looped aeration channel with long retention time; stable against shock loads, but high energy use per cubic metre.', 'Saluran aerasi berbentuk loop dengan waktu tinggal panjang; stabil terhadap beban kejut, tetapi konsumsi energi per meter kubik tinggi.'] },
   as: { t: ['Activated sludge (AS)', 'Lumpur aktif (AS)'], d: ['Suspended-growth process with aeration and sludge return. The reference technology for BOD and ammonia removal in industrial estates.', 'Proses pertumbuhan tersuspensi dengan aerasi dan pengembalian lumpur. Teknologi acuan untuk penyisihan BOD dan amonia di kawasan industri.'] },
+  clearance: { t: ['Clear height', 'Tinggi bersih'], d: ['Usable height from floor to the lowest roof or sprinkler line. Warehouse listings here run 6–8 m at the eaves and 8–14 m at the ridge; below 6 m limits container stacking and racking.', 'Tinggi terpakai dari lantai ke titik terendah atap atau jalur sprinkler. Gudang di sini berkisar 6–8 m di tepi dan 8–14 m di puncak; di bawah 6 m membatasi penumpukan kontainer dan rak.'] },
+  serviceCharge: { t: ['Service charge', 'Service charge'], d: ['A monthly estate fee per m² on top of rent, covering security, roads, drainage and common-area upkeep. Listed at Rp 1,500–3,000 per m² per month and normally excluded from the headline rent.', 'Biaya kawasan bulanan per m² di luar sewa, mencakup keamanan, jalan, drainase, dan pemeliharaan area bersama. Tercatat Rp 1.500–3.000 per m² per bulan dan biasanya tidak termasuk dalam sewa utama.'] },
+  deposit: { t: ['Security deposit', 'Deposit jaminan'], d: ['Refundable cash held by the owner, usually two to three months of rent, paid partly on the offering letter and the rest at lease signing. It protects the owner against early termination, not against wear.', 'Uang yang ditahan pemilik dan dapat dikembalikan, biasanya dua sampai tiga bulan sewa, dibayar sebagian saat surat penawaran dan sisanya saat penandatanganan. Melindungi pemilik dari penghentian dini, bukan dari keausan.'] },
+  escalation: { t: ['Annual escalation', 'Eskalasi tahunan'], d: ['The fixed annual increase applied to rent in a multi-year lease, commonly 5–10%. It must be stated explicitly; otherwise the rent stays flat for the whole term.', 'Kenaikan tahunan tetap pada sewa dalam kontrak bertahun, umumnya 5–10%. Harus dinyatakan tegas; bila tidak, sewa tetap sepanjang jangka.'] },
 };
 
 /* ================= STATE & HELPERS ================= */
@@ -732,7 +777,7 @@ const fmtDate = (iso) => {
 const pct = (n, d) => fmtDec(n, d == null ? 1 : d) + '%';
 const daysAgo = (iso) => Math.round((Date.now() - new Date(iso + 'T00:00:00').getTime()) / 86400000);
 const uid = (prefix) => prefix.replace(/-$/, '') + '-' + String(Math.floor(Math.random() * 9000) + 1000);
-const ESTATE_CODE = { Cikarang: 'CKR', Bekasi: 'BKS', Karawang: 'KRW', Kendal: 'KDL' };
+const ESTATE_CODE = { Cikarang: 'CKR', Bekasi: 'BKS', Karawang: 'KRW', Kendal: 'KDL', Other: 'OTH' };
 function nextAssetId(kawasan) {
   const code = ESTATE_CODE[kawasan] || 'NEW';
   const yy = String(new Date().getFullYear()).slice(2);
@@ -805,6 +850,16 @@ function seedData() {
         gas: seq % 3 === 0 ? 'yes' : 'no',
         permits: PERMITS[(seq + i) % PERMITS.length],
         status: status, intent: intent, price: price, condition: cond,
+        priceUnit: intent === 'sale' || intent === 'jv' ? 'm2' : 'm2mo',
+        serviceCharge: 1800 + (seq % 3) * 300, depositMonths: 3,
+        leaseTermYears: intent === 'sale' || intent === 'jv' ? '' : 3,
+        escalationPct: 5 + (seq % 3), payment: 'annual',
+        handover: cond === 'A' ? 'fitted' : 'asis',
+        fitoutCost: cond === 'A' ? 0 : (cond === 'B' ? 350000 : 900000),
+        vatIncluded: 'no', floorLoad: [3, 3.5, 5][seq % 3], docks: build > 2000 ? 2 : 1,
+        landTitle: seq % 7 === 0 ? 'hgu' : 'hgb',
+        availableFrom: '2026-12-' + String(1 + (seq % 20)).padStart(2, '0'),
+        contact: 'Facility manager 0812-0000-' + String(1000 + seq).slice(-4),
         retrofit: cond === 'A' ? 0 : (cond === 'B' ? 180000000 : 620000000),
         quality: 44 + ((seq * 7 + i * 5) % 52),
         verified: '2026-' + String(6 + (seq % 5)).padStart(2, '0') + '-' + String(3 + (seq % 24)).padStart(2, '0'),
@@ -948,6 +1003,10 @@ function loadData() {
           parsed.plants = fresh.plants;
           parsed.metrics = fresh.metrics;
         }
+        /* migrate older asset records to the price-basis model */
+        parsed.assets.forEach((a) => {
+          if (a.priceUnit == null) a.priceUnit = (a.intent === 'lease' ? 'm2mo' : 'm2');
+        });
         return parsed;
       }
     } catch (e) { /* fall through to demo */ }
@@ -1020,7 +1079,7 @@ function filterRows(rows, key, fields) {
   const f = FILTER[key] || {};
   let out = rows;
   Object.keys(f).forEach((k) => {
-    if (k !== 'q' && f[k]) out = out.filter((r) => String(r[k]) === String(f[k]));
+    if (k !== 'q' && k !== 'sort' && f[k]) out = out.filter((r) => String(r[k]) === String(f[k]));
   });
   const q = (f.q || '').toLowerCase().trim();
   if (q) out = out.filter((r) => fields.some((fl) => String(r[fl] == null ? '' : r[fl]).toLowerCase().includes(q)));
@@ -1170,6 +1229,21 @@ function tableHtml(cols, bodyHtml, pager, minWidth) {
 function emptyRow(cols) { return '<tr><td colspan="' + cols + '"><div class="empty">' + esc(t('c.none')) + '</div></td></tr>'; }
 
 /* ================= ASSETS VIEW ================= */
+/* asset sorting: every key metric has an explicit comparator, blanks always last */
+const rentOf = (a) => ((a.priceUnit === 'm2mo' || (!a.priceUnit && a.intent === 'lease')) ? Number(a.price || 0) : 0);
+const ASSET_SORTS = {
+  verified: (a, b) => String(b.verified || '').localeCompare(String(a.verified || '')),
+  rentDesc: (a, b) => rentOf(b) - rentOf(a),
+  priceDesc: (a, b) => assetPerM2(b) - assetPerM2(a),
+  priceAsc: (a, b) => assetPerM2(a) - assetPerM2(b),
+  buildDesc: (a, b) => Number(b.build || 0) - Number(a.build || 0),
+  landDesc: (a, b) => Number(b.land || 0) - Number(a.land || 0),
+  clearanceDesc: (a, b) => Number(b.clearance || 0) - Number(a.clearance || 0),
+  powerDesc: (a, b) => Number(b.power || 0) - Number(a.power || 0),
+  qualityDesc: (a, b) => Number(b.quality || 0) - Number(a.quality || 0),
+  availableAsc: (a, b) => String(a.availableFrom || '9999-12-31').localeCompare(String(b.availableFrom || '9999-12-31')),
+};
+
 function viewAssets() {
   const tab = TAB.assets;
   const counts = { assets: STATE.assets.length, owners: STATE.owners.length, demands: STATE.demands.length };
@@ -1187,22 +1261,25 @@ function viewAssets() {
       { w: '8%', label: t('a.col.quality'), align: 'right' },
     ];
     const statusOpts = ['operating', 'partial', 'stopped', 'vacant'];
-    const estOpts = ['Cikarang', 'Bekasi', 'Karawang', 'Kendal'];
+    const estOpts = ['Cikarang', 'Bekasi', 'Karawang', 'Kendal', 'Other'];
     const f = FILTER.assets || {};
-    const rows = filterRows(STATE.assets, 'assets', ['asset_id', 'kawasan', 'blok', 'alamat', 'owner_id', 'status', 'intent', 'permits']);
+    const rows = filterRows(STATE.assets, 'assets', ['asset_id', 'kawasan', 'blok', 'alamat', 'owner_id', 'status', 'intent', 'permits', 'contact']).slice();
+    const sortKey = f.sort || 'verified';
+    rows.sort(ASSET_SORTS[sortKey] || ASSET_SORTS.verified);
     const p = paginate('assets', rows, 12);
     const body = p.slice.map((a) => `<tr data-entity="asset" data-id="${esc(a.asset_id)}">
       <td class="mono">${esc(a.asset_id)}</td><td>${esc(a.kawasan)}</td><td class="mono">${esc(a.blok)}</td>
       <td class="mono">${esc(a.owner_id)}</td><td class="num">${fmtInt(a.build)}</td><td class="num">${fmtInt(a.power)}</td>
       <td>${chipFor('status', a.status)}</td><td>${esc(E('intent', a.intent))}</td>
-      <td class="num">${a.intent === 'sale' ? fmtRpShort(a.price) + '/m²' : fmtRp(a.price) + t('c.sqmMonth')}</td>
+      <td class="num">${esc(fmtAssetPrice(a))}</td>
       <td class="num">${fmtInt(a.quality)}</td></tr>`).join('') || emptyRow(cols.length);
-    el('view').innerHTML = tabs + termLine(['occupancy', 'rba', 'accreditation', 'tkdn']) + `<div class="sec-head" style="margin-top:0"><p>${esc(t('a.descAssets'))}</p><div><button class="btn primary" data-add="asset">${esc(t('a.addAsset'))}</button></div></div>
+    el('view').innerHTML = tabs + termLine(['occupancy', 'clearance', 'serviceCharge', 'deposit', 'escalation']) + `<div class="sec-head" style="margin-top:0"><p>${esc(t('a.descAssets'))}</p><div><button class="btn primary" data-add="asset">${esc(t('a.addAsset'))}</button></div></div>
       <div class="card flat">
         <div class="toolbar">
           <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg><input data-q="assets" placeholder="${esc(t('c.search'))}" value="${esc(f.q || '')}"></div>
           <select data-sel="assets" data-f="status"><option value="">${esc(t('a.filterStatus'))}: ${esc(t('c.all'))}</option>${statusOpts.map((s) => `<option value="${s}" ${f.status === s ? 'selected' : ''}>${esc(E('status', s))}</option>`).join('')}</select>
           <select data-sel="assets" data-f="kawasan"><option value="">${esc(t('a.filterKawasan'))}: ${esc(t('c.all'))}</option>${estOpts.map((s) => `<option value="${s}" ${f.kawasan === s ? 'selected' : ''}>${esc(s)}</option>`).join('')}</select>
+          <select data-sel="assets" data-f="sort" aria-label="${esc(t('s.label'))}">${Object.keys(ASSET_SORTS).map((s) => `<option value="${s}" ${sortKey === s ? 'selected' : ''}>${esc(t('s.label'))}: ${esc(t('s.' + s))}</option>`).join('')}</select>
           <span class="count">${fmtInt(rows.length)} ${esc(t('c.total'))}</span>
         </div>
         ${tableHtml(cols, body, p.pager, 1040)}
@@ -1529,18 +1606,30 @@ function viewSettings() {
 }
 
 /* ================= FIELD SCHEMA ================= */
-const MONEY = ['price', 'retrofit', 'floorPrice', 'askPrice', 'budget', 'offer', 'commissionAmt', 'value', 'spend'];
+const MONEY = ['price', 'retrofit', 'floorPrice', 'askPrice', 'budget', 'offer', 'commissionAmt', 'value', 'spend', 'serviceCharge', 'fitoutCost'];
 const E_TYPES = {
   asset: {
     coll: 'assets', idKey: 'asset_id', prefix: 'JI-NEW-', title: 'f.asset', sub: 'f.assetSub',
     fields: [
-      { k: 'asset_id', t: 'text' }, { k: 'kawasan', t: 'select', opts: ['Cikarang', 'Bekasi', 'Karawang', 'Kendal'], req: 1 },
-      { k: 'blok', t: 'text' }, { k: 'alamat', t: 'text' }, { k: 'owner_id', t: 'text', req: 1, hint: 'f.ownerLink' },
-      { k: 'land', t: 'number' }, { k: 'build', t: 'number' }, { k: 'floors', t: 'number' }, { k: 'clearance', t: 'number' },
-      { k: 'power', t: 'number' }, { k: 'water', t: 'number' }, { k: 'wwtp', t: 'select', g: 'wwtp' }, { k: 'gas', t: 'select', g: 'yesno' },
-      { k: 'permits', t: 'text' }, { k: 'status', t: 'select', g: 'status', req: 1 }, { k: 'intent', t: 'select', g: 'intent', req: 1 },
-      { k: 'price', t: 'number' }, { k: 'condition', t: 'select', g: 'condition' }, { k: 'retrofit', t: 'number' },
-      { k: 'quality', t: 'number' }, { k: 'verified', t: 'date' }, { k: 'access', t: 'select', g: 'access' }, { k: 'notes', t: 'textarea' },
+      { k: 'asset_id', t: 'text', sec: 'identity' }, { k: 'kawasan', t: 'select', opts: ['Cikarang', 'Bekasi', 'Karawang', 'Kendal', 'Other'], req: 1, sec: 'identity' },
+      { k: 'blok', t: 'text', sec: 'identity' }, { k: 'owner_id', t: 'text', req: 1, hint: 'f.ownerLink', sec: 'identity' },
+      { k: 'alamat', t: 'text', sec: 'identity' }, { k: 'contact', t: 'text', sec: 'identity' },
+      { k: 'land', t: 'number', sec: 'physical' }, { k: 'build', t: 'number', sec: 'physical' },
+      { k: 'floors', t: 'number', sec: 'physical' }, { k: 'clearance', t: 'number', sec: 'physical' },
+      { k: 'floorLoad', t: 'number', sec: 'physical' }, { k: 'docks', t: 'number', sec: 'physical' },
+      { k: 'power', t: 'number', sec: 'physical' }, { k: 'water', t: 'number', sec: 'physical' },
+      { k: 'wwtp', t: 'select', g: 'wwtp', sec: 'physical' }, { k: 'gas', t: 'select', g: 'yesno', sec: 'physical' },
+      { k: 'permits', t: 'text', sec: 'compliance' }, { k: 'landTitle', t: 'select', g: 'title', sec: 'compliance' },
+      { k: 'status', t: 'select', g: 'status', req: 1, sec: 'compliance' }, { k: 'intent', t: 'select', g: 'intent', req: 1, sec: 'compliance' },
+      { k: 'price', t: 'number', sec: 'commercial' }, { k: 'priceUnit', t: 'select', g: 'priceUnit', sec: 'commercial' },
+      { k: 'serviceCharge', t: 'number', sec: 'commercial' }, { k: 'depositMonths', t: 'number', sec: 'commercial' },
+      { k: 'leaseTermYears', t: 'number', sec: 'commercial' }, { k: 'escalationPct', t: 'number', sec: 'commercial' },
+      { k: 'payment', t: 'select', g: 'payment', sec: 'commercial' }, { k: 'handover', t: 'select', g: 'handover', sec: 'commercial' },
+      { k: 'fitoutCost', t: 'number', sec: 'commercial' }, { k: 'vatIncluded', t: 'select', g: 'yesno', sec: 'commercial' },
+      { k: 'availableFrom', t: 'date', sec: 'commercial' }, { k: 'condition', t: 'select', g: 'condition', sec: 'commercial' },
+      { k: 'retrofit', t: 'number', sec: 'commercial' },
+      { k: 'quality', t: 'number', sec: 'quality' }, { k: 'verified', t: 'date', sec: 'quality' },
+      { k: 'access', t: 'select', g: 'access', sec: 'quality' }, { k: 'notes', t: 'textarea', sec: 'quality' },
     ],
   },
   owner: {
@@ -1612,12 +1701,26 @@ function recTitle(entity, r) {
   if (entity === 'plant') return r.name + ' · ' + r.estate;
   return '';
 }
+function fmtAssetPrice(a) {
+  const u = a.priceUnit || (a.intent === 'lease' ? 'm2mo' : 'm2');
+  const v = Number(a.price || 0);
+  if (u === 'm2mo') return fmtRp(v) + t('c.sqmMonth');
+  if (u === 'tot') return fmtRpShort(v);
+  return fmtRpShort(v) + '/m²';
+}
+function assetPerM2(a) {
+  const u = a.priceUnit || (a.intent === 'lease' ? 'm2mo' : 'm2');
+  const v = Number(a.price || 0);
+  if (u === 'tot') return a.build ? v / Number(a.build) : 0;
+  return v;
+}
 function showVal(rec, k, spec) {
   const v = rec[k];
   if (v === '' || v == null) return '—';
   if (spec.g) return esc(E(spec.g, v));
-  if (k === 'verified' || k === 'start') return esc(fmtDate(v));
-  if (k === 'price') return esc(rec.intent === 'lease' ? fmtRp(v) + t('c.sqmMonth') : fmtRpShort(v) + '/m²');
+  if (k === 'verified' || k === 'start' || k === 'availableFrom') return esc(fmtDate(v));
+  if (k === 'price') return esc(fmtAssetPrice(rec));
+  if (k === 'escalationPct') return esc(fmtDec(v, 1) + '%');
   if (MONEY.includes(k)) return esc(fmtRpShort(v));
   if (spec.t === 'number') return esc(fmtInt(v));
   return esc(tl(v));
@@ -1633,13 +1736,26 @@ function plantDetailExtra(rec) {
     + '</div>';
 }
 
+function assetDetailExtra(rec) {
+  const rent = (rec.priceUnit === 'm2mo' || (!rec.priceUnit && rec.intent === 'lease')) ? Number(rec.price || 0) * Number(rec.build || 0) : 0;
+  const dep = rent && rec.depositMonths ? rent * Number(rec.depositMonths) : 0;
+  const fit = rec.fitoutCost && rec.build ? Number(rec.fitoutCost) * Number(rec.build) : 0;
+  const rows = [];
+  if (rent) rows.push('<dt>' + esc(t('d.assetRent')) + '</dt><dd class="mono">' + esc(fmtRpShort(rent)) + '</dd>');
+  if (dep) rows.push('<dt>' + esc(t('d.assetDeposit')) + '</dt><dd class="mono">' + esc(fmtRpShort(dep)) + '</dd>');
+  if (fit) rows.push('<dt>' + esc(t('d.assetFitout')) + '</dt><dd class="mono">' + esc(fmtRpShort(fit)) + '</dd>');
+  if (!rows.length) return '';
+  return '<div class="card flat" style="margin-top:18px;border:1px solid var(--line)">'
+    + '<div class="kv" style="grid-template-columns:200px minmax(0,1fr)">' + rows.join('') + '</div></div>';
+}
+
 function openDetail(entity, id) {
   const meta = E_TYPES[entity];
   const rec = (STATE[meta.coll] || []).find((r) => String(r[meta.idKey]) === String(id));
   if (!rec) return;
   DRAWER = { entity: entity, id: id };
   const body = '<dl class="kv">' + meta.fields.map((f) => '<dt>' + esc(t(f.label || ('F.' + f.k))) + '</dt><dd>' + showVal(rec, f.k, f) + '</dd>').join('') + '</dl>';
-  const extra = entity === 'plant' ? plantDetailExtra(rec) : '';
+  const extra = entity === 'plant' ? plantDetailExtra(rec) : entity === 'asset' ? assetDetailExtra(rec) : '';
   el('drawerTitle').textContent = t(meta.title);
   el('drawerSub').textContent = recTitle(entity, rec);
   el('drawerBody').innerHTML = body + extra;
@@ -1654,6 +1770,8 @@ function openForm(entity, id) {
   const meta = E_TYPES[entity];
   const isEdit = id != null;
   const rec = isEdit ? (STATE[meta.coll] || []).find((r) => String(r[meta.idKey]) === String(id)) || {} : {};
+  const fullSet = ['alamat', 'permits', 'authority', 'notes', 'pain', 'sku', 'ubo', 'structure', 'liens', 'contact'];
+  let lastSec = null;
   const fields = meta.fields.map((f) => {
     const val = rec[f.k] == null ? '' : rec[f.k];
     let input = '';
@@ -1666,8 +1784,13 @@ function openForm(entity, id) {
     } else {
       input = '<input data-f="' + f.k + '" type="' + (f.t === 'number' ? 'number' : f.t === 'date' ? 'date' : 'text') + '" value="' + esc(val) + '"' + (f.t === 'number' ? ' step="any"' : '') + (f.req ? ' data-req="1"' : '') + '>';
     }
-    const full = f.t === 'textarea' || ['alamat', 'permits', 'authority', 'notes', 'pain', 'sku', 'ubo', 'structure', 'liens'].includes(f.k);
-    return '<div class="field' + (full ? ' full' : '') + '"><label>' + esc(t(f.label || ('F.' + f.k))) + (f.req ? '<span class="req">*</span>' : '') + '</label>' + input
+    const full = f.t === 'textarea' || fullSet.includes(f.k);
+    let head = '';
+    if (f.sec && f.sec !== lastSec) {
+      lastSec = f.sec;
+      head = '<div class="formsec">' + esc(t('sec.' + f.sec)) + '</div>';
+    }
+    return head + '<div class="field' + (full ? ' full' : '') + '"><label>' + esc(t(f.label || ('F.' + f.k))) + (f.req ? '<span class="req">*</span>' : '') + '</label>' + input
       + (f.hint ? '<div class="help">' + esc(t(f.hint)) + '</div>' : '') + '<div class="err">' + esc(t('c.required')) + '</div></div>';
   }).join('');
 
@@ -1676,7 +1799,7 @@ function openForm(entity, id) {
   el('drawerBody').innerHTML = '<div style="font-size:11.5px;color:var(--muted);margin-bottom:16px">' + esc(t('f.requiredHint')) + ' * ' + esc(t('f.requiredHint2')) + '</div>'
     + '<div class="fgrid">' + fields + '</div>'
     + (['asset', 'demand', 'owner'].includes(entity) ? '<div class="help">' + esc(t('f.numberHint')) + '</div>' : '');
-  el('drawerFoot').innerHTML = '<button class="btn" data-close="1">' + esc(t('c.cancel')) + '</button><button class="btn primary" data-save="' + entity + '">' + esc(t('c.save')) + '</button>';
+  el('drawerFoot').innerHTML = '<button class="btn" data-close="1">' + esc(t('c.cancel')) + '</button><button class="btn primary" data-save="' + entity + '"' + (isEdit ? ' data-orig="' + esc(id) + '"' : '') + '>' + esc(t('c.save')) + '</button>';
   el('scrim').classList.add('on');
   el('drawer').classList.add('on');
 }
@@ -1708,6 +1831,20 @@ function saveForm(entity) {
 
   const idKey = meta.idKey;
   if (!rec[idKey]) rec[idKey] = entity === 'asset' ? nextAssetId(rec.kawasan) : uid(meta.prefix);
+  const saveBtn = el('drawerFoot').querySelector('[data-save]');
+  const origId = saveBtn && saveBtn.dataset.orig != null ? saveBtn.dataset.orig : null;
+  if (origId != null && String(origId) !== String(rec[idKey])) {
+    if ((STATE[meta.coll] || []).some((r) => String(r[idKey]) === String(rec[idKey])) || String(rec[idKey]) === String(origId)) {
+      toast(t('c.dupId')); return;
+    }
+    const idx = (STATE[meta.coll] || []).findIndex((r) => String(r[idKey]) === String(origId));
+    if (idx >= 0) STATE[meta.coll][idx] = Object.assign({}, STATE[meta.coll][idx], rec);
+    else (STATE[meta.coll] = STATE[meta.coll] || []).push(rec);
+    /* keep relations pointing at the renamed record */
+    if (entity === 'asset') STATE.demands.forEach((d) => { if (String(d.assetLink) === String(origId)) d.assetLink = rec[idKey]; });
+    if (entity === 'owner') STATE.assets.forEach((a) => { if (String(a.owner_id) === String(origId)) a.owner_id = rec[idKey]; });
+    save(); closeDrawer(); toast(t('c.saved')); renderView(); return;
+  }
   const existing = (STATE[meta.coll] || []).findIndex((r) => String(r[idKey]) === String(rec[idKey]));
   if (existing >= 0) {
     STATE[meta.coll][existing] = Object.assign({}, STATE[meta.coll][existing], rec);
