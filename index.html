@@ -122,6 +122,12 @@ td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 td.date{white-space:nowrap;color:var(--muted);font-size:12px}
 .chip{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;font-size:10.5px;letter-spacing:.02em;border:1px solid transparent;white-space:nowrap;border-radius:1px}
 .chip i{width:5px;height:5px;background:currentColor;display:inline-block;border-radius:50%}
+.flag{margin-left:5px;color:var(--amber);font-size:11px;cursor:help}
+.note-card{padding:14px 20px}
+.note-line{display:grid;grid-template-columns:96px minmax(0,1fr);gap:12px;align-items:start;padding:6px 0}
+.note-line+.note-line{border-top:1px solid var(--line)}
+.note-line .tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;color:var(--muted);padding-top:2px}
+.note-line p{margin:0;font-size:11.5px;line-height:1.65;color:#3C4552}
 .c-vacant{background:var(--red-soft);color:#7E3223}
 .c-partial{background:var(--amber-soft);color:#6B4C14}
 .c-stopped{background:#EDEBE6;color:#5A5F66}
@@ -229,6 +235,16 @@ td.date{white-space:nowrap;color:var(--muted);font-size:12px}
   .g-2,.g-3,.g-4{grid-template-columns:1fr}
   .gloss-grid{grid-template-columns:1fr}
   .chart{height:240px}
+}
+@media (max-width:560px){
+  .brand-name{display:none}
+  .brand{padding:10px 10px}
+  .nav-item{padding:10px 8px;font-size:10px}
+  .nav{padding:0 2px}
+  .top-tools .btn{flex:0 0 auto}
+  .view{padding:16px 12px 44px}
+  .kpi{padding:14px 14px 12px}
+  .sec-head h2{font-size:15px}
 }
 @media print{
   .side,.top,.drawer,.scrim,.toolbar,.pager{display:none}
@@ -344,8 +360,8 @@ const STR = {
   'v.assets.sub': ['Vacant and underused factories, owner terms and matched demand in one record chain.', 'Pabrik kosong dan kurang termanfaatkan, persyaratan pemilik, dan permintaan yang cocok dalam satu rantai catatan.'],
   'v.services.title': ['Service revenue', 'Pendapatan layanan'],
   'v.services.sub': ['Paid services sold through the one-stop office, and the survey leads that feed them.', 'Layanan berbayar yang dijual melalui kantor layanan terpadu, dan prospek survei yang menyuplainya.'],
-  'v.utilities.title': ['Water & waste performance', 'Kinerja air & limbah'],
-  'v.utilities.sub': ['Energy intensity, effluent compliance, reuse rate and sludge output by plant and month.', 'Intensitas energi, kepatuhan efluen, tingkat daur ulang, dan lumpur menurut instalasi dan bulan.'],
+  'v.utilities.title': ['Water & waste', 'Air & limbah'],
+  'v.utilities.sub': ['Design capacity by plant and phase, plus loading, energy, compliance and reuse readings by month.', 'Kapasitas desain per instalasi dan tahap, serta beban, energi, kepatuhan, dan daur ulang per bulan.'],
   'v.glossary.title': ['Glossary', 'Glosarium'],
   'v.glossary.sub': ['Regulatory and technical terms used across the platform, in both languages.', 'Istilah regulasi dan teknis yang dipakai di seluruh platform, dalam dua bahasa.'],
   'v.settings.title': ['Settings', 'Pengaturan'],
@@ -411,11 +427,40 @@ const STR = {
   's.foot.hot': ['score 70 and above, not dropped', 'skor 70 ke atas, belum dihentikan'],
 
   'u.addMetric': ['New reading', 'Pembacaan baru'],
+  'u.addPlant': ['New plant or unit', 'Instalasi atau unit baru'],
+  'u.tab.capacity': ['Capacity register', 'Daftar kapasitas'],
+  'u.tab.readings': ['Monthly readings', 'Pembacaan bulanan'],
   'u.desc': ['Monthly readings per plant. Baselines must come from metered data, not design values, or savings cannot be settled.', 'Pembacaan bulanan per instalasi. Basis harus dari data meter, bukan nilai desain, jika tidak penghematan tidak dapat diselesaikan.'],
+  'u.desc.cap': ['Design capacity by estate, phase and treatment unit. Capacity is kept as reported (Lps or m³/day); the equivalent column is derived at 1 Lps = 86.4 m³/day so totals stay comparable.', 'Kapasitas desain per kawasan, tahap, dan unit pengolahan. Kapasitas disimpan seperti dilaporkan (Lps atau m³/hari); kolom ekuivalen dihitung 1 Lps = 86,4 m³/hari agar total dapat dibandingkan.'],
+  'u.kpi.wtp': ['WTP capacity installed', 'Kapasitas WTP terpasang'],
+  'u.kpi.wwtp': ['WWTP capacity operating', 'Kapasitas WWTP beroperasi'],
+  'u.kpi.planned': ['Capacity in delivery', 'Kapasitas dalam pembangunan'],
+  'u.kpi.total': ['Phase 1 envelope', 'Total Tahap 1'],
+  'u.kpi.loading': ['Capacity utilisation', 'Pemanfaatan kapasitas'],
   'u.kpi.energy': ['Energy intensity', 'Intensitas energi'],
   'u.kpi.compliance': ['Effluent compliance', 'Kepatuhan efluen'],
   'u.kpi.reuse': ['Reuse rate', 'Tingkat daur ulang'],
   'u.kpi.sludge': ['Sludge output', 'Produksi lumpur'],
+  'u.foot.lps': ['Lps installed', 'Lps terpasang'],
+  'u.foot.m3d': ['m³/day equivalent', 'ekuivalen m³/hari'],
+  'u.foot.counted': ['operating units counted in total', 'unit beroperasi dihitung dalam total'],
+  'u.foot.units': ['units measured', 'unit terukur'],
+  'u.flag.excluded': ['Not counted in the total', 'Tidak dihitung dalam total'],
+  'u.foot.units2': ['counted', 'dihitung'],
+  'u.foot.excl': ['excluded', 'dikecualikan'],
+  'u.foot.target': ['Target 20%', 'Target 20%'],
+  'd.derived': ['Equivalent capacity', 'Kapasitas ekuivalen'],
+  'd.treated': ['Stream treated', 'Aliran diolah'],
+  'd.flagNote': ['Excluded from the operating total: reported separately until the Cikarang total is confirmed.', 'Tidak dihitung dalam total beroperasi: dilaporkan terpisah sampai total Cikarang dikonfirmasi.'],
+  'u.foot.excluded': ['reported separately, not counted yet', 'dilaporkan terpisah, belum dihitung'],
+  'u.foot.inDelivery': ['Kendal Phase 1, technology under review', 'Kendal Tahap 1, teknologi masih dibahas'],
+  'u.foot.envelope': ['existing plus planned, excluding flagged units', 'eksisting plus rencana, di luar unit bertanda'],
+  'u.ch.cap': ['Capacity by estate and stream', 'Kapasitas per kawasan dan aliran'],
+  'u.ch.tech': ['Installed capacity by technology', 'Kapasitas terpasang per teknologi'],
+  'u.ch.load': ['Loading rate against design capacity', 'Beban hidrolik terhadap kapasitas desain'],
+  'u.ch.trend': ['Energy intensity trend', 'Tren intensitas energi'],
+  'u.note.cikarang': ['As reported: 15,750 m³/day is the WWTP 1+2 total (IFAS, 182.3 Lps); the 12,000 m³/day OD line (150 Lps) is listed separately and flagged, because it may already sit inside that total. Confirm before publishing a combined figure.', 'Sesuai laporan: 15.750 m³/hari adalah total WWTP 1+2 (IFAS, 182,3 Lps); jalur OD 12.000 m³/hari (150 Lps) dicatat terpisah dan ditandai, karena mungkin sudah termasuk dalam total tersebut. Konfirmasi sebelum menerbitkan angka gabungan.'],
+  'u.note.kendal': ['Kendal Phase 1 WTP is three stages of conventional treatment (2×70, 2×70, 2×100 Lps). WWTP existing 21,200 m³/day plus 16,000 m³/day under construction gives the 37,200 m³/day phase envelope.', 'WTP Kendal Tahap 1 terdiri dari tiga tahap pengolahan konvensional (2×70, 2×70, 2×100 Lps). WWTP eksisting 21.200 m³/hari ditambah 16.000 m³/hari yang dibangun menghasilkan total tahap 37.200 m³/hari.'],
 
   'g.intro': ['Terms are explained once, at first use, and again here. Hover any dotted term to see its definition.', 'Istilah dijelaskan sekali, saat pertama dipakai, dan lagi di sini. Arahkan kursor ke istilah bergaris putus-putus untuk melihat definisinya.'],
   'g.note': ['Definitions are operational summaries, not legal advice. Binding wording follows the regulation cited in each entry.', 'Definisi adalah ringkasan operasional, bukan nasihat hukum. Rumusan yang mengikat mengikuti regulasi yang dikutip di setiap entri.'],
@@ -452,6 +497,8 @@ const STR = {
   'f.deal': ['Service contract', 'Kontrak layanan'],
   'f.lead': ['Survey lead', 'Prospek survei'],
   'f.metric': ['Utility reading', 'Pembacaan utilitas'],
+  'f.plant': ['Plant or treatment unit', 'Instalasi atau unit pengolahan'],
+  'f.plantSub': ['Design capacity, technology and delivery status for one plant or unit. Capacity stays in the unit it was reported in.', 'Kapasitas desain, teknologi, dan status pembangunan untuk satu instalasi atau unit. Kapasitas disimpan dalam satuan seperti dilaporkan.'],
   'f.editTitle': ['Edit record', 'Ubah catatan'],
   'f.newTitle': ['New record', 'Catatan baru'],
   'f.assetSub': ['Physical, compliance and commercial fields in one record.', 'Bidang fisik, kepatuhan, dan komersial dalam satu catatan.'],
@@ -546,6 +593,17 @@ const STR = {
   'F.period': ['Month', 'Bulan'],
   'F.unit': ['Unit', 'Satuan'],
   'F.valueNum': ['Value', 'Nilai'],
+  'F.plantName': ['Plant / unit', 'Instalasi / unit'],
+  'F.estate': ['Estate', 'Kawasan'],
+  'F.phase': ['Phase', 'Tahap'],
+  'F.ptype': ['Type', 'Jenis'],
+  'F.tech': ['Technology', 'Teknologi'],
+  'F.cap': ['Design capacity', 'Kapasitas desain'],
+  'F.capM3d': ['Equivalent', 'Ekuivalen'],
+  'F.pstatus': ['Status', 'Status'],
+  'F.counted': ['In total', 'Masuk total'],
+  'F.pnote': ['Data note', 'Catatan data'],
+  'F.capUnit': ['Capacity unit', 'Satuan kapasitas'],
 };
 
 const ENUM = {
@@ -563,7 +621,11 @@ const ENUM = {
   category: { permit: ['Permits and compliance', 'Perizinan dan kepatuhan'], energy: ['Energy', 'Energi'], environment: ['Environment', 'Lingkungan'], hr: ['People', 'Sumber daya manusia'], supply: ['Supply chain', 'Rantai pasok'], finance: ['Finance and insurance', 'Keuangan dan asuransi'] },
   svcStatus: { quoted: ['Quoted', 'Dikutip'], active: ['Active', 'Aktif'], delivered: ['Delivered', 'Selesai'], lost: ['Lost', 'Gagal'] },
   leadStatus: { new: ['New', 'Baru'], contacted: ['Contacted', 'Dihubungi'], qualified: ['Qualified', 'Terkualifikasi'], converted: ['Converted', 'Terkonversi'], dropped: ['Dropped', 'Dihentikan'] },
-  metric: { energy: ['Energy intensity', 'Intensitas energi'], compliance: ['Effluent compliance', 'Kepatuhan efluen'], reuse: ['Reuse rate', 'Tingkat daur ulang'], sludge: ['Sludge output', 'Produksi lumpur'], cost: ['Unit cost', 'Biaya unit'] },
+  metric: { energy: ['Energy intensity', 'Intensitas energi'], compliance: ['Effluent compliance', 'Kepatuhan efluen'], reuse: ['Reuse rate', 'Tingkat daur ulang'], sludge: ['Sludge output', 'Produksi lumpur'], cost: ['Unit cost', 'Biaya unit'], flow: ['Treated flow', 'Debit terolah'] },
+  ptype: { wtp: ['WTP', 'WTP'], wwtp: ['WWTP', 'WWTP'] },
+  tech: { conv: ['Conventional', 'Konvensional'], ifas: ['IFAS', 'IFAS'], od: ['Oxidation ditch', 'Kolam oksidasi'], as: ['Activated sludge', 'Lumpur aktif'], ifasfcr: ['IFAS / FCR', 'IFAS / FCR'], mbbr: ['MBBR', 'MBBR'], tbd: ['Technology under review', 'Teknologi masih dibahas'] },
+  pstatus: { operating: ['Operating', 'Beroperasi'], construction: ['Under construction', 'Dalam pembangunan'], planned: ['Planned', 'Direncanakan'] },
+  phase: { existing: ['Existing', 'Eksisting'], p1: ['Phase 1', 'Tahap 1'], p2: ['Phase 2', 'Tahap 2'] },
   wwtp: { yes: ['Connected', 'Tersambung'], no: ['Not connected', 'Tidak tersambung'], partial: ['Partial', 'Sebagian'] },
   yesno: { yes: ['Yes', 'Ya'], no: ['No', 'Tidak'] },
   willing: { yes: ['Ready to pay', 'Siap membayar'], price: ['Price sensitive', 'Peka harga'], no: ['Not willing', 'Tidak bersedia'] },
@@ -587,6 +649,11 @@ const GLOSS = {
   perf: { t: ['Performance contract', 'Kontrak kinerja'], d: ['An EPC plus operations contract with guaranteed savings or compliance, penalties for shortfall and a metered baseline. It avoids taking asset risk onto the balance sheet.', 'Kontrak EPC plus operasi dengan jaminan penghematan atau kepatuhan, penalti bila gagal, dan basis terukur. Menghindari risiko aset masuk ke neraca.'] },
   leadscore: { t: ['Lead score', 'Skor prospek'], d: ['Pain (1–5) multiplied by budget (1–3), decision authority (1–3) and time window (1–3); 135 is the maximum. It ranks follow-up order, not credit quality.', 'Rasa sakit (1–5) dikalikan anggaran (1–3), kewenangan keputusan (1–3), dan jendela waktu (1–3); maksimum 135. Skor ini mengurutkan prioritas tindak lanjut, bukan kualitas kredit.'] },
   arpu: { t: ['ARPU', 'ARPU'], d: ['Average revenue per paying tenant per year. Used here to model service revenue without assuming every tenant buys.', 'Pendapatan rata-rata per penyewa berbayar per tahun. Dipakai untuk memodelkan pendapatan layanan tanpa mengasumsikan semua penyewa membeli.'] },
+  loading: { t: ['Loading rate', 'Beban hidrolik'], d: ['Actual inflow divided by design capacity over the same period. Below 60% is under-used, 60–80% is workable, above 80% is efficient, above 100% means the plant is overloaded and effluent risk rises.', 'Debit masuk aktual dibagi kapasitas desain pada periode yang sama. Di bawah 60% kurang termanfaatkan, 60–80% wajar, di atas 80% efisien, di atas 100% berarti instalasi kelebihan beban dan risiko efluen naik.'] },
+  baku: { t: ['Effluent standard (baku mutu)', 'Baku mutu efluen'], d: ['The discharge limits set by the environment ministry for the industrial activity. Compliance is measured per parameter (BOD, COD, TSS, pH, ammonia) against the permit, not as one average score.', 'Batas pembuangan yang ditetapkan kementerian lingkungan untuk kegiatan industri. Kepatuhan diukur per parameter (BOD, COD, TSS, pH, amonia) terhadap izin, bukan sebagai satu skor rata-rata.'] },
+  mbbr: { t: ['MBBR', 'MBBR'], d: ['Moving bed biofilm reactor: floating plastic carriers host the biofilm, so capacity can be raised by adding media rather than new tanks.', 'Moving bed biofilm reactor: media plastik mengapung menjadi tempat biofilm, sehingga kapasitas dapat dinaikkan dengan menambah media, bukan tangki baru.'] },
+  od: { t: ['Oxidation ditch (OD)', 'Kolam oksidasi (OD)'], d: ['A looped aeration channel with long retention time; stable against shock loads, but high energy use per cubic metre.', 'Saluran aerasi berbentuk loop dengan waktu tinggal panjang; stabil terhadap beban kejut, tetapi konsumsi energi per meter kubik tinggi.'] },
+  as: { t: ['Activated sludge (AS)', 'Lumpur aktif (AS)'], d: ['Suspended-growth process with aeration and sludge return. The reference technology for BOD and ammonia removal in industrial estates.', 'Proses pertumbuhan tersuspensi dengan aerasi dan pengembalian lumpur. Teknologi acuan untuk penyisihan BOD dan amonia di kawasan industri.'] },
 };
 
 /* ================= STATE & HELPERS ================= */
@@ -594,7 +661,7 @@ const LS_KEY = 'ji_platform_v1';
 let LANG = 'en';
 let STATE = null;
 let VIEW = 'dashboard';
-let TAB = { assets: 'assets', services: 'deals' };
+let TAB = { assets: 'assets', services: 'deals', utilities: 'capacity' };
 let PAGE = {};
 let FILTER = {};
 let SEEN = {};
@@ -644,6 +711,7 @@ const TX2 = {
 const tl = (v) => (LANG === 'id' && TX2[v]) ? TX2[v] : v;
 const nf = () => (LANG === 'en' ? 'en-US' : 'id-ID');
 const fmtInt = (n) => Number(n || 0).toLocaleString(nf(), { maximumFractionDigits: 0 });
+const volU = () => (LANG === 'id' ? 'm³/hari' : 'm³/d');
 const fmtDec = (n, d) => Number(n || 0).toLocaleString(nf(), { minimumFractionDigits: d, maximumFractionDigits: d });
 const fmtRp = (n) => 'Rp ' + fmtInt(n);
 const fmtRpShort = (n) => {
@@ -822,27 +890,49 @@ function seedData() {
     };
   });
 
-  const PLANTS = ['WTP Cikarang', 'WWTP 1', 'WWTP 2', 'Solid waste'];
+  const PLANTS = [
+    { plant_id: 'PLT-CKR-WTP', estate: 'Cikarang', name: 'WTP 1 + 2', phase: 'existing', ptype: 'wtp', tech: 'conv', cap: 740, cup: 'Lps', pstatus: 'operating', counted: 'yes', pnote: '' },
+    { plant_id: 'PLT-CKR-WW-IFAS', estate: 'Cikarang', name: 'WWTP 1 + 2 (IFAS)', phase: 'existing', ptype: 'wwtp', tech: 'ifas', cap: 15750, cup: 'm3d', pstatus: 'operating', counted: 'yes', pnote: '' },
+    { plant_id: 'PLT-CKR-WW-OD', estate: 'Cikarang', name: 'WWTP (OD)', phase: 'existing', ptype: 'wwtp', tech: 'od', cap: 12000, cup: 'm3d', pstatus: 'operating', counted: 'no', pnote: '' },
+    { plant_id: 'PLT-KDL-WTP-1', estate: 'Kendal', name: 'WTP Stage 1', phase: 'p1', ptype: 'wtp', tech: 'conv', cap: 140, cup: 'Lps', pstatus: 'operating', counted: 'yes', pnote: '' },
+    { plant_id: 'PLT-KDL-WTP-2', estate: 'Kendal', name: 'WTP Stage 2', phase: 'p1', ptype: 'wtp', tech: 'conv', cap: 140, cup: 'Lps', pstatus: 'operating', counted: 'yes', pnote: '' },
+    { plant_id: 'PLT-KDL-WTP-3', estate: 'Kendal', name: 'WTP Stage 3', phase: 'p1', ptype: 'wtp', tech: 'conv', cap: 200, cup: 'Lps', pstatus: 'operating', counted: 'yes', pnote: '' },
+    { plant_id: 'PLT-KDL-WW-1A', estate: 'Kendal', name: 'WWTP 1A', phase: 'p1', ptype: 'wwtp', tech: 'as', cap: 1000, cup: 'm3d', pstatus: 'operating', counted: 'yes', pnote: '' },
+    { plant_id: 'PLT-KDL-WW-1B', estate: 'Kendal', name: 'WWTP 1B', phase: 'p1', ptype: 'wwtp', tech: 'ifasfcr', cap: 4000, cup: 'm3d', pstatus: 'operating', counted: 'yes', pnote: '' },
+    { plant_id: 'PLT-KDL-WW-1BX', estate: 'Kendal', name: 'WWTP 1B extension', phase: 'p1', ptype: 'wwtp', tech: 'mbbr', cap: 16200, cup: 'm3d', pstatus: 'operating', counted: 'yes', pnote: '' },
+    { plant_id: 'PLT-KDL-WW-NEW', estate: 'Kendal', name: 'WWTP new build', phase: 'p1', ptype: 'wwtp', tech: 'tbd', cap: 16000, cup: 'm3d', pstatus: 'planned', counted: 'no', pnote: '' },
+  ];
   const MONTHS = ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06', '2026-07', '2026-08', '2026-09', '2026-10'];
+  const READINGS = [
+    { plant: 'Cikarang WTP 1 + 2', type: 'wtp', cap: 63936, f: 0.78, e: 0.13 },
+    { plant: 'Cikarang WWTP IFAS', type: 'wwtp', cap: 15750, f: 0.78, e: 0.33 },
+    { plant: 'Cikarang WWTP OD', type: 'wwtp', cap: 12000, f: 0.64, e: 0.46 },
+    { plant: 'Kendal WTP', type: 'wtp', cap: 41472, f: 0.72, e: 0.13 },
+    { plant: 'Kendal WWTP 1A', type: 'wwtp', cap: 1000, f: 0.62, e: 0.30 },
+    { plant: 'Kendal WWTP 1B', type: 'wwtp', cap: 4000, f: 0.84, e: 0.34 },
+    { plant: 'Kendal WWTP 1B ext', type: 'wwtp', cap: 16200, f: 0.88, e: 0.28 },
+    { plant: 'Solid waste', type: 'sw' },
+  ];
   const METRICS = [];
   let mseq = 0;
-  PLANTS.forEach((p) => {
+  READINGS.forEach((r, ri) => {
     MONTHS.forEach((m, mi) => {
-      const inds = p === 'WTP Cikarang' ? ['energy', 'cost'] : p === 'Solid waste' ? ['sludge', 'cost'] : ['energy', 'compliance', 'reuse'];
+      const inds = r.type === 'wtp' ? ['energy', 'cost'] : r.type === 'sw' ? ['sludge', 'cost'] : ['flow', 'energy', 'compliance', 'reuse'];
       inds.forEach((ind) => {
         mseq++;
         let v, unit;
-        if (ind === 'energy') { v = (p === 'WWTP 2' ? 0.305 : p === 'WWTP 1' ? 0.342 : 0.118) + (mi * -0.0022) + ((mseq % 5) / 1000); unit = 'kWh/m³'; }
+        if (ind === 'flow') { v = r.cap * (r.f + mi * 0.006 + (ri % 3) / 200); unit = 'm³/day'; }
+        if (ind === 'energy') { v = r.e - mi * 0.0022 + ((mseq % 5) / 1000); unit = 'kWh/m³'; }
         if (ind === 'compliance') { v = 94 + (mi % 5) * 1.1 + (mseq % 3) / 10; unit = '%'; }
         if (ind === 'reuse') { v = 4 + mi * 0.55 + (mseq % 4) / 10; unit = '%'; }
         if (ind === 'sludge') { v = 31 - mi * 0.25 + (mseq % 5) / 10; unit = 't/day'; }
-        if (ind === 'cost') { v = 11800 - mi * 40 + (mseq % 6) * 15; unit = 'Rp/m³'; }
-        METRICS.push({ metric_id: 'M-' + String(mseq).padStart(4, '0'), plant: p, metric: ind, period: m, value: Math.round(v * 100) / 100, unit: unit });
+        if (ind === 'cost') { v = (r.type === 'wtp' ? 6200 : 11800) - mi * 40 + (mseq % 6) * 15; unit = 'Rp/m³'; }
+        METRICS.push({ metric_id: 'M-' + String(mseq).padStart(4, '0'), plant: r.plant, metric: ind, period: m, value: Math.round(v * 100) / 100, unit: unit });
       });
     });
   });
 
-  return { owners: OWNERS, assets: ASSETS, demands: DEMANDS, deals: DEALS, leads: LEADS, metrics: METRICS };
+  return { owners: OWNERS, assets: ASSETS, demands: DEMANDS, deals: DEALS, leads: LEADS, metrics: METRICS, plants: PLANTS };
 }
 
 /* ================= STORAGE ================= */
@@ -852,7 +942,14 @@ function loadData() {
   if (stored) {
     try {
       const parsed = JSON.parse(stored);
-      if (parsed && parsed.assets && parsed.owners) return parsed;
+      if (parsed && parsed.assets && parsed.owners) {
+        if (!parsed.plants) {
+          const fresh = seedData();
+          parsed.plants = fresh.plants;
+          parsed.metrics = fresh.metrics;
+        }
+        return parsed;
+      }
     } catch (e) { /* fall through to demo */ }
   }
   const seeded = seedData();
@@ -986,12 +1083,12 @@ function viewDashboard() {
   const cats = ['permit', 'energy', 'environment', 'hr', 'supply', 'finance'];
   const catData = cats.map((c) => STATE.deals.filter((d) => d.category === c && d.svcStatus !== 'quoted' && d.svcStatus !== 'lost').reduce((s, d) => s + Number(d.value), 0));
   const months = Array.from(new Set(STATE.metrics.map((m) => m.period))).sort();
-  const e2 = metricSeries('WWTP 2', 'energy').map((m) => m.value);
-  const r2 = metricSeries('WWTP 2', 'reuse').map((m) => m.value);
+  const e2 = metricSeries('Cikarang WWTP IFAS', 'energy').map((m) => m.value);
+  const r2 = metricSeries('Cikarang WWTP IFAS', 'reuse').map((m) => m.value);
 
   const stale = STATE.assets.filter((a) => daysAgo(a.verified) > 90);
   const noDemand = STATE.assets.filter((a) => a.quality >= 75 && !STATE.demands.some((d) => d.assetLink === a.asset_id && OPEN_STAGES.includes(d.stage)));
-  const lowReuse = ['WWTP 1', 'WWTP 2'].map((p) => {
+  const lowReuse = ['Cikarang WWTP IFAS', 'Kendal WWTP 1B'].map((p) => {
     const s = metricSeries(p, 'reuse');
     return { plant: p, v: s.length ? s[s.length - 1].value : 0 };
   }).filter((x) => x.v < 10);
@@ -1216,35 +1313,172 @@ function viewServices() {
 }
 
 /* ================= UTILITIES VIEW ================= */
+const READING_CAP = {
+  'Cikarang WTP 1 + 2': 63936, 'Cikarang WWTP IFAS': 15750, 'Cikarang WWTP OD': 12000,
+  'Kendal WTP': 41472, 'Kendal WWTP 1A': 1000, 'Kendal WWTP 1B': 4000, 'Kendal WWTP 1B ext': 16200,
+};
+function capM3d(p) { return Number(p.cap) * (p.cup === 'Lps' ? 86.4 : 1); }
+function capLps(p) { return Number(p.cap) / (p.cup === 'Lps' ? 1 : 86.4); }
+function loadingPct(plant, period) {
+  const flow = STATE.metrics.find((m) => m.plant === plant && m.metric === 'flow' && m.period === period);
+  const cap = READING_CAP[plant];
+  return flow && cap ? Number(flow.value) / cap * 100 : null;
+}
 function viewUtilities() {
+  const tab = TAB.utilities || 'capacity';
   const latest = latestMonth();
+  const plants = STATE.plants || [];
+  const avg = (arr) => arr.length ? arr.reduce((s, m) => s + Number(m.value), 0) / arr.length : 0;
+  const tabs = `<div class="tabs">
+    <div class="tab ${tab === 'capacity' ? 'active' : ''}" data-tab="utilities" data-t="capacity">${esc(t('u.tab.capacity'))}<span class="n">${fmtInt(plants.length)}</span></div>
+    <div class="tab ${tab === 'readings' ? 'active' : ''}" data-tab="utilities" data-t="readings">${esc(t('u.tab.readings'))}<span class="n">${fmtInt(STATE.metrics.length)}</span></div>
+  </div>`;
+  let html = tabs + termLine(['loading', 'baku', 'ifas', 'mbbr', 'reuse']);
+
+  if (tab === 'capacity') {
+    const wtp = plants.filter((p) => p.ptype === 'wtp');
+    const wwOp = plants.filter((p) => p.ptype === 'wwtp' && p.pstatus === 'operating');
+    const counted = wwOp.filter((p) => p.counted !== 'no');
+    const flagged = wwOp.filter((p) => p.counted === 'no');
+    const planned = plants.filter((p) => p.pstatus !== 'operating');
+    const wtpLps = wtp.reduce((s, p) => s + capLps(p), 0);
+    const wwM3d = counted.reduce((s, p) => s + capM3d(p), 0);
+    const flagM3d = flagged.reduce((s, p) => s + capM3d(p), 0);
+    const planM3d = planned.reduce((s, p) => s + capM3d(p), 0);
+
+    const cols = [
+      { w: '11%', label: 'ID' }, { w: '8%', label: t('F.estate') }, { w: '20%', label: t('F.plantName') },
+      { w: '8%', label: t('F.phase') }, { w: '6%', label: t('F.ptype') }, { w: '13%', label: t('F.tech') },
+      { w: '9%', label: t('F.cap'), align: 'right' }, { w: '5%', label: t('F.unit') },
+      { w: '10%', label: t('F.capM3d'), align: 'right' }, { w: '10%', label: t('F.pstatus') },
+    ];
+    const rows = filterRows(plants, 'plants', ['plant_id', 'estate', 'name', 'tech']);
+    const p = paginate('plants', rows, 12);
+    const body = p.slice.map((x) => `<tr data-entity="plant" data-id="${esc(x.plant_id)}">
+      <td class="mono">${esc(x.plant_id)}</td><td>${esc(x.estate)}</td>
+      <td>${esc(x.name)}${x.counted === 'no' ? `<span class="flag" title="${esc(t('u.flag.excluded'))}">•</span>` : ''}</td>
+      <td>${esc(E('phase', x.phase))}</td><td>${esc(E('ptype', x.ptype))}</td><td>${esc(E('tech', x.tech))}</td>
+      <td class="num">${fmtInt(x.cap)}</td><td>${esc(x.cup === 'Lps' ? 'Lps' : volU())}</td>
+      <td class="num">${fmtInt(capM3d(x))}</td><td>${chipFor('pstatus', x.pstatus)}</td></tr>`).join('') || emptyRow(cols.length);
+
+    html += `<div class="grid g-4" style="margin-bottom:16px">
+      ${kpiCard(t('u.kpi.wtp'), fmtInt(wtpLps) + '<span class="k-unit">Lps</span>', fmtInt(wtpLps * 86.4) + ' ' + t('u.foot.m3d'), '')}
+      ${kpiCard(t('u.kpi.wwtp'), fmtInt(wwM3d) + '<span class="k-unit">m³/d</span>', fmtInt(counted.length) + ' ' + t('u.foot.units2') + ' · ' + fmtInt(flagM3d) + ' ' + t('u.foot.excl'), 't')}
+      ${kpiCard(t('u.kpi.planned'), fmtInt(planM3d) + '<span class="k-unit">m³/d</span>', t('u.foot.inDelivery'), 'r')}
+      ${kpiCard(t('u.kpi.total'), fmtInt(wwM3d + planM3d) + '<span class="k-unit">m³/d</span>', t('u.foot.envelope'), '')}
+    </div>
+    <div class="grid g-2">
+      <div class="card"><div class="card-head"><h3>${esc(t('u.ch.cap'))}</h3><span class="hint">${esc(volU())}</span></div><div id="ch-cap" class="chart"></div></div>
+      <div class="card"><div class="card-head"><h3>${esc(t('u.ch.tech'))}</h3><span class="hint">${fmtInt(plants.length)} ${esc(t('c.total'))}</span></div><div id="ch-tech" class="chart"></div></div>
+    </div>
+    <div class="sec-head"><div><h2>${esc(t('u.tab.capacity'))}</h2><p>${esc(t('u.desc.cap'))}</p></div><div><button class="btn primary" data-add="plant">${esc(t('u.addPlant'))}</button></div></div>
+    <div class="card flat"><div class="toolbar">
+      <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg><input data-q="plants" placeholder="${esc(t('c.search'))}" value="${esc((FILTER.plants || {}).q || '')}"></div>
+      <select data-sel="plants" data-f="estate"><option value="">${esc(t('F.estate'))}: ${esc(t('c.all'))}</option>${['Cikarang', 'Kendal'].map((x) => `<option value="${x}" ${(FILTER.plants || {}).estate === x ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select>
+      <select data-sel="plants" data-f="ptype"><option value="">${esc(t('F.ptype'))}: ${esc(t('c.all'))}</option>${['wtp', 'wwtp'].map((x) => `<option value="${x}" ${(FILTER.plants || {}).ptype === x ? 'selected' : ''}>${esc(E('ptype', x))}</option>`).join('')}</select>
+      <span class="count">${fmtInt(rows.length)} ${esc(t('c.total'))}</span></div>
+      ${tableHtml(cols, body, p.pager, 940)}</div>
+    <div class="card note-card" style="margin-top:16px">
+      <div class="note-line"><span class="tag">CIKARANG</span><p>${esc(t('u.note.cikarang'))}</p></div>
+      <div class="note-line"><span class="tag">KENDAL</span><p>${esc(t('u.note.kendal'))}</p></div>
+    </div>`;
+
+    el('view').innerHTML = html;
+
+    const capCats = ['Cikarang WTP', 'Cikarang WWTP', 'Kendal WTP', 'Kendal WWTP'];
+    const existing = [
+      wtp.filter((x) => x.estate === 'Cikarang').reduce((s, x) => s + capM3d(x), 0),
+      counted.filter((x) => x.estate === 'Cikarang').reduce((s, x) => s + capM3d(x), 0),
+      wtp.filter((x) => x.estate === 'Kendal').reduce((s, x) => s + capM3d(x), 0),
+      counted.filter((x) => x.estate === 'Kendal').reduce((s, x) => s + capM3d(x), 0),
+    ];
+    const future = [0, 0, 0, planned.filter((x) => x.estate === 'Kendal').reduce((s, x) => s + capM3d(x), 0)];
+    const narrow = window.innerWidth < 760;
+    chart('ch-cap', {
+      grid: narrow ? { left: 112, right: 36, top: 40, bottom: 18 } : { left: 108, right: 30, top: 24, bottom: 20 },
+      tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: (ps) => ps[0].name + '<br/>' + ps.map((q) => q.marker + q.seriesName + ': ' + fmtInt(q.value) + ' ' + volU()).join('<br/>') },
+      legend: { top: 0, left: 0, itemWidth: 10, itemHeight: 8, textStyle: { fontSize: 10.5, color: '#3C4552' }, data: [t('u.foot.counted'), t('u.kpi.planned')] },
+      xAxis: Object.assign({ type: 'value', splitNumber: narrow ? 3 : 5, axisLabel: { formatter: (v) => fmtInt(v), fontSize: narrow ? 9 : 10.5 } }, AXIS),
+      yAxis: Object.assign({ type: 'category', data: capCats, inverse: true }, AXIS, { splitLine: { show: false }, axisLabel: { fontSize: narrow ? 9.5 : 10.5, color: '#3C4552', width: narrow ? 96 : 100, overflow: 'truncate' } }),
+      series: [
+        { name: t('u.foot.counted'), type: 'bar', stack: 'cap', barWidth: 14, itemStyle: { color: '#182A42' }, data: existing, label: { show: true, position: 'insideRight', fontSize: 10, color: '#FFF', formatter: (q) => q.value ? fmtInt(q.value) : '' } },
+        { name: t('u.kpi.planned'), type: 'bar', stack: 'cap', barWidth: 14, itemStyle: { color: '#A9701C' }, data: future, label: { show: true, position: 'right', fontSize: 10, color: '#6C727C', formatter: (q) => q.value ? fmtInt(q.value) : '' } },
+      ],
+    });
+    const techKeys = Array.from(new Set(plants.map((x) => x.tech)));
+    const techData = techKeys.map((k) => ({ name: E('tech', k), value: Math.round(plants.filter((x) => x.tech === k).reduce((s, x) => s + capM3d(x), 0) * 10) / 10 }));
+    chart('ch-tech', {
+      tooltip: { trigger: 'item', formatter: (q) => q.name + ': ' + fmtInt(q.value) + ' ' + volU() + ' (' + pct(q.percent, 1) + ')' },
+      legend: narrow
+        ? { orient: 'horizontal', left: 0, right: 0, bottom: 0, itemWidth: 9, itemHeight: 9, textStyle: { fontSize: 10, color: '#3C4552' } }
+        : { orient: 'vertical', right: 4, top: 'middle', itemWidth: 9, itemHeight: 9, textStyle: { fontSize: 10.5, color: '#3C4552' } },
+      series: [{ type: 'pie', radius: narrow ? ['34%', '52%'] : ['44%', '66%'], center: narrow ? ['50%', '38%'] : ['34%', '54%'], label: { show: false }, itemStyle: { borderColor: '#FFF', borderWidth: 2 }, data: techData }],
+    });
+    return;
+  }
+
   const energy = STATE.metrics.filter((m) => m.metric === 'energy' && m.period === latest);
   const comp = STATE.metrics.filter((m) => m.metric === 'compliance' && m.period === latest);
   const reuse = STATE.metrics.filter((m) => m.metric === 'reuse' && m.period === latest);
-  const sludge = STATE.metrics.filter((m) => m.metric === 'sludge' && m.period === latest);
-  const avg = (arr) => arr.length ? arr.reduce((s, m) => s + Number(m.value), 0) / arr.length : 0;
+  const wwPlants = Array.from(new Set(STATE.metrics.filter((m) => m.metric === 'flow').map((m) => m.plant)));
+  const energyWw = energy.filter((m) => wwPlants.includes(m.plant));
+  const loads = wwPlants.map((x) => loadingPct(x, latest)).filter((v) => v != null);
+  const loadAvg = loads.length ? loads.reduce((s, v) => s + v, 0) / loads.length : 0;
   const cols = [
-    { w: '13%', label: 'ID' }, { w: '24%', label: t('F.plant') }, { w: '22%', label: t('F.metric') },
-    { w: '14%', label: t('F.period') }, { w: '15%', label: t('F.valueNum'), align: 'right' }, { w: '12%', label: t('F.unit') },
+    { w: '13%', label: 'ID' }, { w: '24%', label: t('F.plant') }, { w: '21%', label: t('F.metric') },
+    { w: '13%', label: t('F.period') }, { w: '16%', label: t('F.valueNum'), align: 'right' }, { w: '13%', label: t('F.unit') },
   ];
   const rows = filterRows(STATE.metrics, 'metrics', ['metric_id', 'plant', 'metric', 'period', 'unit']);
-  const p = paginate('metrics', rows, 14);
-  const body = p.slice.map((m) => `<tr data-entity="metric" data-id="${esc(m.metric_id)}">
+  const pg = paginate('metrics', rows, 14);
+  const body = pg.slice.map((m) => `<tr data-entity="metric" data-id="${esc(m.metric_id)}">
     <td class="mono">${esc(m.metric_id)}</td><td>${esc(m.plant)}</td><td>${esc(E('metric', m.metric))}</td>
-    <td class="date">${esc(m.period)}</td><td class="num">${fmtDec(m.value, 2)}</td><td>${esc(m.unit)}</td></tr>`).join('') || emptyRow(cols.length);
-  el('view').innerHTML = termLine(['reuse', 'ifas', 'rdf', 'perf']) + `<div class="grid g-4" style="margin-bottom:16px">
-      ${kpiCard(t('u.kpi.energy'), fmtDec(avg(energy), 2) + '<span class="k-unit">kWh/m³</span>', t('F.period') + ': ' + (latest || '—'), '')}
-      ${kpiCard(t('u.kpi.compliance'), pct(avg(comp), 1), t('F.period') + ': ' + (latest || '—'), 't')}
-      ${kpiCard(t('u.kpi.reuse'), pct(avg(reuse), 1), 'Target: 20%', 'r')}
-      ${kpiCard(t('u.kpi.sludge'), fmtDec(avg(sludge), 1) + '<span class="k-unit">t/day</span>', t('F.plant') + ': Solid waste', '')}
-    </div>
-    <div class="sec-head" style="margin-top:0"><p>${esc(t('u.desc'))}</p><div><button class="btn primary" data-add="metric">${esc(t('u.addMetric'))}</button></div></div>
-    <div class="card flat"><div class="toolbar">
-      <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg><input data-q="metrics" placeholder="${esc(t('c.search'))}" value="${esc((FILTER.metrics || {}).q || '')}"></div>
-      <select data-sel="metrics" data-f="plant"><option value="">${esc(t('F.plant'))}: ${esc(t('c.all'))}</option>${['WTP Cikarang', 'WWTP 1', 'WWTP 2', 'Solid waste'].map((x) => `<option value="${x}" ${(FILTER.metrics || {}).plant === x ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select>
-      <select data-sel="metrics" data-f="metric"><option value="">${esc(t('F.metric'))}: ${esc(t('c.all'))}</option>${['energy', 'compliance', 'reuse', 'sludge', 'cost'].map((x) => `<option value="${x}" ${(FILTER.metrics || {}).metric === x ? 'selected' : ''}>${esc(E('metric', x))}</option>`).join('')}</select>
-      <span class="count">${fmtInt(rows.length)} ${esc(t('c.total'))}</span></div>
-      ${tableHtml(cols, body, p.pager, 900)}</div>`;
+    <td class="date">${esc(m.period)}</td><td class="num">${fmtDec(m.value, 2)}</td><td>${esc(m.unit === 'm³/day' ? volU() : m.unit)}</td></tr>`).join('') || emptyRow(cols.length);
+  const plantOpts = Array.from(new Set(STATE.metrics.map((m) => m.plant)));
+  const metOpts = ['flow', 'energy', 'compliance', 'reuse', 'sludge', 'cost'];
+
+  html += `<div class="grid g-4" style="margin-bottom:16px">
+    ${kpiCard(t('u.kpi.loading'), pct(loadAvg, 1), fmtInt(loads.length) + ' ' + t('u.foot.units') + ' · ' + (latest || '—'), loadAvg >= 80 ? 't' : loadAvg >= 60 ? '' : 'r')}
+    ${kpiCard(t('u.kpi.energy'), fmtDec(avg(energyWw), 2) + '<span class="k-unit">kWh/m³</span>', 'WWTP · ' + (latest || '—'), '')}
+    ${kpiCard(t('u.kpi.compliance'), pct(avg(comp), 1), t('F.period') + ': ' + (latest || '—'), 't')}
+    ${kpiCard(t('u.kpi.reuse'), pct(avg(reuse), 1), esc(t('u.foot.target')), 'r')}
+  </div>
+  <div class="grid g-2" style="margin-bottom:16px">
+    <div class="card"><div class="card-head"><h3>${esc(t('u.ch.load'))}</h3><span class="hint">${latest || '—'}</span></div><div id="ch-load" class="chart"></div></div>
+    <div class="card"><div class="card-head"><h3>${esc(t('u.ch.trend'))}</h3><span class="hint">kWh/m³</span></div><div id="ch-etrend" class="chart"></div></div>
+  </div>
+  <div class="sec-head" style="margin-top:0"><p>${esc(t('u.desc'))}</p><div><button class="btn primary" data-add="metric">${esc(t('u.addMetric'))}</button></div></div>
+  <div class="card flat"><div class="toolbar">
+    <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg><input data-q="metrics" placeholder="${esc(t('c.search'))}" value="${esc((FILTER.metrics || {}).q || '')}"></div>
+    <select data-sel="metrics" data-f="plant"><option value="">${esc(t('F.plant'))}: ${esc(t('c.all'))}</option>${plantOpts.map((x) => `<option value="${x}" ${(FILTER.metrics || {}).plant === x ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select>
+    <select data-sel="metrics" data-f="metric"><option value="">${esc(t('F.metric'))}: ${esc(t('c.all'))}</option>${metOpts.map((x) => `<option value="${x}" ${(FILTER.metrics || {}).metric === x ? 'selected' : ''}>${esc(E('metric', x))}</option>`).join('')}</select>
+    <span class="count">${fmtInt(rows.length)} ${esc(t('c.total'))}</span></div>
+    ${tableHtml(cols, body, pg.pager, 900)}</div>`;
+
+  el('view').innerHTML = html;
+
+  const loadData = wwPlants.map((x) => ({ name: x, v: loadingPct(x, latest) || 0 }));
+  const narrowR = window.innerWidth < 760;
+  chart('ch-load', {
+    grid: narrowR ? { left: 92, right: 62, top: 10, bottom: 18 } : { left: 148, right: 54, top: 10, bottom: 20 },
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: (ps) => ps[0].name + ': ' + pct(ps[0].value, 1) },
+    xAxis: Object.assign({ type: 'value', max: 100, interval: narrowR ? 25 : 20, axisLabel: { formatter: (v) => v + '%', fontSize: narrowR ? 9 : 10.5, hideOverlap: true } }, AXIS),
+    yAxis: Object.assign({ type: 'category', data: loadData.map((x) => x.name), inverse: true }, AXIS, { splitLine: { show: false }, axisLabel: { fontSize: narrowR ? 9.5 : 10.5, color: '#3C4552', width: narrowR ? 86 : 140, overflow: 'truncate' } }),
+    series: [{
+      type: 'bar', barWidth: 12, data: loadData.map((x) => ({ value: Math.round(x.v * 10) / 10, itemStyle: { color: x.v >= 80 ? '#2C6E6A' : x.v >= 60 ? '#A9701C' : '#9AA0A8' } })),
+      label: { show: true, position: 'right', fontSize: 10, color: '#6C727C', formatter: (q) => pct(q.value, 1) },
+      markLine: { silent: true, symbol: 'none', lineStyle: { color: '#C9CFD8', type: 'dashed', width: 1 }, label: { show: false }, data: [{ xAxis: 80 }] },
+    }],
+  });
+  const months = Array.from(new Set(STATE.metrics.map((m) => m.period))).sort();
+  const series = ['Cikarang WWTP IFAS', 'Cikarang WWTP OD'].map((x) => metricSeries(x, 'energy').map((m) => m.value));
+  chart('ch-etrend', {
+    grid: { left: 48, right: 20, top: 28, bottom: 40 },
+    tooltip: { trigger: 'axis' },
+    legend: { bottom: 0, left: 0, itemWidth: 10, itemHeight: 8, textStyle: { fontSize: 10.5, color: '#3C4552' }, data: ['Cikarang WWTP IFAS', 'Cikarang WWTP OD'] },
+    xAxis: Object.assign({ type: 'category', data: months.map(monthLabel), boundaryGap: false }, AXIS),
+    yAxis: Object.assign({ type: 'value', name: 'kWh/m³', nameTextStyle: { fontSize: 10, color: '#9AA0A8' }, scale: true }, AXIS),
+    series: series.map((data, i) => ({ name: ['Cikarang WWTP IFAS', 'Cikarang WWTP OD'][i], type: 'line', smooth: true, symbolSize: 5, data: data, itemStyle: { color: i ? '#A9701C' : '#182A42' }, lineStyle: { width: 2 } })),
+  });
 }
 
 /* ================= GLOSSARY ================= */
@@ -1282,7 +1516,7 @@ function viewSettings() {
       <div class="card">
         <div class="settings-row"><div class="txt"><b>${esc(t('st.storage'))}</b><span>${esc(t('st.storageDesc'))}</span></div><div style="text-align:right;flex:0 0 auto"><div style="font-size:22px;font-weight:600;white-space:nowrap">${fmtDec(bytes / 1024, 1)} KB</div><div style="font-size:11px;color:#6C727C">localStorage</div></div></div>
         <div class="settings-row"><div class="txt"><b>${esc(t('st.about'))}</b><span>${esc(t('st.aboutDesc'))}</span></div><div style="font-family:var(--mono);font-size:11px;color:#6C727C;white-space:nowrap;flex:0 0 auto">v1.0 · 2026-11</div></div>
-        <div class="settings-row"><div class="txt"><b>${esc(t('st.version'))}</b><span>JSON schema ji_platform_v1</span></div><div style="font-family:var(--mono);font-size:11px;color:#6C727C;white-space:nowrap;flex:0 0 auto">${fmtInt(STATE.assets.length)}A / ${fmtInt(STATE.owners.length)}O / ${fmtInt(STATE.demands.length)}D / ${fmtInt(STATE.deals.length)}S / ${fmtInt(STATE.leads.length)}L / ${fmtInt(STATE.metrics.length)}M</div></div>
+        <div class="settings-row"><div class="txt"><b>${esc(t('st.version'))}</b><span>JSON schema ji_platform_v1</span></div><div style="font-family:var(--mono);font-size:11px;color:#6C727C;white-space:nowrap;flex:0 0 auto">${fmtInt(STATE.assets.length)}A / ${fmtInt(STATE.owners.length)}O / ${fmtInt(STATE.demands.length)}D / ${fmtInt(STATE.deals.length)}S / ${fmtInt(STATE.leads.length)}L / ${fmtInt(STATE.metrics.length)}M / ${fmtInt((STATE.plants || []).length)}P</div></div>
       </div>
       <div class="card">
         <div class="card-head" style="margin-bottom:6px"><h3>${esc(t('st.own.title'))}</h3></div>
@@ -1350,8 +1584,19 @@ const E_TYPES = {
   metric: {
     coll: 'metrics', idKey: 'metric_id', prefix: 'M-', title: 'f.metric', sub: 'f.metricSub',
     fields: [
-      { k: 'metric_id', t: 'text' }, { k: 'plant', t: 'select', opts: ['WTP Cikarang', 'WWTP 1', 'WWTP 2', 'Solid waste'], req: 1 },
+      { k: 'metric_id', t: 'text' }, { k: 'plant', t: 'select', opts: ['Cikarang WTP 1 + 2', 'Cikarang WWTP IFAS', 'Cikarang WWTP OD', 'Kendal WTP', 'Kendal WWTP 1A', 'Kendal WWTP 1B', 'Kendal WWTP 1B ext', 'Solid waste'], req: 1 },
       { k: 'metric', t: 'select', g: 'metric', req: 1 }, { k: 'period', t: 'text', req: 1 }, { k: 'value', t: 'number', req: 1, label: 'F.valueNum' }, { k: 'unit', t: 'text' },
+    ],
+  },
+  plant: {
+    coll: 'plants', idKey: 'plant_id', prefix: 'PLT-', title: 'f.plant', sub: 'f.plantSub',
+    fields: [
+      { k: 'plant_id', t: 'text' }, { k: 'estate', t: 'select', opts: ['Cikarang', 'Kendal'], req: 1 },
+      { k: 'name', t: 'text', req: 1, label: 'F.plantName' }, { k: 'phase', t: 'select', g: 'phase' },
+      { k: 'ptype', t: 'select', g: 'ptype', req: 1 }, { k: 'tech', t: 'select', g: 'tech', req: 1 },
+      { k: 'cap', t: 'number', req: 1, label: 'F.cap' }, { k: 'cup', t: 'select', opts: ['Lps', 'm3d'], req: 1, label: 'F.capUnit' },
+      { k: 'pstatus', t: 'select', g: 'pstatus', req: 1 }, { k: 'counted', t: 'select', g: 'yesno', label: 'F.counted' },
+      { k: 'pnote', t: 'textarea', label: 'F.pnote' },
     ],
   },
 };
@@ -1364,6 +1609,7 @@ function recTitle(entity, r) {
   if (entity === 'deal') return r.sku;
   if (entity === 'lead') return r.company;
   if (entity === 'metric') return r.plant + ' · ' + r.period;
+  if (entity === 'plant') return r.name + ' · ' + r.estate;
   return '';
 }
 function showVal(rec, k, spec) {
@@ -1377,15 +1623,26 @@ function showVal(rec, k, spec) {
   return esc(tl(v));
 }
 
+function plantDetailExtra(rec) {
+  const derived = capM3d(rec);
+  return '<div class="card flat" style="margin-top:18px;border:1px solid var(--line)">'
+    + '<div class="kv" style="grid-template-columns:150px minmax(0,1fr)">'
+    + '<dt>' + esc(t('d.derived')) + '</dt><dd class="mono">' + esc(fmtInt(derived) + ' ' + volU()) + '</dd>'
+    + '</div>'
+    + (rec.counted === 'no' ? '<p class="help" style="margin:10px 0 0">' + esc(t('d.flagNote')) + '</p>' : '')
+    + '</div>';
+}
+
 function openDetail(entity, id) {
   const meta = E_TYPES[entity];
   const rec = (STATE[meta.coll] || []).find((r) => String(r[meta.idKey]) === String(id));
   if (!rec) return;
   DRAWER = { entity: entity, id: id };
   const body = '<dl class="kv">' + meta.fields.map((f) => '<dt>' + esc(t(f.label || ('F.' + f.k))) + '</dt><dd>' + showVal(rec, f.k, f) + '</dd>').join('') + '</dl>';
+  const extra = entity === 'plant' ? plantDetailExtra(rec) : '';
   el('drawerTitle').textContent = t(meta.title);
   el('drawerSub').textContent = recTitle(entity, rec);
-  el('drawerBody').innerHTML = body;
+  el('drawerBody').innerHTML = body + extra;
   el('drawerFoot').innerHTML = '<button class="btn" data-close="1">' + esc(t('c.close')) + '</button>'
     + '<button class="btn danger" data-del="' + esc(id) + '">' + esc(t('c.delete')) + '</button>'
     + '<button class="btn primary" data-edit="' + esc(id) + '">' + esc(t('c.edit')) + '</button>';
@@ -1493,6 +1750,7 @@ function importJson(file) {
     try {
       const parsed = JSON.parse(String(reader.result));
       if (!parsed || !parsed.assets || !parsed.owners) throw new Error('shape');
+      if (!parsed.plants) parsed.plants = seedData().plants;
       STATE = parsed;
       save();
       toast(t('c.imported'));
@@ -1638,7 +1896,7 @@ function bindEvents() {
 
   el('btnExport').addEventListener('click', exportJson);
   el('btnNew').addEventListener('click', () => {
-    const entity = VIEW === 'services' ? (TAB.services === 'deals' ? 'deal' : 'lead') : VIEW === 'utilities' ? 'metric' : VIEW === 'assets' ? (TAB.assets === 'owners' ? 'owner' : TAB.assets === 'demands' ? 'demand' : 'asset') : 'asset';
+    const entity = VIEW === 'services' ? (TAB.services === 'deals' ? 'deal' : 'lead') : VIEW === 'utilities' ? (TAB.utilities === 'readings' ? 'metric' : 'plant') : VIEW === 'assets' ? (TAB.assets === 'owners' ? 'owner' : TAB.assets === 'demands' ? 'demand' : 'asset') : 'asset';
     openForm(entity, null);
   });
 
