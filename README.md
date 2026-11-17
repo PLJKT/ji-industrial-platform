@@ -7,7 +7,7 @@ purpose-built for internal operating use rather than marketing.
 ## What this is
 
 A single-page static system. No server, no account, no database. Records live in the browser's
-`localStorage` under the key `ji_platform_v1`; the language choice lives under `ji_lang`.
+`localStorage` under the key `ji_platform_v2`; the language choice lives under `ji_lang`.
 Data can be exported to a JSON snapshot and re-imported on another device.
 
 | View | Purpose | Records |
@@ -23,9 +23,9 @@ Data can be exported to a JSON snapshot and re-imported on another device.
 
 The Overview view is arranged for a board-level read, top to bottom:
 
-- A prototype banner states that figures are illustrative sample records, not JI performance.
+- A register banner states that the 203 vacant plots come from the 17 Nov 2026 workbook; commercial, compliance and quality fields are blank pending owner verification, and demand, service leads and utility readings are not yet entered.
 - Three workstream cards — vacant asset matching, one-stop service revenue, water & waste efficiency — each show the headline metric, a one-line description and a jump button into the working register.
-- Six KPIs: registered assets, vacant / idle share, idle building area, demand in pipeline, service revenue booked, and quoted service pipeline.
+- Six KPIs: registered assets, vacant / idle share, idle land area, demand in pipeline, service revenue booked, and quoted service pipeline.
 - Four unchanged charts: asset status mix, demand by stage, revenue by service line, energy intensity and reuse trend.
 - A three-phase roadmap (pilot pool, paid services scale, regional platform with ministry-backed certification) marks the current phase.
 - A "data basis and open items" panel records the standing caveats: monthly readings derive from design capacity until metered data is loaded; the Cikarang oxidation-ditch 12,000 m³/day line is listed separately and excluded from the WWTP total pending basis confirmation; the Kendal 16,000 m³/day new build is planned capacity with treatment technology under review.
@@ -53,8 +53,12 @@ decision authority can change without rewriting the property.
 ID, estate, block / lot, address, owner ID, owner contact, land area, building area, floors, clear
 height, floor load, loading docks, power, water, wastewater connection, gas or steam, permits, land
 title, status, owner intent, asking price, condition, retrofit estimate, data quality, last verified,
-access tier and notes. All 37 fields are editable in the form, including the ID; renaming an asset
+access tier and notes. All fields are editable in the form, including the ID; renaming an asset
 keeps demand links pointing at the renamed record.
+
+The asset detail drawer embeds a Google Maps frame queried from block, address and the Jababeka
+Cikarang estate; a link opens the same query in Google Maps. No API key or stored coordinates are
+required, and an imprecise address falls back to the estate area.
 
 Commercial fields follow industrial leasing practice: price basis (`Rp/m²/month` for lease,
 `Rp/m²` or `Rp total` for sale), service charge (Rp/m²/month), security deposit in months, minimum
@@ -86,10 +90,11 @@ and an oxidation-ditch line of 12,000 m³/day reported separately; Kendal Phase 
 under technology review. Design totals: 1,220 Lps water, 36,950 m³/day wastewater operating, 16,000
 m³/day in delivery.
 
-Demo dataset sizes: 32 assets, 8 owners, 20 demands, 36 service contracts, 30 survey leads, 10 plants,
-260 plant readings (January–October 2026, derived from design capacity and flagged as illustrative
-until metered data is loaded). The banner marks these records as illustrative; replace them with
-live records before operational use.
+Seed register: 203 vacant plots from the 17 Nov 2026 workbook, matched to 185 unique owner records
+(one owner can hold several plots). Land area and owner contact are carried over where the workbook
+has them; building size, utility connections, commercial terms, compliance, quality and verification
+fields are left blank on purpose and completed during owner follow-up. `demands`, `deals`, `leads`
+and `metrics` start empty; `plants` keeps the 10 reported treatment units above.
 
 ## Run locally
 
@@ -102,7 +107,7 @@ The site then appears at `https://pljkt.github.io/ji-industrial-platform/`.
 
 ## Operating notes
 
-- Export a JSON snapshot before restoring demo data, before clearing browser storage, and at the end
+- Export a JSON snapshot before reloading the register seed, before clearing browser storage, and at the end
   of each reporting month.
 - Required fields are validated before a write; a record stays unsaved until the missing field is filled.
 - Charts use ECharts 5.5.0 from jsDelivr; there is no analytics and no other external call.
