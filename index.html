@@ -67,6 +67,32 @@ h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-0.015em}
 .notice svg{width:15px;height:15px;flex:0 0 15px;margin-top:2px}
 .notice b{font-weight:600}
 
+/* ---------- BOD program cards ---------- */
+.prog-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:16px}
+.prog{background:#FFF;border:1px solid var(--line);padding:16px 18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.prog .p-top{display:flex;align-items:center;gap:10px}
+.prog .p-icon{width:30px;height:30px;border:1px solid var(--line);display:grid;place-items:center;color:var(--ink-2);flex:0 0 30px}
+.prog .p-icon svg{width:16px;height:16px}
+.prog h3{font-size:13px}
+.prog .p-metric{font-size:25px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.15}
+.prog .p-metric .k-unit{font-size:11px;color:var(--muted);margin-left:6px;font-weight:400;letter-spacing:0}
+.prog p{margin:0;font-size:11.5px;color:var(--muted);line-height:1.6}
+.prog .p-act{margin-top:auto}
+
+/* ---------- roadmap ---------- */
+.road{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.stage{position:relative;padding:14px 16px;border:1px solid var(--line);background:#FFF}
+.stage .s-no{font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:.04em}
+.stage h4{font-size:12.5px;margin:6px 0 5px}
+.stage p{margin:0;font-size:11px;color:var(--muted);line-height:1.6}
+.stage.now{border-color:var(--amber);background:#FDF9F1}
+.stage .s-tag{position:absolute;top:12px;right:12px;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--amber);font-weight:600}
+.basis-list{display:flex;flex-direction:column;gap:0}
+.basis-line{display:grid;grid-template-columns:74px minmax(0,1fr);gap:12px;padding:8px 0}
+.basis-line+.basis-line{border-top:1px solid var(--line)}
+.basis-line .tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;color:var(--muted);padding-top:2px}
+.basis-line p{margin:0;font-size:11.5px;line-height:1.65;color:#3C4552}
+
 /* ---------- cards / grid ---------- */
 .grid{display:grid;gap:16px}
 .g-3{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -236,6 +262,7 @@ td.date{white-space:nowrap;color:var(--muted);font-size:12px}
   .fgrid{grid-template-columns:1fr}
   .kv{grid-template-columns:112px minmax(0,1fr)}
   .g-2,.g-3,.g-4{grid-template-columns:1fr}
+  .prog-grid,.road{grid-template-columns:1fr}
   .gloss-grid{grid-template-columns:1fr}
   .chart{height:240px}
 }
@@ -340,8 +367,8 @@ const STR = {
   'c.none': ['No records match the current filters.', 'Tidak ada catatan yang cocok dengan filter saat ini.'],
   'c.required': ['Required', 'Wajib'],
   'c.select': ['Select', 'Pilih'],
-  'c.demo': ['Demo dataset', 'Data contoh'],
-  'c.demoText': ['Records below are illustrative samples for workflow testing. Replace them with live records before operational use.', 'Catatan di bawah adalah contoh untuk menguji alur kerja. Ganti dengan data sebenarnya sebelum digunakan secara operasional.'],
+  'c.demo': ['Board prototype · sample data', 'Prototipe dewan · data contoh'],
+  'c.demoText': ['Illustrative sample records for workflow review. Figures shown are not actual JI performance; replace them with live records before operational use.', 'Catatan contoh ilustratif untuk tinjauan alur kerja. Angka yang tampil bukan kinerja JI sebenarnya; ganti dengan data nyata sebelum digunakan secara operasional.'],
   'c.saved': ['Record saved', 'Catatan tersimpan'],
   'c.deleted': ['Record deleted', 'Catatan dihapus'],
   'c.dupId': ['That ID is already in use', 'ID tersebut sudah dipakai'],
@@ -359,7 +386,7 @@ const STR = {
   'c.of': ['of', 'dari'],
 
   'v.dashboard.title': ['Operations overview', 'Ringkasan operasional'],
-  'v.dashboard.sub': ['Asset portfolio, matching pipeline, service revenue and utility performance in one view.', 'Portofolio aset, alur pencocokan, pendapatan layanan, dan kinerja utilitas dalam satu tampilan.'],
+  'v.dashboard.sub': ['Three strategic workstreams in one place: vacant asset matching, one-stop service revenue, and water & waste improvement.', 'Tiga lini strategis dalam satu tempat: pencocokan aset kosong, pendapatan layanan terpadu, dan peningkatan air & limbah.'],
   'v.assets.title': ['Asset register', 'Register aset'],
   'v.assets.sub': ['Vacant and underused factories, owner terms and matched demand in one record chain.', 'Pabrik kosong dan kurang termanfaatkan, persyaratan pemilik, dan permintaan yang cocok dalam satu rantai catatan.'],
   'v.services.title': ['Service revenue', 'Pendapatan layanan'],
@@ -374,7 +401,7 @@ const STR = {
   'k.assets': ['Registered assets', 'Aset terdaftar'],
   'k.assets.foot': ['{n} active in the register', '{n} aktif dalam daftar'],
   'k.vacant': ['Vacant or idle', 'Kosong atau idle'],
-  'k.vacant.foot': ['{n} share of the portfolio', '{n} dari portofolio'],
+  'k.vacant.foot': ['{n} records vacant or idle', '{n} catatan kosong atau idle'],
   'k.pipeline': ['Demand in pipeline', 'Permintaan dalam alur'],
   'k.pipeline.foot': ['{n} already matched to an asset', '{n} sudah cocok dengan aset'],
   'k.revenue': ['Service revenue booked', 'Pendapatan layanan tercatat'],
@@ -394,6 +421,42 @@ const STR = {
   'd.noDemand': ['A-class assets with no matched demand', 'Aset kelas A tanpa permintaan yang cocok'],
   'd.belowTarget': ['plants below the reuse target', 'instalasi di bawah target daur ulang'],
   'd.pipelineValue': ['Weighted pipeline value', 'Nilai alur tertimbang'],
+
+  'k.idleArea': ['Idle building area', 'Luas bangunan idle'],
+  'k.idleArea.foot': ['{n} m² vacant or stopped', '{n} m² kosong atau berhenti'],
+  'k.pipeValue': ['Quoted service pipeline', 'Alur layanan dalam kutipan'],
+  'k.pipeValue.foot': ['{n} quoted, not yet signed', '{n} dikutip, belum ditandatangani'],
+
+  'd.prog.asset.title': ['Vacant asset matching', 'Pencocokan aset kosong'],
+  'd.prog.asset.metric': ['{n} idle of {t}', '{n} kosong dari {t}'],
+  'd.prog.asset.desc': ['Reach owners, match vacant factories to demand, and build the listing pool for later scaling.', 'Jangkau pemilik, cocokkan pabrik kosong dengan permintaan, dan bangun kumpulan daftar untuk pengembangan lanjutan.'],
+  'd.prog.asset.act': ['Open asset register', 'Buka register aset'],
+  'd.prog.service.title': ['One-stop service revenue', 'Pendapatan layanan terpadu'],
+  'd.prog.service.metric': ['{n} contracts signed', '{n} kontrak ditandatangani'],
+  'd.prog.service.desc': ['Turn the service office from a cost centre into paid, value-added services sold to tenants.', 'Ubah kantor layanan dari pusat biaya menjadi layanan nilai tambah berbayar yang dijual kepada penyewa.'],
+  'd.prog.service.act': ['Open service revenue', 'Buka pendapatan layanan'],
+  'd.prog.utility.title': ['Water & waste efficiency', 'Efisiensi air & limbah'],
+  'd.prog.utility.metric': ['Reuse {r} · target 20%', 'Daur ulang {r} · Target 20%'],
+  'd.prog.utility.desc': ['Track capacity, loading, energy and reuse; keep the audited basis needed for technology transfer.', 'Pantau kapasitas, beban, energi, dan daur ulang; jaga dasar teraudit yang diperlukan untuk alih teknologi.'],
+  'd.prog.utility.act': ['Open water & waste', 'Buka air & limbah'],
+
+  'd.roadmap': ['Roadmap: think big, start small, move fast', 'Peta jalan: berpikir besar, mulai kecil, bergerak cepat'],
+  'd.r1.title': ['Phase 1 · Pilot pool', 'Tahap 1 · Kumpulan pilot'],
+  'd.r1.desc': ['Register Cikarang-area vacant factories, verify data, match demand and close the first cases.', 'Daftarkan pabrik kosong kawasan Cikarang, verifikasi data, cocokkan permintaan, dan tutup kasus pertama.'],
+  'd.r2.title': ['Phase 2 · Paid services scale', 'Tahap 2 · Skala layanan berbayar'],
+  'd.r2.desc': ['Run the regular-plus-value survey, price add-on services, and convert qualified leads into contracts.', 'Jalankan survei reguler-plus-nilai, beri harga layanan tambahan, dan ubah prospek yang memenuhi syarat menjadi kontrak.'],
+  'd.r3.title': ['Phase 3 · Regional platform', 'Tahap 3 · Platform regional'],
+  'd.r3.desc': ['Extend the register to other estates, then pursue a ministry-backed national certification.', 'Perluas daftar ke kawasan lain, kemudian upayakan sertifikasi nasional yang didukung kementerian.'],
+  'd.now': ['Current', 'Saat ini'],
+
+  'd.basis': ['Data basis and open items', 'Dasar data dan item terbuka'],
+  'd.basis1': ['Monthly readings are derived from design capacity until metered data is loaded; savings cannot be settled on design figures alone.', 'Pembacaan bulanan diturunkan dari kapasitas desain sampai data meter dimuat; penghematan tidak dapat diselesaikan hanya dari angka desain.'],
+  'd.basis2': ['Cikarang OD line of 12,000 m³/day is listed separately and excluded from the WWTP total until the combined basis is confirmed.', 'Jalur OD Cikarang 12.000 m³/hari dicatat terpisah dan dikecualikan dari total WWTP sampai basis gabungan dikonfirmasi.'],
+  'd.basis3': ['Kendal new-build 16,000 m³/day capacity has its treatment technology under review; this is planned capacity, not a confirmed design.', 'Kapasitas pembangunan baru Kendal 16.000 m³/hari teknologinya masih dibahas; ini kapasitas rencana, bukan desain final.'],
+
+  'd.tag.action': ['Action', 'Aksi'],
+  'd.tag.data': ['Data', 'Data'],
+  'd.tag.utility': ['Utility', 'Utilitas'],
 
   'a.tab.assets': ['Assets', 'Aset'],
   'a.tab.owners': ['Owners', 'Pemilik'],
@@ -1096,16 +1159,20 @@ function termLine(keys) {
 const OPEN_STAGES = ['lead', 'viewing', 'offer', 'loi', 'dd'];
 function kpis() {
   const a = STATE.assets;
-  const idle = a.filter((x) => x.status === 'vacant' || x.status === 'stopped').length;
+  const idle = a.filter((x) => x.status === 'vacant' || x.status === 'stopped');
+  const idleArea = idle.reduce((s, x) => s + Number(x.build || 0), 0);
   const open = STATE.demands.filter((d) => OPEN_STAGES.includes(d.stage));
   const matched = open.filter((d) => d.assetLink).length;
   const signed = STATE.deals.filter((d) => d.svcStatus === 'active' || d.svcStatus === 'delivered');
   const revenue = signed.reduce((s, d) => s + Number(d.value || 0), 0);
+  const quoted = STATE.deals.filter((d) => d.svcStatus === 'quoted');
+  const quotedValue = quoted.reduce((s, d) => s + Number(d.value || 0), 0);
   const quality = a.length ? a.reduce((s, x) => s + Number(x.quality || 0), 0) / a.length : 0;
   const latest = latestMonth();
   const ww = STATE.metrics.filter((m) => m.period === latest && m.metric === 'reuse');
   const reuse = ww.length ? ww.reduce((s, m) => s + Number(m.value), 0) / ww.length : 0;
-  return { total: a.length, idle, idleShare: a.length ? (idle / a.length) * 100 : 0, open: open.length, matched, delivered: signed.length, revenue, quality, reuse, latest };
+  const reuseGap = Math.max(0, 20 - reuse);
+  return { total: a.length, idle: idle.length, idleArea, idleShare: a.length ? (idle.length / a.length) * 100 : 0, open: open.length, matched, delivered: signed.length, revenue, quoted: quoted.length, quotedValue, quality, reuse, reuseGap, latest };
 }
 function latestMonth() {
   const periods = STATE.metrics.map((m) => m.period).sort();
@@ -1152,18 +1219,32 @@ function viewDashboard() {
     return { plant: p, v: s.length ? s[s.length - 1].value : 0 };
   }).filter((x) => x.v < 10);
 
+  const progCard = (view, icon, title, metric, desc, act) => `
+  <div class="prog">
+    <div class="p-top"><div class="p-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">${icon}</svg></div><h3>${esc(title)}</h3></div>
+    <div class="p-metric">${metric}</div>
+    <p>${esc(desc)}</p>
+    <div class="p-act"><button class="btn ghost" data-goto="${view}">${esc(act)}</button></div>
+  </div>`;
+
   el('view').innerHTML = `
   <div class="notice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg><div><b>${esc(t('c.demo'))}</b> — ${esc(t('c.demoText'))}</div></div>
 
   ${termLine(['occupancy', 'leadscore', 'reuse'])}
 
+  <div class="prog-grid">
+    ${progCard('assets', ICONS.assets, t('d.prog.asset.title'), t('d.prog.asset.metric', { n: fmtInt(k.idle), t: fmtInt(k.total) }), t('d.prog.asset.desc'), t('d.prog.asset.act'))}
+    ${progCard('services', ICONS.services, t('d.prog.service.title'), t('d.prog.service.metric', { n: fmtInt(k.delivered) }), t('d.prog.service.desc'), t('d.prog.service.act'))}
+    ${progCard('utilities', ICONS.utilities, t('d.prog.utility.title'), t('d.prog.utility.metric', { r: pct(k.reuse, 1) }), t('d.prog.utility.desc'), t('d.prog.utility.act'))}
+  </div>
+
   <div class="grid g-3" style="margin-bottom:16px">
     ${kpiCard(t('k.assets'), fmtInt(k.total), t('k.assets.foot', { n: fmtInt(k.total) }), '')}
-    ${kpiCard(t('k.vacant'), fmtInt(k.idle), t('k.vacant.foot', { n: pct(k.idleShare, 1) }), 'r')}
+    ${kpiCard(t('k.vacant'), pct(k.idleShare, 1), t('k.vacant.foot', { n: fmtInt(k.idle) }), 'r')}
+    ${kpiCard(t('k.idleArea'), fmtInt(k.idleArea) + '<span class="k-unit">m²</span>', t('k.idleArea.foot', { n: fmtInt(k.idleArea) }), '')}
     ${kpiCard(t('k.pipeline'), fmtInt(k.open), t('k.pipeline.foot', { n: fmtInt(k.matched) }), '')}
     ${kpiCard(t('k.revenue'), fmtRpShort(k.revenue), t('k.revenue.foot', { n: fmtInt(k.delivered) }), 't')}
-    ${kpiCard(t('k.quality'), fmtDec(k.quality, 0) + '<span class="k-unit">/ 100</span>', t('k.quality.foot'), '')}
-    ${kpiCard(t('k.util'), pct(k.reuse, 1), t('k.util.foot') + ' · ' + fmtDate(k.latest + '-01'), 't')}
+    ${kpiCard(t('k.pipeValue'), fmtRpShort(k.quotedValue), t('k.pipeValue.foot', { n: fmtInt(k.quoted) }), '')}
   </div>
 
   <div class="grid g-2">
@@ -1176,12 +1257,29 @@ function viewDashboard() {
     <div class="card"><div class="card-head"><h3>${esc(t('d.trend'))}</h3><span class="hint">${esc(t('d.trend.unit'))}</span></div><div id="ch-trend" class="chart tall"></div></div>
   </div>
 
-  <div class="sec-head"><div><h2>${esc(t('d.attention'))}</h2><p>${esc(t('d.stale'))} · ${esc(t('d.noDemand'))}</p></div></div>
-  <div class="card flat">
-    <div class="list" style="padding:0 20px">
-      <div class="li"><span class="tag">A / DEMAND</span><div class="body"><b>${fmtInt(noDemand.length)} ${esc(t('d.noDemand'))}</b><span>${noDemand.slice(0, 4).map((a) => esc(a.asset_id)).join(' · ') || '—'}</span></div><div class="act"><button class="btn ghost" data-goto="assets">${esc(t('c.new'))}</button></div></div>
-      <div class="li"><span class="tag">DATA</span><div class="body"><b>${fmtInt(stale.length)} ${esc(t('d.stale'))}</b><span>${stale.slice(0, 4).map((a) => esc(a.asset_id + ' · ' + fmtDate(a.verified))).join('  |  ') || '—'}</span></div><div class="act"><button class="btn ghost" data-goto="assets">${esc(t('a.tab.assets'))}</button></div></div>
-      <div class="li"><span class="tag">REUSE</span><div class="body"><b>${fmtInt(lowReuse.length)} ${esc(t('d.belowTarget'))}</b><span>${lowReuse.map((x) => esc(x.plant + ' · ' + pct(x.v, 1))).join('  |  ') || '—'}</span></div><div class="act"><button class="btn ghost" data-goto="utilities">${esc(t('nav.utilities'))}</button></div></div>
+  <div class="sec-head"><div><h2>${esc(t('d.roadmap'))}</h2></div></div>
+  <div class="road">
+    <div class="stage now"><span class="s-tag">${esc(t('d.now'))}</span><div class="s-no">01</div><h4>${esc(t('d.r1.title'))}</h4><p>${esc(t('d.r1.desc'))}</p></div>
+    <div class="stage"><div class="s-no">02</div><h4>${esc(t('d.r2.title'))}</h4><p>${esc(t('d.r2.desc'))}</p></div>
+    <div class="stage"><div class="s-no">03</div><h4>${esc(t('d.r3.title'))}</h4><p>${esc(t('d.r3.desc'))}</p></div>
+  </div>
+
+  <div class="grid g-2" style="margin-top:16px">
+    <div class="card flat">
+      <div class="card-head" style="padding:14px 20px 0"><h3>${esc(t('d.attention'))}</h3></div>
+      <div class="list" style="padding:0 20px 12px">
+        <div class="li"><span class="tag">${esc(t('d.tag.action'))}</span><div class="body"><b>${fmtInt(noDemand.length)} ${esc(t('d.noDemand'))}</b><span>${noDemand.slice(0, 4).map((a) => esc(a.asset_id)).join(' · ') || '—'}</span></div><div class="act"><button class="btn ghost" data-goto="assets">${esc(t('a.tab.assets'))}</button></div></div>
+        <div class="li"><span class="tag">${esc(t('d.tag.data'))}</span><div class="body"><b>${fmtInt(stale.length)} ${esc(t('d.stale'))}</b><span>${stale.slice(0, 4).map((a) => esc(a.asset_id + ' · ' + fmtDate(a.verified))).join('  |  ') || '—'}</span></div><div class="act"><button class="btn ghost" data-goto="assets">${esc(t('a.tab.assets'))}</button></div></div>
+        <div class="li"><span class="tag">${esc(t('d.tag.utility'))}</span><div class="body"><b>${fmtInt(lowReuse.length)} ${esc(t('d.belowTarget'))}</b><span>${lowReuse.map((x) => esc(x.plant + ' · ' + pct(x.v, 1))).join('  |  ') || '—'}</span></div><div class="act"><button class="btn ghost" data-goto="utilities">${esc(t('nav.utilities'))}</button></div></div>
+      </div>
+    </div>
+    <div class="card note-card">
+      <div class="card-head"><h3>${esc(t('d.basis'))}</h3></div>
+      <div class="basis-list">
+        <div class="basis-line"><span class="tag">DATA</span><p>${esc(t('d.basis1'))}</p></div>
+        <div class="basis-line"><span class="tag">CIKARANG</span><p>${esc(t('d.basis2'))}</p></div>
+        <div class="basis-line"><span class="tag">KENDAL</span><p>${esc(t('d.basis3'))}</p></div>
+      </div>
     </div>
   </div>`;
 
@@ -1212,7 +1310,7 @@ function viewDashboard() {
     yAxis: [Object.assign({ type: 'value', name: 'kWh/m³', nameTextStyle: { fontSize: 10, color: '#9AA0A8' }, scale: true }, AXIS), Object.assign({ type: 'value', name: '%', nameTextStyle: { fontSize: 10, color: '#9AA0A8' }, max: 20, min: 0 }, AXIS)],
     series: [
       { name: 'kWh/m³', type: 'line', smooth: true, symbolSize: 5, data: e2, itemStyle: { color: '#182A42' }, lineStyle: { width: 2 } },
-      { name: 'Reuse %', type: 'line', smooth: true, symbolSize: 5, yAxisIndex: 1, data: r2, itemStyle: { color: '#A9701C' }, lineStyle: { width: 2, type: 'dashed' } },
+      { name: `${t('u.kpi.reuse')} %`, type: 'line', smooth: true, symbolSize: 5, yAxisIndex: 1, data: r2, itemStyle: { color: '#A9701C' }, lineStyle: { width: 2, type: 'dashed' } },
     ],
   });
 }

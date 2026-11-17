@@ -12,12 +12,23 @@ Data can be exported to a JSON snapshot and re-imported on another device.
 
 | View | Purpose | Records |
 | --- | --- | --- |
-| Operations overview | Portfolio, pipeline, revenue and utility KPIs with four charts | derived |
+| Operations overview | Three workstream cards, six portfolio KPIs, four charts, a three-phase roadmap, and a data-basis / open-items panel | derived |
 | Asset register | Vacant / idle factories, owner terms and matched demand | assets, owners, demands |
 | Service revenue | Paid services sold through the one-stop office, and survey leads | deals, leads |
 | Water & waste | Two tabs: design capacity register by plant and phase, and monthly readings (loading, energy, compliance, reuse, sludge, unit cost) | plants, metrics |
 | Glossary | Regulatory and technical terms with definitions in both languages | 20 entries |
 | Settings | Language, import / export, storage status, record ownership, data rules | — |
+
+## Board-review overview
+
+The Overview view is arranged for a board-level read, top to bottom:
+
+- A prototype banner states that figures are illustrative sample records, not JI performance.
+- Three workstream cards — vacant asset matching, one-stop service revenue, water & waste efficiency — each show the headline metric, a one-line description and a jump button into the working register.
+- Six KPIs: registered assets, vacant / idle share, idle building area, demand in pipeline, service revenue booked, and quoted service pipeline.
+- Four unchanged charts: asset status mix, demand by stage, revenue by service line, energy intensity and reuse trend.
+- A three-phase roadmap (pilot pool, paid services scale, regional platform with ministry-backed certification) marks the current phase.
+- A "data basis and open items" panel records the standing caveats: monthly readings derive from design capacity until metered data is loaded; the Cikarang oxidation-ditch 12,000 m³/day line is listed separately and excluded from the WWTP total pending basis confirmation; the Kendal 16,000 m³/day new build is planned capacity with treatment technology under review.
 
 ## Language rules
 
