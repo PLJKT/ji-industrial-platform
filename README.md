@@ -13,7 +13,7 @@ Data can be exported to a JSON snapshot and re-imported on another device.
 | View | Purpose | Records |
 | --- | --- | --- |
 | Operations overview | Three workstream cards, six portfolio KPIs, four charts, a three-phase roadmap, and a data-basis / open-items panel | derived |
-| Asset register | One asset-centric register: each vacant plot joins its owner name, contact, motive, ask price, pressure and KYC, plus matched demand | assets, owners, demands |
+| Asset register | One asset-centric register: each vacant plot joins its owner name, business industry, contact, motive, ask price, pressure and KYC, plus matched demand | assets, owners, demands |
 | Service revenue | Paid services sold through the one-stop office, and survey leads | deals, leads |
 | Water & waste | Two tabs: design capacity register by plant and phase, and monthly readings (loading, energy, compliance, reuse, sludge, unit cost) | plants, metrics |
 | Glossary | Regulatory and technical terms with definitions in both languages | 20 entries |
@@ -56,6 +56,18 @@ height, floor load, loading docks, power, water, wastewater connection, gas or s
 title, status, owner intent, asking price, condition, retrofit estimate, data quality, last verified,
 access tier and notes. All fields are editable in the form, including the ID; renaming an asset
 keeps demand links pointing at the renamed record.
+
+`owners` carries name, business industry, contact, legal form, beneficial owner, ownership
+structure, motive, floor / asking price, time pressure, encumbrances, transaction preference,
+commission tolerance, decision authority and KYB. The register joins the owner's industry onto
+each asset row under the Industry column. Industry is recorded against public company profiles
+where one could be verified; the remainder follow strong company-name tokens. Pure personal-name
+records are marked `Private individual`, and companies that could not be verified stay blank (`—`)
+rather than being guessed. The 18-key bilingual taxonomy covers food & beverage, agriculture &
+plantation, pharma & healthcare, textile & apparel, plastic & packaging, metal & machinery,
+machinery & automation, electronics & electrical, chemicals, automotive components, wood &
+furniture, building materials, logistics & warehousing, trade & distribution, services &
+consulting, finance & investment, private individual and other.
 
 The asset detail drawer embeds a Google Maps frame queried from street address, block and the Jababeka
 Cikarang estate; a link opens the same query in Google Maps. No API key or stored coordinates are
