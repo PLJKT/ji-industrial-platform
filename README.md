@@ -7,7 +7,7 @@ purpose-built for internal operating use rather than marketing.
 ## What this is
 
 A single-page static system. No server, no account, no database. Records live in the browser's
-`localStorage` under the key `ji_platform_v3`; the language choice lives under `ji_lang`.
+`localStorage` under the key `ji_platform_v4`; the language choice lives under `ji_lang`.
 Data can be exported to a JSON snapshot and re-imported on another device.
 
 | View | Purpose | Records |
@@ -58,9 +58,14 @@ keeps demand links pointing at the renamed record.
 
 The asset detail drawer embeds a Google Maps frame queried from street address, block and the Jababeka
 Cikarang estate; a link opens the same query in Google Maps. No API key or stored coordinates are
-required, and an imprecise address falls back to the estate area. Below the asset register table, a
-wide map card shows the whole Jababeka estate where the registered plots sit; opening an individual
-record shows that plot's own location query.
+required, and an imprecise address falls back to the estate area.
+
+Below the asset register table, a wide Leaflet map (OpenStreetMap tiles, no API key) plots every
+asset whose road was resolved offline once during the build; markers cluster on the map and a popup
+opens the asset record. Records without a resolved road are counted as pending and are not pinned,
+because parcel coordinates are not in the source register and are not invented. The pending list
+needs parcel coordinates from the estate master plan to be located. A header link still opens the
+whole estate in Google Maps.
 
 Phone contacts are stored as text. Cikarang / Bekasi fixed lines carry the `021` area code; numbers
 already in `08xx` mobile format are kept as mobiles. Multi-number cells, `HO` / `Jababeka` labels
