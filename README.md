@@ -13,7 +13,7 @@ Data can be exported to a JSON snapshot and re-imported on another device.
 | View | Purpose | Records |
 | --- | --- | --- |
 | Operations overview | Three workstream cards, six portfolio KPIs, four charts, a three-phase roadmap, and a data-basis / open-items panel | derived |
-| Asset register | Vacant / idle factories, owner terms and matched demand | assets, owners, demands |
+| Asset register | One asset-centric register: each vacant plot joins its owner name, contact, motive, ask price, pressure and KYC, plus matched demand | assets, owners, demands |
 | Service revenue | Paid services sold through the one-stop office, and survey leads | deals, leads |
 | Water & waste | Two tabs: design capacity register by plant and phase, and monthly readings (loading, energy, compliance, reuse, sludge, unit cost) | plants, metrics |
 | Glossary | Regulatory and technical terms with definitions in both languages | 20 entries |
@@ -47,7 +47,8 @@ The Overview view is arranged for a board-level read, top to bottom:
 `owners`, `assets`, `demands`, `deals`, `leads`, `plants`, `metrics`. Asset IDs follow
 `JI-<estate>-<yy>-<seq>` (`JI-CKR-26-0001`); new asset records inherit the estate code and the next
 sequence number. Owner terms are kept separate from the physical asset record so price concessions and
-decision authority can change without rewriting the property.
+decision authority can change without rewriting the property; the register view joins the owner record
+onto each asset row, and the full owner record opens from the asset drawer.
 
 `assets` mirrors the intake workbook (`JI 闲置资产登记模板`, sheet `资产主表`) field for field: asset
 ID, estate, block / lot, address, owner ID, owner contact, land area, building area, floors, clear

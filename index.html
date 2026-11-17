@@ -164,6 +164,8 @@ th{position:sticky;top:0;background:#FCFBF8;z-index:2;font-size:10px;letter-spac
 tbody tr{cursor:pointer}
 tbody tr:hover td{background:#FAF8F3}
 td.mono{font-family:var(--mono);font-size:11.5px;color:#3D4756}
+.oname{font-weight:600;color:var(--ink);line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.osub{font-size:10.5px;color:var(--faint);margin-top:2px}
 td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 td.date{white-space:nowrap;color:var(--muted);font-size:12px}
 .chip{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;font-size:10.5px;letter-spacing:.02em;border:1px solid transparent;white-space:nowrap;border-radius:1px}
@@ -479,6 +481,7 @@ const STR = {
 
   'a.tab.assets': ['Assets', 'Aset'],
   'a.tab.owners': ['Owners', 'Pemilik'],
+  'a.openOwner': ['Open owner record', 'Buka catatan pemilik'],
   'a.tab.demands': ['Demand', 'Permintaan'],
   'a.addAsset': ['New asset', 'Aset baru'],
   'a.addOwner': ['New owner', 'Pemilik baru'],
@@ -604,6 +607,7 @@ const STR = {
   'F.blok': ['Block / lot', 'Blok / kavling'],
   'F.alamat': ['Address', 'Alamat'],
   'F.owner_id': ['Owner ID', 'ID pemilik'],
+  'F.id': ['Owner ID', 'ID Pemilik'],
   'F.land': ['Land area (m²)', 'Luas tanah (m²)'],
   'F.build': ['Building area (m²)', 'Luas bangunan (m²)'],
   'F.floors': ['Floors', 'Jumlah lantai'],
@@ -1202,31 +1206,50 @@ const ASSET_SORTS = {
 function viewAssets() {
   const tab = TAB.assets;
   const counts = { assets: STATE.assets.length, owners: STATE.owners.length, demands: STATE.demands.length };
+  const ownerMap = new Map(STATE.owners.map((o) => [o.id, o]));
   const tabs = `<div class="tabs">
     <div class="tab ${tab === 'assets' ? 'active' : ''}" data-tab="assets" data-t="assets">${esc(t('a.tab.assets'))}<span class="n">${fmtInt(counts.assets)}</span></div>
-    <div class="tab ${tab === 'owners' ? 'active' : ''}" data-tab="assets" data-t="owners">${esc(t('a.tab.owners'))}<span class="n">${fmtInt(counts.owners)}</span></div>
     <div class="tab ${tab === 'demands' ? 'active' : ''}" data-tab="assets" data-t="demands">${esc(t('a.tab.demands'))}<span class="n">${fmtInt(counts.demands)}</span></div>
   </div>`;
   if (tab === 'assets') {
     const cols = [
-      { w: '12%', label: 'ID' }, { w: '9%', label: t('F.kawasan') }, { w: '7%', label: t('F.blok') },
-      { w: '12%', label: t('F.owner_id') }, { w: '9%', label: t('F.land'), align: 'right' },
-      { w: '12%', label: t('F.contact') }, { w: '13%', label: t('F.status') },
-      { w: '9%', label: t('F.intent') }, { w: '11%', label: t('a.col.price'), align: 'right' },
+      { w: '8%', label: 'ID' }, { w: '7%', label: t('F.kawasan') }, { w: '7%', label: t('F.blok') },
+      { w: '19%', label: t('F.name') }, { w: '11%', label: t('F.contact') },
+      { w: '8%', label: t('F.land'), align: 'right' }, { w: '10%', label: t('F.status') },
+      { w: '8%', label: t('F.intent') }, { w: '8%', label: t('F.motive') },
+      { w: '10%', label: t('F.askPriceShort'), align: 'right' }, { w: '7%', label: t('F.pressure') },
+      { w: '7%', label: t('F.kybShort') },
     ];
     const statusOpts = ['operating', 'partial', 'stopped', 'vacant'];
     const estOpts = ['Cikarang', 'Bekasi', 'Karawang', 'Kendal', 'Other'];
     const f = FILTER.assets || {};
-    const rows = filterRows(STATE.assets, 'assets', ['asset_id', 'kawasan', 'blok', 'alamat', 'owner_id', 'status', 'intent', 'permits', 'contact']).slice();
+    const joined = STATE.assets.map((a) => {
+      const o = ownerMap.get(a.owner_id) || null;
+      return Object.assign({}, a, {
+        _oname: o ? o.name : '', _ocontact: o ? o.contact : '',
+        _onotes: o ? o.notes : '', _oubo: o ? o.ubo : '', _ostructure: o ? o.structure : '',
+      });
+    });
+    const rows = filterRows(joined, 'assets', ['asset_id', 'kawasan', 'blok', 'alamat', 'owner_id', 'status', 'intent', 'permits', 'contact', '_oname', '_ocontact', '_onotes', '_oubo', '_ostructure']).slice();
     const sortKey = f.sort || 'verified';
     rows.sort(ASSET_SORTS[sortKey] || ASSET_SORTS.verified);
     const p = paginate('assets', rows, 12);
+    const distinctOwners = new Set(rows.map((r) => r.owner_id)).size;
     const estateQ = encodeURIComponent('Kawasan Industri Jababeka, Cikarang, Bekasi, Jawa Barat');
-    const body = p.slice.map((a) => `<tr data-entity="asset" data-id="${esc(a.asset_id)}">
+    const body = p.slice.map((a) => {
+      const o = ownerMap.get(a.owner_id) || null;
+      const contact = a.contact || (o && o.contact) || '';
+      const ask = o && o.askPrice ? fmtRpShort(o.askPrice) : '—';
+      const motive = o && o.motive ? E('motive', o.motive) : '—';
+      const pressure = o && o.pressure ? E('pressure', o.pressure) : '—';
+      const kyb = o && o.kyb ? chipFor('kyb', o.kyb) : '—';
+      return `<tr data-entity="asset" data-id="${esc(a.asset_id)}">
       <td class="mono">${esc(a.asset_id)}</td><td>${esc(a.kawasan)}</td><td class="mono">${esc(a.blok)}</td>
-      <td class="mono">${esc(a.owner_id)}</td><td class="num">${fmtArea(a.land)}</td><td class="mono">${esc(a.contact || '—')}</td>
+      <td><div class="oname">${esc(o ? o.name : '—')}</div><div class="osub">${esc(a.owner_id || '—')}</div></td>
+      <td class="mono">${esc(contact || '—')}</td><td class="num">${fmtArea(a.land)}</td>
       <td>${chipFor('status', a.status)}</td><td>${esc(E('intent', a.intent))}</td>
-      <td class="num">${esc(fmtAssetPrice(a))}</td></tr>`).join('') || emptyRow(cols.length);
+      <td>${esc(motive)}</td><td class="num">${esc(ask)}</td><td>${esc(pressure)}</td><td>${kyb}</td></tr>`;
+    }).join('') || emptyRow(cols.length);
     const located = STATE.assets.filter((a) => a.geo === 'road' && a.lat !== '' && a.lon !== '');
     const pendingN = STATE.assets.length - located.length;
     const htmlView = tabs + termLine(['occupancy', 'clearance', 'serviceCharge', 'deposit', 'escalation']) + `<div class="sec-head" style="margin-top:0"><p>${esc(t('a.descAssets'))}</p><div><button class="btn primary" data-add="asset">${esc(t('a.addAsset'))}</button></div></div>
@@ -1236,9 +1259,9 @@ function viewAssets() {
           <select data-sel="assets" data-f="status"><option value="">${esc(t('a.filterStatus'))}: ${esc(t('c.all'))}</option>${statusOpts.map((s) => `<option value="${s}" ${f.status === s ? 'selected' : ''}>${esc(E('status', s))}</option>`).join('')}</select>
           <select data-sel="assets" data-f="kawasan"><option value="">${esc(t('a.filterKawasan'))}: ${esc(t('c.all'))}</option>${estOpts.map((s) => `<option value="${s}" ${f.kawasan === s ? 'selected' : ''}>${esc(s)}</option>`).join('')}</select>
           <select data-sel="assets" data-f="sort" aria-label="${esc(t('s.label'))}">${Object.keys(ASSET_SORTS).map((s) => `<option value="${s}" ${sortKey === s ? 'selected' : ''}>${esc(t('s.label'))}: ${esc(t('s.' + s))}</option>`).join('')}</select>
-          <span class="count">${fmtInt(rows.length)} ${esc(t('c.total'))}</span>
+          <span class="count">${fmtInt(rows.length)} ${esc(t('c.total'))} · ${fmtInt(distinctOwners)} ${esc(t('a.tab.owners'))}</span>
         </div>
-        ${tableHtml(cols, body, p.pager, 1040)}
+        ${tableHtml(cols, body, p.pager, 1180)}
       </div>
       <div class="card flat map-card wide" style="margin-top:16px;border:1px solid var(--line)">
         <div class="map-head"><span>${esc(t('a.mapAll'))} · ${fmtInt(STATE.assets.length)}</span>
@@ -1249,25 +1272,6 @@ function viewAssets() {
       </div>`;
     el('view').innerHTML = htmlView;
     initAllMap(located);
-  } else if (tab === 'owners') {
-    const cols = [
-      { w: '9%', label: 'ID' }, { w: '20%', label: t('F.name') }, { w: '14%', label: t('F.contact') },
-      { w: '9%', label: t('F.motive') }, { w: '11%', label: t('F.floorPriceShort'), align: 'right' },
-      { w: '11%', label: t('F.askPriceShort'), align: 'right' }, { w: '10%', label: t('F.pressure') },
-      { w: '10%', label: t('F.kybShort') }, { w: '9%', label: t('F.commissionShort'), align: 'right' },
-    ];
-    const rows = filterRows(STATE.owners, 'owners', ['id', 'name', 'contact', 'ubo', 'structure', 'authority', 'notes']);
-    const p = paginate('owners', rows, 12);
-    const body = p.slice.map((o) => `<tr data-entity="owner" data-id="${esc(o.id)}">
-      <td class="mono">${esc(o.id)}</td><td>${esc(o.name)}</td><td class="mono">${esc(o.contact || '—')}</td>
-      <td>${esc(E('motive', o.motive))}</td><td class="num">${fmtRpShort(o.floorPrice)}</td>
-      <td class="num">${fmtRpShort(o.askPrice)}</td><td>${esc(E('pressure', o.pressure))}</td>
-      <td>${chipFor('kyb', o.kyb)}</td><td class="num">${fmtDec(o.commission, 1)}%</td></tr>`).join('') || emptyRow(cols.length);
-    el('view').innerHTML = tabs + `<div class="sec-head" style="margin-top:0"><p>${esc(t('a.descOwners'))}</p><div><button class="btn primary" data-add="owner">${esc(t('a.addOwner'))}</button></div></div>
-      <div class="card flat">
-        <div class="toolbar"><div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg><input data-q="owners" placeholder="${esc(t('c.search'))}" value="${esc((FILTER.owners || {}).q || '')}"></div><span class="count">${fmtInt(rows.length)} ${esc(t('c.total'))}</span></div>
-        ${tableHtml(cols, body, p.pager, 980)}
-      </div>`;
   } else {
     const cols = [
       { w: '10%', label: 'ID' }, { w: '19%', label: t('F.company') }, { w: '10%', label: t('F.industry') },
@@ -1750,6 +1754,9 @@ function assetDetailExtra(rec) {
     html += '<div class="card flat" style="margin-top:18px;border:1px solid var(--line)">'
       + '<div class="kv" style="grid-template-columns:200px minmax(0,1fr)">' + rows.join('') + '</div></div>';
   }
+  if (rec.owner_id) {
+    html += '<div class="card flat" style="margin-top:18px;border:1px solid var(--line)"><button class="btn ghost" data-open-owner="' + esc(rec.owner_id) + '">' + esc(t('a.openOwner')) + '</button></div>';
+  }
   html += '<div class="card flat map-card" style="margin-top:18px;border:1px solid var(--line)">'
     + '<div class="map-head"><span>' + esc(t('f.map')) + '</span>'
     + '<a target="_blank" rel="noopener" href="https://www.google.com/maps?q=' + q + '">' + esc(t('f.mapOpen')) + '</a></div>'
@@ -1975,6 +1982,8 @@ function bindEvents() {
     if (add) { openForm(add.dataset.add, null); return; }
     const row = e.target.closest('tr[data-entity]');
     if (row) { openDetail(row.dataset.entity, row.dataset.id); return; }
+    const oo = e.target.closest('[data-open-owner]');
+    if (oo) { openDetail('owner', oo.dataset.openOwner); return; }
     const mp = e.target.closest('[data-map-open]');
     if (mp) { openDetail('asset', mp.dataset.mapOpen); return; }
     const pg = e.target.closest('[data-pg]');
@@ -2044,7 +2053,7 @@ function bindEvents() {
 
   el('btnExport').addEventListener('click', exportJson);
   el('btnNew').addEventListener('click', () => {
-    const entity = VIEW === 'services' ? (TAB.services === 'deals' ? 'deal' : 'lead') : VIEW === 'utilities' ? (TAB.utilities === 'readings' ? 'metric' : 'plant') : VIEW === 'assets' ? (TAB.assets === 'owners' ? 'owner' : TAB.assets === 'demands' ? 'demand' : 'asset') : 'asset';
+    const entity = VIEW === 'services' ? (TAB.services === 'deals' ? 'deal' : 'lead') : VIEW === 'utilities' ? (TAB.utilities === 'readings' ? 'metric' : 'plant') : VIEW === 'assets' ? (TAB.assets === 'demands' ? 'demand' : 'asset') : 'asset';
     openForm(entity, null);
   });
 
