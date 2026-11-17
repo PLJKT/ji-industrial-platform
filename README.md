@@ -104,9 +104,10 @@ m³/day in delivery.
 
 Seed register: 203 vacant plots from the 17 Nov 2026 workbook, matched to 185 unique owner records
 (one owner can hold several plots). Land area and owner contact are carried over where the workbook
-has them; building size, utility connections, commercial terms, compliance, quality and verification
-fields are left blank on purpose and completed during owner follow-up. `demands`, `deals`, `leads`
-and `metrics` start empty; `plants` keeps the 10 reported treatment units above.
+has them; 194 plots carry a recorded land area (344,716.47 m² total) and 9 plots leave the area blank
+because the workbook has none. Building size, utility connections, commercial terms, compliance,
+quality and verification fields are left blank on purpose and completed during owner follow-up.
+`demands`, `deals`, `leads` and `metrics` start empty; `plants` keeps the 10 reported treatment units above.
 
 ## Run locally
 
