@@ -7,7 +7,7 @@ purpose-built for internal operating use rather than marketing.
 ## What this is
 
 A single-page static system. No server, no account, no database. Records live in the browser's
-`localStorage` under the key `ji_platform_v2`; the language choice lives under `ji_lang`.
+`localStorage` under the key `ji_platform_v3`; the language choice lives under `ji_lang`.
 Data can be exported to a JSON snapshot and re-imported on another device.
 
 | View | Purpose | Records |
@@ -56,9 +56,16 @@ title, status, owner intent, asking price, condition, retrofit estimate, data qu
 access tier and notes. All fields are editable in the form, including the ID; renaming an asset
 keeps demand links pointing at the renamed record.
 
-The asset detail drawer embeds a Google Maps frame queried from block, address and the Jababeka
+The asset detail drawer embeds a Google Maps frame queried from street address, block and the Jababeka
 Cikarang estate; a link opens the same query in Google Maps. No API key or stored coordinates are
-required, and an imprecise address falls back to the estate area.
+required, and an imprecise address falls back to the estate area. Below the asset register table, a
+wide map card shows the whole Jababeka estate where the registered plots sit; opening an individual
+record shows that plot's own location query.
+
+Phone contacts are stored as text. Cikarang / Bekasi fixed lines carry the `021` area code; numbers
+already in `08xx` mobile format are kept as mobiles. Multi-number cells, `HO` / `Jababeka` labels
+and range suffixes (`-58`) are preserved. One 10-digit entry (`5349268001`) is kept as reported and
+still needs owner confirmation.
 
 Commercial fields follow industrial leasing practice: price basis (`Rp/m²/month` for lease,
 `Rp/m²` or `Rp total` for sale), service charge (Rp/m²/month), security deposit in months, minimum
