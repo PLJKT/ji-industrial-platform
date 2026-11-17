@@ -7,7 +7,7 @@ purpose-built for internal operating use rather than marketing.
 ## What this is
 
 A single-page static system. No server, no account, no database. Records live in the browser's
-`localStorage` under the key `ji_platform_v4`; the language choice lives under `ji_lang`.
+`localStorage` under the key `ji_platform_v5`; the language choice lives under `ji_lang`.
 Data can be exported to a JSON snapshot and re-imported on another device.
 
 | View | Purpose | Records |
