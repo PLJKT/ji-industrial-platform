@@ -502,7 +502,7 @@ const STR = {
   's.addDeal': ['New contract', 'Kontrak baru'],
   's.addLead': ['New lead', 'Prospek baru'],
   's.descDeals': ['Each contract is tied to a service line and a tenant, so revenue can be read by product rather than by department.', 'Setiap kontrak terikat pada lini layanan dan penyewa, sehingga pendapatan dapat dibaca per produk, bukan per departemen.'],
-  's.dummyNote': ['Dummy rows are format samples only and are not real agreements; Real rows come from signed contracts.', 'Baris Dummy adalah contoh format saja dan bukan kontrak nyata; baris Real berasal dari kontrak yang ditandatangani.'],
+  's.dummyNote': ['Dummy rows are format samples only, not real records; Real rows come from actual registered data.', 'Baris Dummy adalah contoh format saja, bukan data nyata; baris Real berasal dari data tercatat yang sebenarnya.'],
   's.descLeads': ['The lead score multiplies pain, budget, decision authority and time window. Scores above 70 must be contacted within 48 hours.', 'Skor prospek mengalikan rasa sakit, anggaran, kewenangan keputusan, dan jendela waktu. Skor di atas 70 harus dihubungi dalam 48 jam.'],
   's.kpi.revenue': ['Revenue booked', 'Pendapatan tercatat'],
   's.kpi.active': ['Active contracts', 'Kontrak aktif'],
@@ -804,7 +804,7 @@ const GLOSS = {
 };
 
 /* ================= STATE & HELPERS ================= */
-const LS_KEY = 'ji_platform_v9';
+const LS_KEY = 'ji_platform_v10';
 let LANG = 'en';
 let STATE = null;
 let VIEW = 'dashboard';
@@ -916,6 +916,8 @@ function seedData() {
 
   const DUMMY_DEALS = [{"svc_id":"SVC-001","tenant":"Sample tenant 01","category":"permit","sku":"OSS/RBA permit handling","value":48500000,"svcStatus":"active","source":"dummy","ownerMgr":"","start":"2026-01-15","notes":"Format sample"},{"svc_id":"SVC-002","tenant":"Sample tenant 02","category":"energy","sku":"Power distribution and demand charge","value":320000000,"svcStatus":"active","source":"dummy","ownerMgr":"","start":"2026-01-01","notes":"Format sample"},{"svc_id":"SVC-003","tenant":"Sample tenant 03","category":"water","sku":"Clean water supply, metered","value":96000000,"svcStatus":"active","source":"dummy","ownerMgr":"","start":"2026-01-01","notes":"Format sample"},{"svc_id":"SVC-004","tenant":"Sample tenant 04","category":"water","sku":"Water connection charge","value":12500000,"svcStatus":"quoted","source":"dummy","ownerMgr":"","start":"2026-02-10","notes":"Format sample"},{"svc_id":"SVC-005","tenant":"Sample tenant 05","category":"environment","sku":"Wastewater treatment and discharge","value":154000000,"svcStatus":"active","source":"dummy","ownerMgr":"","start":"2026-01-01","notes":"Format sample"},{"svc_id":"SVC-006","tenant":"Sample tenant 06","category":"waste","sku":"Solid waste collection and disposal","value":36800000,"svcStatus":"delivered","source":"dummy","ownerMgr":"","start":"2025-12-01","notes":"Format sample"},{"svc_id":"SVC-007","tenant":"Sample tenant 07","category":"waste","sku":"Hazardous waste compliance","value":21400000,"svcStatus":"quoted","source":"dummy","ownerMgr":"","start":"2026-03-05","notes":"Format sample"},{"svc_id":"SVC-008","tenant":"Sample tenant 08","category":"property","sku":"Estate maintenance / service charge","value":78000000,"svcStatus":"active","source":"dummy","ownerMgr":"","start":"2026-01-01","notes":"Format sample"},{"svc_id":"SVC-009","tenant":"Sample tenant 09","category":"property","sku":"Security and gate access","value":42000000,"svcStatus":"delivered","source":"dummy","ownerMgr":"","start":"2025-12-01","notes":"Format sample"},{"svc_id":"SVC-010","tenant":"Sample tenant 10","category":"finance","sku":"Insurance brokerage","value":18700000,"svcStatus":"lost","source":"dummy","ownerMgr":"","start":"2026-02-20","notes":"Format sample"}];
 
+  const DUMMY_LEADS = [{"lead_id":"LEAD-001","company":"Sample company 01","industry":"food","nps":7,"pain":"Power reliability","spend":18500000,"willing":"price","budget":"lt50","decision":"plant","timeline":"m6","channel":"Email","leadScore":58,"leadStatus":"contacted","source":"dummy","notes":"Format sample"},{"lead_id":"LEAD-002","company":"Sample company 02","industry":"metal","nps":4,"pain":"Permit delays","spend":62000000,"willing":"yes","budget":"50_150","decision":"gm","timeline":"m3","channel":"WhatsApp","leadScore":86,"leadStatus":"qualified","source":"dummy","notes":"Format sample"},{"lead_id":"LEAD-003","company":"Sample company 03","industry":"electronics","nps":9,"pain":"Wastewater compliance","spend":150000000,"willing":"yes","budget":"150_500","decision":"owner","timeline":"m3","channel":"Site visit","leadScore":95,"leadStatus":"qualified","source":"dummy","notes":"Format sample"},{"lead_id":"LEAD-004","company":"Sample company 04","industry":"textile","nps":6,"pain":"Labour turnover","spend":28000000,"willing":"price","budget":"lt50","decision":"gm","timeline":"m6","channel":"Email","leadScore":44,"leadStatus":"new","source":"dummy","notes":"Format sample"},{"lead_id":"LEAD-005","company":"Sample company 05","industry":"chemical","nps":8,"pain":"Customs clearance","spend":210000000,"willing":"yes","budget":"150_500","decision":"finance","timeline":"m12","channel":"WhatsApp","leadScore":72,"leadStatus":"contacted","source":"dummy","notes":"Format sample"},{"lead_id":"LEAD-006","company":"Sample company 06","industry":"logistics","nps":5,"pain":"Water quality","spend":34000000,"willing":"no","budget":"lt50","decision":"plant","timeline":"m12","channel":"Email","leadScore":31,"leadStatus":"dropped","source":"dummy","notes":"Format sample"},{"lead_id":"LEAD-007","company":"Sample company 07","industry":"pharma","nps":10,"pain":"Wastewater compliance","spend":420000000,"willing":"yes","budget":"gt500","decision":"owner","timeline":"m1","channel":"Site visit","leadScore":118,"leadStatus":"converted","source":"dummy","notes":"Format sample"},{"lead_id":"LEAD-008","company":"Sample company 08","industry":"plastic","nps":7,"pain":"Power reliability","spend":96000000,"willing":"price","budget":"50_150","decision":"gm","timeline":"m6","channel":"WhatsApp","leadScore":63,"leadStatus":"contacted","source":"dummy","notes":"Format sample"},{"lead_id":"LEAD-009","company":"Sample company 09","industry":"machinery","nps":3,"pain":"Permit delays","spend":15000000,"willing":"no","budget":"lt50","decision":"finance","timeline":"none","channel":"Email","leadScore":22,"leadStatus":"dropped","source":"dummy","notes":"Format sample"},{"lead_id":"LEAD-010","company":"Sample company 10","industry":"trade","nps":8,"pain":"Water quality","spend":45000000,"willing":"price","budget":"lt50","decision":"gm","timeline":"m3","channel":"Site visit","leadScore":69,"leadStatus":"new","source":"dummy","notes":"Format sample"}];
+
   const PLANTS = [
     { plant_id: 'PLT-CKR-WTP', estate: 'Cikarang', name: 'WTP 1 + 2', phase: 'existing', ptype: 'wtp', tech: 'conv', cap: 740, cup: 'Lps', pstatus: 'operating', counted: 'yes', pnote: '' },
     { plant_id: 'PLT-CKR-WW-IFAS', estate: 'Cikarang', name: 'WWTP 1 + 2 (IFAS)', phase: 'existing', ptype: 'wwtp', tech: 'ifas', cap: 15750, cup: 'm3d', pstatus: 'operating', counted: 'yes', pnote: '' },
@@ -928,7 +930,7 @@ function seedData() {
     { plant_id: 'PLT-KDL-WW-1BX', estate: 'Kendal', name: 'WWTP 1B extension', phase: 'p1', ptype: 'wwtp', tech: 'mbbr', cap: 16200, cup: 'm3d', pstatus: 'operating', counted: 'yes', pnote: '' },
     { plant_id: 'PLT-KDL-WW-NEW', estate: 'Kendal', name: 'WWTP new build', phase: 'p1', ptype: 'wwtp', tech: 'tbd', cap: 16000, cup: 'm3d', pstatus: 'planned', counted: 'no', pnote: '' },
   ];
-  return { owners: REAL_OWNERS, assets: REAL_ASSETS, demands: [], deals: DUMMY_DEALS, leads: [], metrics: [], plants: PLANTS };
+  return { owners: REAL_OWNERS, assets: REAL_ASSETS, demands: [], deals: DUMMY_DEALS, leads: DUMMY_LEADS, metrics: [], plants: PLANTS };
 }
 
 /* ================= STORAGE ================= */
@@ -954,6 +956,7 @@ function loadData() {
         });
         parsed.owners.forEach((o) => { if (o.industry == null) o.industry = ''; });
         (parsed.deals || []).forEach((d) => { if (d.source == null) d.source = 'real'; });
+        (parsed.leads || []).forEach((l) => { if (l.source == null) l.source = 'real'; });
         return parsed;
       }
     } catch (e) { /* fall through to demo */ }
@@ -1368,16 +1371,16 @@ function viewServices() {
     ${tableHtml(cols, body, p.pager, 980)}</div>`;
   } else {
     const cols = [
-      { w: '10%', label: 'ID' }, { w: '19%', label: t('F.company') }, { w: '20%', label: t('F.pain') },
-      { w: '11%', label: t('F.spend'), align: 'right' }, { w: '9%', label: t('F.leadScore'), align: 'right' },
-      { w: '12%', label: t('F.leadStatus') }, { w: '11%', label: t('F.channel') }, { w: '8%', label: t('F.nps'), align: 'right' },
+      { w: '9%', label: 'ID' }, { w: '17%', label: t('F.company') }, { w: '18%', label: t('F.pain') },
+      { w: '10%', label: t('F.spend'), align: 'right' }, { w: '8%', label: t('F.leadScore'), align: 'right' },
+      { w: '11%', label: t('F.leadStatus') }, { w: '8%', label: t('F.source') }, { w: '10%', label: t('F.channel') }, { w: '7%', label: t('F.nps'), align: 'right' },
     ];
-    const rows = filterRows(STATE.leads, 'leads', ['lead_id', 'company', 'pain', 'channel', 'leadStatus', 'industry']);
+    const rows = filterRows(STATE.leads, 'leads', ['lead_id', 'company', 'pain', 'channel', 'leadStatus', 'industry', 'source']);
     const p = paginate('leads', rows, 12);
     const body = p.slice.map((l) => `<tr data-entity="lead" data-id="${esc(l.lead_id)}">
       <td class="mono">${esc(l.lead_id)}</td><td>${esc(l.company)}</td><td>${esc(tl(l.pain))}</td>
       <td class="num">${fmtRpShort(l.spend)}</td><td class="num" style="color:${l.leadScore >= 70 ? '#A8452F' : '#3C4552'};font-weight:${l.leadScore >= 70 ? '600' : '400'}">${fmtInt(l.leadScore)}</td>
-      <td>${chipFor('leadStatus', l.leadStatus)}</td><td>${esc(tl(l.channel))}</td><td class="num">${fmtInt(l.nps)}</td></tr>`).join('') || emptyRow(cols.length);
+      <td>${chipFor('leadStatus', l.leadStatus)}</td><td>${chipFor('source', l.source)}</td><td>${esc(tl(l.channel))}</td><td class="num">${fmtInt(l.nps)}</td></tr>`).join('') || emptyRow(cols.length);
     html += `<div class="grid g-4" style="margin-bottom:16px">
       ${kpiCard(t('s.kpi.hot'), fmtInt(hot), t('s.tab.leads'), 'r')}
       ${kpiCard(t('s.kpi.promoters'), fmtInt(STATE.leads.filter((l) => l.nps >= 9).length), t('s.tab.leads'), 't')}
@@ -1385,8 +1388,10 @@ function viewServices() {
       ${kpiCard(t('s.kpi.newleads'), fmtInt(STATE.leads.filter((l) => l.leadStatus === 'new').length), t('s.tab.leads'), '')}
     </div>
     <div class="sec-head" style="margin-top:0"><p>${esc(t('s.descLeads'))}</p><div><button class="btn primary" data-add="lead">${esc(t('s.addLead'))}</button></div></div>
+    <div class="help" style="margin:-8px 0 10px">${esc(t('s.dummyNote'))}</div>
     <div class="card flat"><div class="toolbar"><div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg><input data-q="leads" placeholder="${esc(t('c.search'))}" value="${esc((FILTER.leads || {}).q || '')}"></div>
     <select data-sel="leads" data-f="leadStatus"><option value="">${esc(t('F.leadStatus'))}: ${esc(t('c.all'))}</option>${['new', 'contacted', 'qualified', 'converted', 'dropped'].map((s) => `<option value="${s}" ${(FILTER.leads || {}).leadStatus === s ? 'selected' : ''}>${esc(E('leadStatus', s))}</option>`).join('')}</select>
+    <select data-sel="leads" data-f="source"><option value="">${esc(t('F.source'))}: ${esc(t('c.all'))}</option>${['real', 'dummy'].map((c) => `<option value="${c}" ${(FILTER.leads || {}).source === c ? 'selected' : ''}>${esc(E('source', c))}</option>`).join('')}</select>
     <span class="count">${fmtInt(rows.length)} ${esc(t('c.total'))}</span></div>
     ${tableHtml(cols, body, p.pager, 980)}</div>`;
   }
@@ -1673,7 +1678,7 @@ const E_TYPES = {
       { k: 'nps', t: 'number' }, { k: 'pain', t: 'text', req: 1 }, { k: 'spend', t: 'number' },
       { k: 'willing', t: 'select', g: 'willing' }, { k: 'budget', t: 'select', g: 'budgetBand', label: 'F.budgetBand' }, { k: 'decision', t: 'select', g: 'decision' },
       { k: 'timeline', t: 'select', g: 'pressure' }, { k: 'channel', t: 'text' }, { k: 'leadScore', t: 'number', req: 1 },
-      { k: 'leadStatus', t: 'select', g: 'leadStatus', req: 1 }, { k: 'notes', t: 'textarea' },
+      { k: 'leadStatus', t: 'select', g: 'leadStatus', req: 1 }, { k: 'source', t: 'select', g: 'source', req: 1 }, { k: 'notes', t: 'textarea' },
     ],
   },
   metric: {
