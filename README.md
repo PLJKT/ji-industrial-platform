@@ -7,7 +7,7 @@ purpose-built for internal operating use rather than marketing.
 ## What this is
 
 A single-page static system. No server, no account, no database. Records live in the browser's
-`localStorage` under the key `ji_platform_v6`; the language choice lives under `ji_lang`.
+`localStorage` under the key `ji_platform_v11`; the language choice lives under `ji_lang`.
 Data can be exported to a JSON snapshot and re-imported on another device.
 
 | View | Purpose | Records |
@@ -15,20 +15,20 @@ Data can be exported to a JSON snapshot and re-imported on another device.
 | Operations overview | Three workstream cards, six portfolio KPIs, four charts, a three-phase roadmap, and a data-basis / open-items panel | derived |
 | Asset register | One asset-centric register: each vacant plot joins its owner name, business industry, contact, location identification, survey status, motive, ask price, pressure and KYC, plus matched demand | assets, owners, demands |
 | Service revenue | Paid services sold through the one-stop office, and survey leads | deals, leads |
-| Water & waste | Two tabs: design capacity register by plant and phase, and monthly readings (loading, energy, compliance, reuse, sludge, unit cost) | plants, metrics |
-| Glossary | Regulatory and technical terms with definitions in both languages | 20 entries |
+| Water & waste | Two tabs: design capacity register by plant and phase, an efficiency indicator framework with public benchmark ranges, and monthly readings (loading, flow, energy, compliance, removal, reuse, sludge, chemical dose, unit cost, solid-waste indicators) | plants, metrics |
+| Glossary | Regulatory and technical terms with definitions in both languages | 31 entries |
 | Settings | Language, import / export, storage status, record ownership, data rules | — |
 
 ## Board-review overview
 
 The Overview view is arranged for a board-level read, top to bottom:
 
-- A register banner states that the 203 vacant plots come from the 17 Nov 2026 workbook; commercial, compliance and quality fields are blank pending owner verification, and demand, service leads and utility readings are not yet entered.
+- A register banner states that the 203 vacant plots come from the 17 Nov 2026 workbook; commercial, compliance and quality fields are blank pending owner verification, while service contracts, leads and utility readings carry Dummy format samples only.
 - Three workstream cards — vacant asset matching, one-stop service revenue, water & waste efficiency — each show the headline metric, a one-line description and a jump button into the working register.
 - Six KPIs: registered assets, vacant / idle share, idle land area, demand in pipeline, service revenue booked, and quoted service pipeline.
 - Four unchanged charts: asset status mix, demand by stage, revenue by service line, energy intensity and reuse trend.
 - A three-phase roadmap (pilot pool, paid services scale, regional platform with ministry-backed certification) marks the current phase.
-- A "data basis and open items" panel records the standing caveats: monthly readings derive from design capacity until metered data is loaded; the Cikarang oxidation-ditch 12,000 m³/day line is listed separately and excluded from the WWTP total pending basis confirmation; the Kendal 16,000 m³/day new build is planned capacity with treatment technology under review.
+- A "data basis and open items" panel records the standing caveats: monthly readings shown are Dummy format samples until metered Real data is loaded; the Cikarang oxidation-ditch 12,000 m³/day line is listed separately and excluded from the WWTP total pending basis confirmation; the Kendal 16,000 m³/day new build is planned capacity with treatment technology under review.
 
 ## Language rules
 
@@ -102,35 +102,45 @@ Asking price is normalised to Rp per m² using building area when the record is 
 one ranking holds across both quoting conventions.
 
 `plants` holds design capacity as reported by the operator: estate, plant / unit, phase, treatment
-stream (WTP or WWTP), technology, design capacity with its original unit (`Lps` or `m³/day`), status.
-The register stores the reported unit and derives the equivalent once, at 1 Lps = 86.4 m³/day, so
+stream (WTP, WWTP or solid waste), technology, design capacity with its original unit (`Lps` or `m³/day`),
+status. The register stores the reported unit and derives the equivalent once, at 1 Lps = 86.4 m³/day, so
 mixed units stay comparable without touching the source figure. Units reported separately from a
 declared total are flagged and excluded from the operating total until the reporting basis is confirmed.
 
-`metrics` holds one line per plant, indicator and month: flow (actual inflow), energy intensity
-(kWh/m³), effluent compliance (%), reuse rate (%), sludge and unit cost (Rp/m³). Loading rate is
-derived as actual flow ÷ design capacity; 60–80% is the normal band, above 80% is tight operation and
-above 100% is overloading.
+`metrics` holds one line per plant, indicator and month: treated flow (m³/day), energy intensity
+(kWh/m³), chemical dose (kg/m³), effluent compliance (%), pollutant removal (%), sludge output
+(kg DS/m³), reuse rate (%), unit cost (Rp/m³), and solid-waste coverage, material recovery, landfill
+diversion and cost per tonne. Loading rate is derived as actual flow ÷ design capacity; the reference
+band is 80–90% utilisation, below 70% indicates under-use and above 100% indicates overload. The
+readings tab also carries an indicator framework: each indicator lists its stream, unit, public
+benchmark range and what it measures. Benchmarks are KPI reference ranges from public WWTP / WTP and
+solid-waste practice sources, not JI measured results; plant values are entered only from metered
+readings.
 
 Recorded assets: 10 treatment units — Cikarang WTP 1+2 740 Lps; Cikarang WWTP 1+2 15,750 m³/day (IFAS)
 and an oxidation-ditch line of 12,000 m³/day reported separately; Kendal Phase 1 WTP 2×70 + 2×70 +
 2×100 Lps, WWTP 1A 1,000, 1B 4,000 (IFAS/FCR), 1B extension 16,200 (MBBR), new build 16,000 m³/day
 under technology review. Design totals: 1,220 Lps water, 36,950 m³/day wastewater operating, 16,000
-m³/day in delivery.
+m³/day in delivery. No solid-waste plant capacity record has been reported yet; the solid-waste
+indicators exist in the framework and reading form, with capacity rows to be added when the waste plant
+register is supplied.
 
 Seed register: 203 vacant plots from the 17 Nov 2026 workbook, matched to 185 unique owner records
 (one owner can hold several plots). Land area and owner contact are carried over where the workbook
 has them; 194 plots carry a recorded land area (344,717 m² total, whole square metres rounded half up) and 9 plots leave the area blank
 because the workbook has none. Building size, utility connections, commercial terms, compliance,
 quality and verification fields are left blank on purpose and completed during owner follow-up.
-`demands` and `metrics` start empty; `plants` keeps the 10 reported treatment units above.
+`demands` starts empty; `plants` keeps the 10 reported treatment units above, and `metrics` is seeded
+with 21 Dummy format readings for 2026-10 (flow, energy, compliance, removal, reuse, sludge, chemical
+dose, unit cost) so the table, filters and KPI aggregations can be tested before real metered data
+is loaded.
 
-Both `deals` and `leads` carry a **Data source** flag: `Real` (`Nyata`) for actual
-registered records and `Dummy` for a format sample. The 10 seeded contracts and 10 seeded
-survey leads are all `Dummy` — their company names, spend and scores exist only to
-demonstrate the table, filter and field format and are not real; signed agreements and real
-respondents are entered with `Real`. KPI cards and dashboard aggregates count every record
-in the register regardless of its source flag; the flag marks provenance, not inclusion.
+`deals`, `leads` and `metrics` carry a **Data source** flag: `Real` (`Nyata`) for actual
+registered records and `Dummy` for a format sample. The 10 seeded contracts, 10 seeded survey leads and
+21 seeded utility readings are all `Dummy` — their plant names, values and scores exist only to
+demonstrate the table, filter and field format and are not real; signed agreements, real
+respondents and metered readings are entered with `Real`. KPI cards and dashboard aggregates count
+every record in the register regardless of its source flag; the flag marks provenance, not inclusion.
 
 `deals` service-line taxonomy follows estate-operator charges cross-checked across IEAT
 estate tariffs, the Jababeka CODB schedule and shared-utility SEZ sources: permits and

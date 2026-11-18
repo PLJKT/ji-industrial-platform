@@ -389,7 +389,7 @@ const STR = {
   'c.required': ['Required', 'Wajib'],
   'c.select': ['Select', 'Pilih'],
   'c.demo': ['Live vacant-asset register', 'Daftar aset idle nyata'],
-  'c.demoText': ['203 vacant plots from the 17 Nov 2026 workbook; commercial, compliance and quality fields stay blank pending owner verification. Demand, service leads and utility readings are not yet entered.', '203 kavling kosong dari buku kerja 17 Nov 2026; bidang komersial, kepatuhan, dan kualitas dikosongkan menunggu verifikasi pemilik. Permintaan, prospek layanan, dan pembacaan utilitas belum dimasukkan.'],
+  'c.demoText': ['203 vacant plots from the 17 Nov 2026 workbook; commercial, compliance and quality fields stay blank pending owner verification. Service contracts, leads and utility readings include Dummy format samples only; Real records come from registered data.', '203 kavling kosong dari buku kerja 17 Nov 2026; bidang komersial, kepatuhan, dan kualitas dikosongkan menunggu verifikasi pemilik. Kontrak layanan, prospek, dan pembacaan utilitas memuat contoh format Dummy saja; catatan Real berasal dari data tercatat.'],
   'c.saved': ['Record saved', 'Catatan tersimpan'],
   'c.deleted': ['Record deleted', 'Catatan dihapus'],
   'c.dupId': ['That ID is already in use', 'ID tersebut sudah dipakai'],
@@ -471,7 +471,7 @@ const STR = {
   'd.now': ['Current', 'Saat ini'],
 
   'd.basis': ['Data basis and open items', 'Dasar data dan item terbuka'],
-  'd.basis1': ['Monthly utility readings are not yet entered; capacity figures below are design basis until metered data is loaded. Savings cannot be settled on design figures alone.', 'Pembacaan utilitas bulanan belum dimasukkan; angka kapasitas di bawah adalah basis desain sampai data meter dimuat. Penghematan tidak dapat diselesaikan hanya dari angka desain.'],
+  'd.basis1': ['Monthly utility readings shown are Dummy format samples until metered Real data is loaded; capacity figures are the design basis. Savings cannot be settled on design figures alone.', 'Pembacaan utilitas bulanan yang tampil adalah contoh format Dummy sampai data meter Real dimuat; angka kapasitas adalah basis desain. Penghematan tidak dapat diselesaikan hanya dari angka desain.'],
   'd.basis2': ['Cikarang OD line of 12,000 m³/day is listed separately and excluded from the WWTP total until the combined basis is confirmed.', 'Jalur OD Cikarang 12.000 m³/hari dicatat terpisah dan dikecualikan dari total WWTP sampai basis gabungan dikonfirmasi.'],
   'd.basis3': ['Kendal new-build 16,000 m³/day capacity has its treatment technology under review; this is planned capacity, not a confirmed design.', 'Kapasitas pembangunan baru Kendal 16.000 m³/hari teknologinya masih dibahas; ini kapasitas rencana, bukan desain final.'],
 
@@ -551,6 +551,19 @@ const STR = {
   'u.ch.trend': ['Energy intensity trend', 'Tren intensitas energi'],
   'u.note.cikarang': ['As reported: 15,750 m³/day is the WWTP 1+2 total (IFAS, 182.3 Lps); the 12,000 m³/day OD line (150 Lps) is listed separately and flagged, because it may already sit inside that total. Confirm before publishing a combined figure.', 'Sesuai laporan: 15.750 m³/hari adalah total WWTP 1+2 (IFAS, 182,3 Lps); jalur OD 12.000 m³/hari (150 Lps) dicatat terpisah dan ditandai, karena mungkin sudah termasuk dalam total tersebut. Konfirmasi sebelum menerbitkan angka gabungan.'],
   'u.note.kendal': ['Kendal Phase 1 WTP is three stages of conventional treatment (2×70, 2×70, 2×100 Lps). WWTP existing 21,200 m³/day plus 16,000 m³/day under construction gives the 37,200 m³/day phase envelope.', 'WTP Kendal Tahap 1 terdiri dari tiga tahap pengolahan konvensional (2×70, 2×70, 2×100 Lps). WWTP eksisting 21.200 m³/hari ditambah 16.000 m³/hari yang dibangun menghasilkan total tahap 37.200 m³/hari.'],
+  'u.fw.title': ['Efficiency indicator framework', 'Kerangka indikator efisiensi'],
+  'u.fw.desc': ['Reference definitions and public benchmark ranges for estate utilities. Plant values are entered only from metered readings; a benchmark range is not a JI result.', 'Definisi referensi dan rentang acuan publik untuk utilitas kawasan. Nilai instalasi diisi hanya dari pembacaan meter; rentang acuan bukan hasil JI.'],
+  'u.fw.ind': ['Indicator', 'Indikator'],
+  'u.fw.stream': ['Stream', 'Aliran'],
+  'u.fw.unit': ['Unit', 'Satuan'],
+  'u.fw.bench': ['Reference benchmark', 'Acuan benchmark'],
+  'u.fw.what': ['What it measures', 'Apa yang diukur'],
+  'u.fw.both': ['WTP / WWTP', 'WTP / WWTP'],
+  'u.fw.wtp': ['WTP', 'WTP'],
+  'u.fw.wwtp': ['WWTP', 'WWTP'],
+  'u.fw.waste': ['Solid waste', 'Limbah padat'],
+  'u.fw.site': ['Site-specific', 'Tergantung lokasi'],
+  'u.fw.benchNote': ['Benchmarks are public KPI reference ranges, not JI measured results.', 'Benchmark adalah rentang acuan KPI publik, bukan hasil ukur JI.'],
 
   'g.intro': ['Terms are explained once, at first use, and again here. Hover any dotted term to see its definition.', 'Istilah dijelaskan sekali, saat pertama dipakai, dan lagi di sini. Arahkan kursor ke istilah bergaris putus-putus untuk melihat definisinya.'],
   'g.note': ['Definitions are operational summaries, not legal advice. Binding wording follows the regulation cited in each entry.', 'Definisi adalah ringkasan operasional, bukan nasihat hukum. Rumusan yang mengikat mengikuti regulasi yang dikutip di setiap entri.'],
@@ -758,8 +771,8 @@ const ENUM = {
   source: { real: ['Real', 'Nyata'], dummy: ['Dummy', 'Dummy'] },
   svcStatus: { quoted: ['Quoted', 'Dikutip'], active: ['Active', 'Aktif'], delivered: ['Delivered', 'Selesai'], lost: ['Lost', 'Gagal'] },
   leadStatus: { new: ['New', 'Baru'], contacted: ['Contacted', 'Dihubungi'], qualified: ['Qualified', 'Terkualifikasi'], converted: ['Converted', 'Terkonversi'], dropped: ['Dropped', 'Dihentikan'] },
-  metric: { energy: ['Energy intensity', 'Intensitas energi'], compliance: ['Effluent compliance', 'Kepatuhan efluen'], reuse: ['Reuse rate', 'Tingkat daur ulang'], sludge: ['Sludge output', 'Produksi lumpur'], cost: ['Unit cost', 'Biaya unit'], flow: ['Treated flow', 'Debit terolah'] },
-  ptype: { wtp: ['WTP', 'WTP'], wwtp: ['WWTP', 'WWTP'] },
+  metric: { energy: ['Energy intensity', 'Intensitas energi'], compliance: ['Effluent compliance', 'Kepatuhan efluen'], reuse: ['Reuse rate', 'Tingkat daur ulang'], sludge: ['Sludge output', 'Produksi lumpur'], cost: ['Unit cost', 'Biaya unit'], flow: ['Treated flow', 'Debit terolah'], loading: ['Loading rate', 'Beban hidrolik'], removal: ['Pollutant removal', 'Penurunan polutan'], chemical: ['Chemical dose', 'Dosis kimia'], coverage: ['Collection coverage', 'Cakupan pengumpulan'], recovery: ['Material recovery', 'Pemulihan material'], diversion: ['Landfill diversion', 'Pengalihan dari TPA'], costTon: ['Cost per tonne', 'Biaya per ton'] },
+  ptype: { wtp: ['WTP', 'WTP'], wwtp: ['WWTP', 'WWTP'], waste: ['Solid waste', 'Limbah padat'] },
   tech: { conv: ['Conventional', 'Konvensional'], ifas: ['IFAS', 'IFAS'], od: ['Oxidation ditch', 'Kolam oksidasi'], as: ['Activated sludge', 'Lumpur aktif'], ifasfcr: ['IFAS / FCR', 'IFAS / FCR'], mbbr: ['MBBR', 'MBBR'], tbd: ['Technology under review', 'Teknologi masih dibahas'] },
   pstatus: { operating: ['Operating', 'Beroperasi'], construction: ['Under construction', 'Dalam pembangunan'], planned: ['Planned', 'Direncanakan'] },
   phase: { existing: ['Existing', 'Eksisting'], p1: ['Phase 1', 'Tahap 1'], p2: ['Phase 2', 'Tahap 2'] },
@@ -790,11 +803,17 @@ const GLOSS = {
   perf: { t: ['Performance contract', 'Kontrak kinerja'], d: ['An EPC plus operations contract with guaranteed savings or compliance, penalties for shortfall and a metered baseline. It avoids taking asset risk onto the balance sheet.', 'Kontrak EPC plus operasi dengan jaminan penghematan atau kepatuhan, penalti bila gagal, dan basis terukur. Menghindari risiko aset masuk ke neraca.'] },
   leadscore: { t: ['Lead score', 'Skor prospek'], d: ['Pain (1–5) multiplied by budget (1–3), decision authority (1–3) and time window (1–3); 135 is the maximum. It ranks follow-up order, not credit quality.', 'Rasa sakit (1–5) dikalikan anggaran (1–3), kewenangan keputusan (1–3), dan jendela waktu (1–3); maksimum 135. Skor ini mengurutkan prioritas tindak lanjut, bukan kualitas kredit.'] },
   arpu: { t: ['ARPU', 'ARPU'], d: ['Average revenue per paying tenant per year. Used here to model service revenue without assuming every tenant buys.', 'Pendapatan rata-rata per penyewa berbayar per tahun. Dipakai untuk memodelkan pendapatan layanan tanpa mengasumsikan semua penyewa membeli.'] },
-  loading: { t: ['Loading rate', 'Beban hidrolik'], d: ['Actual inflow divided by design capacity over the same period. Below 60% is under-used, 60–80% is workable, above 80% is efficient, above 100% means the plant is overloaded and effluent risk rises.', 'Debit masuk aktual dibagi kapasitas desain pada periode yang sama. Di bawah 60% kurang termanfaatkan, 60–80% wajar, di atas 80% efisien, di atas 100% berarti instalasi kelebihan beban dan risiko efluen naik.'] },
+  loading: { t: ['Loading rate', 'Beban hidrolik'], d: ['Actual inflow divided by design capacity over the same period. Around 80–90% is optimal; below 70% is under-used; above 100% means the plant is overloaded and effluent risk rises.', 'Debit masuk aktual dibagi kapasitas desain pada periode yang sama. Sekitar 80–90% optimal; di bawah 70% kurang termanfaatkan; di atas 100% berarti instalasi kelebihan beban dan risiko efluen naik.'] },
   baku: { t: ['Effluent standard (baku mutu)', 'Baku mutu efluen'], d: ['The discharge limits set by the environment ministry for the industrial activity. Compliance is measured per parameter (BOD, COD, TSS, pH, ammonia) against the permit, not as one average score.', 'Batas pembuangan yang ditetapkan kementerian lingkungan untuk kegiatan industri. Kepatuhan diukur per parameter (BOD, COD, TSS, pH, amonia) terhadap izin, bukan sebagai satu skor rata-rata.'] },
   mbbr: { t: ['MBBR', 'MBBR'], d: ['Moving bed biofilm reactor: floating plastic carriers host the biofilm, so capacity can be raised by adding media rather than new tanks.', 'Moving bed biofilm reactor: media plastik mengapung menjadi tempat biofilm, sehingga kapasitas dapat dinaikkan dengan menambah media, bukan tangki baru.'] },
   od: { t: ['Oxidation ditch (OD)', 'Kolam oksidasi (OD)'], d: ['A looped aeration channel with long retention time; stable against shock loads, but high energy use per cubic metre.', 'Saluran aerasi berbentuk loop dengan waktu tinggal panjang; stabil terhadap beban kejut, tetapi konsumsi energi per meter kubik tinggi.'] },
   as: { t: ['Activated sludge (AS)', 'Lumpur aktif (AS)'], d: ['Suspended-growth process with aeration and sludge return. The reference technology for BOD and ammonia removal in industrial estates.', 'Proses pertumbuhan tersuspensi dengan aerasi dan pengembalian lumpur. Teknologi acuan untuk penyisihan BOD dan amonia di kawasan industri.'] },
+  energy: { t: ['Energy intensity', 'Intensitas energi'], d: ['Electricity consumed per cubic metre treated, kWh/m³. Lower is better; it depends strongly on plant loading, aeration efficiency and whether pumping or aeration is the main load.', 'Listrik yang dipakai per meter kubik terolah, kWh/m³. Semakin rendah semakin baik; sangat dipengaruhi beban instalasi, efisiensi aerasi, dan apakah pompa atau aerasi yang menjadi beban utama.'] },
+  compliance: { t: ['Effluent compliance', 'Kepatuhan efluen'], d: ['Share of discharge samples meeting every permitted parameter (BOD, COD, TSS, pH, ammonia) for the period. A single failed parameter counts as a non-compliant sample.', 'Porsi sampel pembuangan yang memenuhi seluruh parameter izin (BOD, COD, TSS, pH, amonia) pada periode tersebut. Satu parameter gagal membuat sampel dianggap tidak patuh.'] },
+  sludge: { t: ['Sludge output', 'Produksi lumpur'], d: ['Sludge generated per cubic metre treated, expressed as dry solids (kg DS/m³). Dewatering to higher cake solids cuts hauling and disposal cost.', 'Lumpur yang dihasilkan per meter kubik terolah, dinyatakan sebagai padatan kering (kg DS/m³). Pengeringan ke kadar padatan lumpur lebih tinggi menekan biaya angkut dan pembuangan.'] },
+  chemical: { t: ['Chemical dose', 'Dosis kimia'], d: ['Coagulant, disinfectant or polymer consumed per cubic metre treated. Dosing is optimized to meet water quality without overdosing that wastes reagent and forms by-products.', 'Koagulan, disinfektan, atau polimer yang dipakai per meter kubik terolah. Dosis dioptimalkan agar kualitas air terpenuhi tanpa kelebihan dosis yang membuang reagen dan membentuk produk samping.'] },
+  recovery: { t: ['Material recovery', 'Pemulihan material'], d: ['Share of waste generated that is sorted and recycled or recovered as material, fuel or compost. Residual that goes to landfill is not recovered.', 'Porsi sampah yang disortir dan didaur ulang atau dipulihkan sebagai material, bahan bakar, atau kompos. Sisa yang dibuang ke TPA bukan pemulihan.'] },
+  diversion: { t: ['Landfill diversion', 'Pengalihan dari TPA'], d: ['Share of waste kept out of landfill through recycling, composting, RDF or energy recovery. It closes the loop toward circular waste management.', 'Porsi sampah yang tidak dibuang ke TPA melalui daur ulang, kompos, RDF, atau pemulihan energi. Menutup siklus menuju pengelolaan sampah sirkular.'] },
   clearance: { t: ['Clear height', 'Tinggi bersih'], d: ['Usable height from floor to the lowest roof or sprinkler line. Warehouse listings here run 6–8 m at the eaves and 8–14 m at the ridge; below 6 m limits container stacking and racking.', 'Tinggi terpakai dari lantai ke titik terendah atap atau jalur sprinkler. Gudang di sini berkisar 6–8 m di tepi dan 8–14 m di puncak; di bawah 6 m membatasi penumpukan kontainer dan rak.'] },
   serviceCharge: { t: ['Service charge', 'Service charge'], d: ['A monthly estate fee per m² on top of rent, covering security, roads, drainage and common-area upkeep. Listed at Rp 1,500–3,000 per m² per month and normally excluded from the headline rent.', 'Biaya kawasan bulanan per m² di luar sewa, mencakup keamanan, jalan, drainase, dan pemeliharaan area bersama. Tercatat Rp 1.500–3.000 per m² per bulan dan biasanya tidak termasuk dalam sewa utama.'] },
   deposit: { t: ['Security deposit', 'Deposit jaminan'], d: ['Refundable cash held by the owner, usually two to three months of rent, paid partly on the offering letter and the rest at lease signing. It protects the owner against early termination, not against wear.', 'Uang yang ditahan pemilik dan dapat dikembalikan, biasanya dua sampai tiga bulan sewa, dibayar sebagian saat surat penawaran dan sisanya saat penandatanganan. Melindungi pemilik dari penghentian dini, bukan dari keausan.'] },
@@ -804,7 +823,7 @@ const GLOSS = {
 };
 
 /* ================= STATE & HELPERS ================= */
-const LS_KEY = 'ji_platform_v10';
+const LS_KEY = 'ji_platform_v11';
 let LANG = 'en';
 let STATE = null;
 let VIEW = 'dashboard';
@@ -918,6 +937,30 @@ function seedData() {
 
   const DUMMY_LEADS = [{"lead_id":"LEAD-001","company":"Sample company 01","industry":"food","nps":7,"pain":"Power reliability","spend":18500000,"willing":"price","budget":"lt50","decision":"plant","timeline":"m6","channel":"Email","leadScore":58,"leadStatus":"contacted","source":"dummy","notes":"Format sample"},{"lead_id":"LEAD-002","company":"Sample company 02","industry":"metal","nps":4,"pain":"Permit delays","spend":62000000,"willing":"yes","budget":"50_150","decision":"gm","timeline":"m3","channel":"WhatsApp","leadScore":86,"leadStatus":"qualified","source":"dummy","notes":"Format sample"},{"lead_id":"LEAD-003","company":"Sample company 03","industry":"electronics","nps":9,"pain":"Wastewater compliance","spend":150000000,"willing":"yes","budget":"150_500","decision":"owner","timeline":"m3","channel":"Site visit","leadScore":95,"leadStatus":"qualified","source":"dummy","notes":"Format sample"},{"lead_id":"LEAD-004","company":"Sample company 04","industry":"textile","nps":6,"pain":"Labour turnover","spend":28000000,"willing":"price","budget":"lt50","decision":"gm","timeline":"m6","channel":"Email","leadScore":44,"leadStatus":"new","source":"dummy","notes":"Format sample"},{"lead_id":"LEAD-005","company":"Sample company 05","industry":"chemical","nps":8,"pain":"Customs clearance","spend":210000000,"willing":"yes","budget":"150_500","decision":"finance","timeline":"m12","channel":"WhatsApp","leadScore":72,"leadStatus":"contacted","source":"dummy","notes":"Format sample"},{"lead_id":"LEAD-006","company":"Sample company 06","industry":"logistics","nps":5,"pain":"Water quality","spend":34000000,"willing":"no","budget":"lt50","decision":"plant","timeline":"m12","channel":"Email","leadScore":31,"leadStatus":"dropped","source":"dummy","notes":"Format sample"},{"lead_id":"LEAD-007","company":"Sample company 07","industry":"pharma","nps":10,"pain":"Wastewater compliance","spend":420000000,"willing":"yes","budget":"gt500","decision":"owner","timeline":"m1","channel":"Site visit","leadScore":118,"leadStatus":"converted","source":"dummy","notes":"Format sample"},{"lead_id":"LEAD-008","company":"Sample company 08","industry":"plastic","nps":7,"pain":"Power reliability","spend":96000000,"willing":"price","budget":"50_150","decision":"gm","timeline":"m6","channel":"WhatsApp","leadScore":63,"leadStatus":"contacted","source":"dummy","notes":"Format sample"},{"lead_id":"LEAD-009","company":"Sample company 09","industry":"machinery","nps":3,"pain":"Permit delays","spend":15000000,"willing":"no","budget":"lt50","decision":"finance","timeline":"none","channel":"Email","leadScore":22,"leadStatus":"dropped","source":"dummy","notes":"Format sample"},{"lead_id":"LEAD-010","company":"Sample company 10","industry":"trade","nps":8,"pain":"Water quality","spend":45000000,"willing":"price","budget":"lt50","decision":"gm","timeline":"m3","channel":"Site visit","leadScore":69,"leadStatus":"new","source":"dummy","notes":"Format sample"}];
 
+  const DUMMY_METRICS = [
+    { metric_id: 'M-001', plant: 'Cikarang WTP 1 + 2', metric: 'flow', period: '2026-10', value: 54800, unit: 'm³/day', source: 'dummy' },
+    { metric_id: 'M-002', plant: 'Cikarang WTP 1 + 2', metric: 'energy', period: '2026-10', value: 0.18, unit: 'kWh/m³', source: 'dummy' },
+    { metric_id: 'M-003', plant: 'Cikarang WTP 1 + 2', metric: 'chemical', period: '2026-10', value: 0.024, unit: 'kg/m³', source: 'dummy' },
+    { metric_id: 'M-004', plant: 'Cikarang WWTP IFAS', metric: 'flow', period: '2026-10', value: 13650, unit: 'm³/day', source: 'dummy' },
+    { metric_id: 'M-005', plant: 'Cikarang WWTP IFAS', metric: 'energy', period: '2026-10', value: 0.41, unit: 'kWh/m³', source: 'dummy' },
+    { metric_id: 'M-006', plant: 'Cikarang WWTP IFAS', metric: 'compliance', period: '2026-10', value: 99.2, unit: '%', source: 'dummy' },
+    { metric_id: 'M-007', plant: 'Cikarang WWTP IFAS', metric: 'removal', period: '2026-10', value: 93.5, unit: '%', source: 'dummy' },
+    { metric_id: 'M-008', plant: 'Cikarang WWTP IFAS', metric: 'reuse', period: '2026-10', value: 12.0, unit: '%', source: 'dummy' },
+    { metric_id: 'M-009', plant: 'Cikarang WWTP IFAS', metric: 'sludge', period: '2026-10', value: 0.32, unit: 'kg DS/m³', source: 'dummy' },
+    { metric_id: 'M-010', plant: 'Cikarang WWTP IFAS', metric: 'chemical', period: '2026-10', value: 0.018, unit: 'kg/m³', source: 'dummy' },
+    { metric_id: 'M-011', plant: 'Cikarang WWTP IFAS', metric: 'cost', period: '2026-10', value: 2850, unit: 'Rp/m³', source: 'dummy' },
+    { metric_id: 'M-012', plant: 'Cikarang WWTP OD', metric: 'flow', period: '2026-10', value: 10440, unit: 'm³/day', source: 'dummy' },
+    { metric_id: 'M-013', plant: 'Cikarang WWTP OD', metric: 'energy', period: '2026-10', value: 0.45, unit: 'kWh/m³', source: 'dummy' },
+    { metric_id: 'M-014', plant: 'Cikarang WWTP OD', metric: 'compliance', period: '2026-10', value: 98.6, unit: '%', source: 'dummy' },
+    { metric_id: 'M-015', plant: 'Kendal WTP', metric: 'flow', period: '2026-10', value: 34200, unit: 'm³/day', source: 'dummy' },
+    { metric_id: 'M-016', plant: 'Kendal WTP', metric: 'energy', period: '2026-10', value: 0.17, unit: 'kWh/m³', source: 'dummy' },
+    { metric_id: 'M-017', plant: 'Kendal WWTP 1B', metric: 'flow', period: '2026-10', value: 3560, unit: 'm³/day', source: 'dummy' },
+    { metric_id: 'M-018', plant: 'Kendal WWTP 1B', metric: 'compliance', period: '2026-10', value: 97.8, unit: '%', source: 'dummy' },
+    { metric_id: 'M-019', plant: 'Kendal WWTP 1B ext', metric: 'flow', period: '2026-10', value: 14780, unit: 'm³/day', source: 'dummy' },
+    { metric_id: 'M-020', plant: 'Kendal WWTP 1B ext', metric: 'energy', period: '2026-10', value: 0.39, unit: 'kWh/m³', source: 'dummy' },
+    { metric_id: 'M-021', plant: 'Kendal WWTP 1B ext', metric: 'reuse', period: '2026-10', value: 17.5, unit: '%', source: 'dummy' },
+  ];
+
   const PLANTS = [
     { plant_id: 'PLT-CKR-WTP', estate: 'Cikarang', name: 'WTP 1 + 2', phase: 'existing', ptype: 'wtp', tech: 'conv', cap: 740, cup: 'Lps', pstatus: 'operating', counted: 'yes', pnote: '' },
     { plant_id: 'PLT-CKR-WW-IFAS', estate: 'Cikarang', name: 'WWTP 1 + 2 (IFAS)', phase: 'existing', ptype: 'wwtp', tech: 'ifas', cap: 15750, cup: 'm3d', pstatus: 'operating', counted: 'yes', pnote: '' },
@@ -930,7 +973,7 @@ function seedData() {
     { plant_id: 'PLT-KDL-WW-1BX', estate: 'Kendal', name: 'WWTP 1B extension', phase: 'p1', ptype: 'wwtp', tech: 'mbbr', cap: 16200, cup: 'm3d', pstatus: 'operating', counted: 'yes', pnote: '' },
     { plant_id: 'PLT-KDL-WW-NEW', estate: 'Kendal', name: 'WWTP new build', phase: 'p1', ptype: 'wwtp', tech: 'tbd', cap: 16000, cup: 'm3d', pstatus: 'planned', counted: 'no', pnote: '' },
   ];
-  return { owners: REAL_OWNERS, assets: REAL_ASSETS, demands: [], deals: DUMMY_DEALS, leads: DUMMY_LEADS, metrics: [], plants: PLANTS };
+  return { owners: REAL_OWNERS, assets: REAL_ASSETS, demands: [], deals: DUMMY_DEALS, leads: DUMMY_LEADS, metrics: DUMMY_METRICS, plants: PLANTS };
 }
 
 /* ================= STORAGE ================= */
@@ -957,6 +1000,7 @@ function loadData() {
         parsed.owners.forEach((o) => { if (o.industry == null) o.industry = ''; });
         (parsed.deals || []).forEach((d) => { if (d.source == null) d.source = 'real'; });
         (parsed.leads || []).forEach((l) => { if (l.source == null) l.source = 'real'; });
+        (parsed.metrics || []).forEach((m) => { if (m.source == null) m.source = 'real'; });
         return parsed;
       }
     } catch (e) { /* fall through to demo */ }
@@ -1209,7 +1253,7 @@ function kpiCard(label, value, foot, tone) {
 function tableHtml(cols, bodyHtml, pager, minWidth) {
   const cg = cols.map((c) => '<col style="width:' + c.w + '">').join('');
   const th = cols.map((c) => '<th style="text-align:' + (c.align || 'left') + '">' + esc(c.label) + '</th>').join('');
-  return '<div class="tbl-wrap"><table style="min-width:' + (minWidth || 900) + 'px"><colgroup>' + cg + '</colgroup><thead><tr>' + th + '</tr></thead><tbody>' + bodyHtml + '</tbody></table></div>' + pager;
+  return '<div class="tbl-wrap"><table style="min-width:' + (minWidth || 900) + 'px"><colgroup>' + cg + '</colgroup><thead><tr>' + th + '</tr></thead><tbody>' + bodyHtml + '</tbody></table></div>' + (pager || '');
 }
 function emptyRow(cols) { return '<tr><td colspan="' + cols + '"><div class="empty">' + esc(t('c.none')) + '</div></td></tr>'; }
 
@@ -1419,7 +1463,7 @@ function viewUtilities() {
     <div class="tab ${tab === 'capacity' ? 'active' : ''}" data-tab="utilities" data-t="capacity">${esc(t('u.tab.capacity'))}<span class="n">${fmtInt(plants.length)}</span></div>
     <div class="tab ${tab === 'readings' ? 'active' : ''}" data-tab="utilities" data-t="readings">${esc(t('u.tab.readings'))}<span class="n">${fmtInt(STATE.metrics.length)}</span></div>
   </div>`;
-  let html = tabs + termLine(['loading', 'baku', 'ifas', 'mbbr', 'reuse']);
+  let html = tabs + termLine(['loading', 'baku', 'ifas', 'mbbr', 'reuse', 'energy', 'compliance', 'sludge']);
 
   if (tab === 'capacity') {
     const wtp = plants.filter((p) => p.ptype === 'wtp');
@@ -1461,7 +1505,7 @@ function viewUtilities() {
     <div class="card flat"><div class="toolbar">
       <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg><input data-q="plants" placeholder="${esc(t('c.search'))}" value="${esc((FILTER.plants || {}).q || '')}"></div>
       <select data-sel="plants" data-f="estate"><option value="">${esc(t('F.estate'))}: ${esc(t('c.all'))}</option>${['Cikarang', 'Kendal'].map((x) => `<option value="${x}" ${(FILTER.plants || {}).estate === x ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select>
-      <select data-sel="plants" data-f="ptype"><option value="">${esc(t('F.ptype'))}: ${esc(t('c.all'))}</option>${['wtp', 'wwtp'].map((x) => `<option value="${x}" ${(FILTER.plants || {}).ptype === x ? 'selected' : ''}>${esc(E('ptype', x))}</option>`).join('')}</select>
+      <select data-sel="plants" data-f="ptype"><option value="">${esc(t('F.ptype'))}: ${esc(t('c.all'))}</option>${['wtp', 'wwtp', 'waste'].map((x) => `<option value="${x}" ${(FILTER.plants || {}).ptype === x ? 'selected' : ''}>${esc(E('ptype', x))}</option>`).join('')}</select>
       <span class="count">${fmtInt(rows.length)} ${esc(t('c.total'))}</span></div>
       ${tableHtml(cols, body, p.pager, 940)}</div>
     <div class="card note-card" style="margin-top:16px">
@@ -1507,24 +1551,45 @@ function viewUtilities() {
   const comp = STATE.metrics.filter((m) => m.metric === 'compliance' && m.period === latest);
   const reuse = STATE.metrics.filter((m) => m.metric === 'reuse' && m.period === latest);
   const wwPlants = Array.from(new Set(STATE.metrics.filter((m) => m.metric === 'flow').map((m) => m.plant)));
-  const energyWw = energy.filter((m) => wwPlants.includes(m.plant));
   const loads = wwPlants.map((x) => loadingPct(x, latest)).filter((v) => v != null);
   const loadAvg = loads.length ? loads.reduce((s, v) => s + v, 0) / loads.length : 0;
   const cols = [
-    { w: '13%', label: 'ID' }, { w: '24%', label: t('F.plant') }, { w: '21%', label: t('F.metric') },
-    { w: '13%', label: t('F.period') }, { w: '16%', label: t('F.valueNum'), align: 'right' }, { w: '13%', label: t('F.unit') },
+    { w: '10%', label: 'ID' }, { w: '20%', label: t('F.plant') }, { w: '18%', label: t('F.metric') },
+    { w: '11%', label: t('F.period') }, { w: '14%', label: t('F.valueNum'), align: 'right' }, { w: '12%', label: t('F.unit') }, { w: '15%', label: t('F.source') },
   ];
-  const rows = filterRows(STATE.metrics, 'metrics', ['metric_id', 'plant', 'metric', 'period', 'unit']);
+  const rows = filterRows(STATE.metrics, 'metrics', ['metric_id', 'plant', 'metric', 'period', 'unit', 'source']);
   const pg = paginate('metrics', rows, 14);
+  const fmtMetric = (m) => ['m³/day', 'Rp/m³', 'Rp/ton'].includes(m.unit) ? fmtInt(m.value) : m.unit === '%' ? fmtDec(m.value, 1) : fmtDec(m.value, 2);
   const body = pg.slice.map((m) => `<tr data-entity="metric" data-id="${esc(m.metric_id)}">
     <td class="mono">${esc(m.metric_id)}</td><td>${esc(m.plant)}</td><td>${esc(E('metric', m.metric))}</td>
-    <td class="date">${esc(m.period)}</td><td class="num">${fmtDec(m.value, 2)}</td><td>${esc(m.unit === 'm³/day' ? volU() : m.unit)}</td></tr>`).join('') || emptyRow(cols.length);
+    <td class="date">${esc(m.period)}</td><td class="num">${fmtMetric(m)}</td><td>${esc(m.unit === 'm³/day' ? volU() : m.unit)}</td><td>${chipFor('source', m.source)}</td></tr>`).join('') || emptyRow(cols.length);
   const plantOpts = Array.from(new Set(STATE.metrics.map((m) => m.plant)));
-  const metOpts = ['flow', 'energy', 'compliance', 'reuse', 'sludge', 'cost'];
+  const metOpts = ['flow', 'energy', 'compliance', 'reuse', 'sludge', 'cost', 'removal', 'chemical', 'coverage', 'recovery', 'diversion', 'costTon'];
+
+  const FW = [
+    { ind: 'flow', stream: 'both', unit: 'm³/day', bench: '', desc: ['Actual clean water or wastewater processed in the period; compared with design capacity.', 'Air bersih atau air limbah aktual yang diolah pada periode tersebut; dibandingkan dengan kapasitas desain.'] },
+    { ind: 'loading', stream: 'both', unit: '%', bench: '80–90% optimal', desc: ['Actual flow ÷ design capacity. Below 70% is under-used; above 100% means overload and effluent risk rises.', 'Debit aktual ÷ kapasitas desain. Di bawah 70% kurang termanfaatkan; di atas 100% berarti kelebihan beban dan risiko efluen naik.'] },
+    { ind: 'energy', stream: 'both', unit: 'kWh/m³', bench: '≤0.47; median 0.38', desc: ['Electricity per cubic metre treated; lower is better. Main drivers are loading, aeration efficiency and pumping.', 'Listrik per meter kubik terolah; semakin rendah semakin baik. Penggerak utamanya beban, efisiensi aerasi, dan pemompaan.'] },
+    { ind: 'chemical', stream: 'both', unit: 'kg/m³', bench: 'site-specific', desc: ['Coagulant, disinfectant or polymer dose per cubic metre; dosing must meet quality without reagent waste.', 'Dosis koagulan, disinfektan, atau polimer per meter kubik; dosis harus memenuhi kualitas tanpa membuang reagen.'] },
+    { ind: 'compliance', stream: 'wwtp', unit: '%', bench: '≥98%', desc: ['Share of discharge samples meeting every permitted parameter; one failed parameter counts as non-compliant.', 'Porsi sampel pembuangan yang memenuhi seluruh parameter izin; satu parameter gagal dianggap tidak patuh.'] },
+    { ind: 'removal', stream: 'wwtp', unit: '%', bench: 'COD ≥92%', desc: ['Reduction of COD, BOD or TSS between influent and effluent, measured on matched samples.', 'Penurunan COD, BOD, atau TSS antara influen dan efluen, diukur dari sampel yang berpasangan.'] },
+    { ind: 'sludge', stream: 'wwtp', unit: 'kg DS/m³', bench: 'cake ≥20% DS', desc: ['Dry solids produced per cubic metre; higher cake solids cut hauling and disposal cost.', 'Padatan kering yang dihasilkan per meter kubik; kadar padatan lumpur lebih tinggi menekan biaya angkut.'] },
+    { ind: 'reuse', stream: 'wwtp', unit: '%', bench: 'target 20%', desc: ['Treated water reused for cooling, washing or other non-potable use instead of discharge.', 'Air terolah yang dipakai ulang untuk pendinginan, pencucian, atau non-potabel lain, alih-alih dibuang.'] },
+    { ind: 'cost', stream: 'both', unit: 'Rp/m³', bench: 'site-specific', desc: ['O&M cost per cubic metre treated: power, chemicals, labour and sludge disposal.', 'Biaya O&M per meter kubik terolah: listrik, bahan kimia, tenaga, dan pembuangan lumpur.'] },
+    { ind: 'coverage', stream: 'waste', unit: '%', bench: 'target ≥95%', desc: ['Share of estate premises served by regular waste collection.', 'Porsi unit di kawasan yang terlayani pengumpulan sampah secara rutin.'] },
+    { ind: 'recovery', stream: 'waste', unit: '%', bench: 'site-specific', desc: ['Share sorted and recycled or recovered as material, fuel or compost; landfill residual is not recovered.', 'Porsi yang disortir dan dipulihkan sebagai material, bahan bakar, atau kompos; sisa TPA bukan pemulihan.'] },
+    { ind: 'diversion', stream: 'waste', unit: '%', bench: 'site-specific', desc: ['Share kept out of landfill through recycling, composting, RDF or energy recovery.', 'Porsi yang tidak dibuang ke TPA melalui daur ulang, kompos, RDF, atau pemulihan energi.'] },
+    { ind: 'costTon', stream: 'waste', unit: 'Rp/ton', bench: 'site-specific', desc: ['Collection and processing cost per tonne of waste handled.', 'Biaya pengumpulan dan pengolahan per ton sampah yang ditangani.'] },
+  ];
+  const STREAM_LBL = { both: 'u.fw.both', wtp: 'u.fw.wtp', wwtp: 'u.fw.wwtp', waste: 'u.fw.waste' };
+  const fwRows = FW.map((f) => `<tr>
+    <td><b>${esc(E('metric', f.ind))}</b></td><td>${esc(t(STREAM_LBL[f.stream]))}</td><td class="mono">${esc(f.unit)}</td>
+    <td>${f.bench === 'site-specific' ? esc(t('u.fw.site')) : (f.bench ? esc(f.bench) : '—')}</td>
+    <td>${esc(LANG === 'en' ? f.desc[0] : f.desc[1])}</td></tr>`).join('');
 
   html += `<div class="grid g-4" style="margin-bottom:16px">
     ${kpiCard(t('u.kpi.loading'), pct(loadAvg, 1), fmtInt(loads.length) + ' ' + t('u.foot.units') + ' · ' + (latest || '—'), loadAvg >= 80 ? 't' : loadAvg >= 60 ? '' : 'r')}
-    ${kpiCard(t('u.kpi.energy'), fmtDec(avg(energyWw), 2) + '<span class="k-unit">kWh/m³</span>', 'WWTP · ' + (latest || '—'), '')}
+    ${kpiCard(t('u.kpi.energy'), fmtDec(avg(energy), 2) + '<span class="k-unit">kWh/m³</span>', t('F.plant') + ' · ' + (latest || '—'), '')}
     ${kpiCard(t('u.kpi.compliance'), pct(avg(comp), 1), t('F.period') + ': ' + (latest || '—'), 't')}
     ${kpiCard(t('u.kpi.reuse'), pct(avg(reuse), 1), esc(t('u.foot.target')), 'r')}
   </div>
@@ -1532,11 +1597,21 @@ function viewUtilities() {
     <div class="card"><div class="card-head"><h3>${esc(t('u.ch.load'))}</h3><span class="hint">${latest || '—'}</span></div><div id="ch-load" class="chart"></div></div>
     <div class="card"><div class="card-head"><h3>${esc(t('u.ch.trend'))}</h3><span class="hint">kWh/m³</span></div><div id="ch-etrend" class="chart"></div></div>
   </div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-head"><h3>${esc(t('u.fw.title'))}</h3><span class="hint">${esc(t('u.fw.benchNote'))}</span></div>
+    <p style="margin:0 0 12px;color:#6C727C;font-size:12.5px">${esc(t('u.fw.desc'))}</p>
+    ${tableHtml([
+      { w: '16%', label: t('u.fw.ind') }, { w: '12%', label: t('u.fw.stream') }, { w: '13%', label: t('u.fw.unit') },
+      { w: '20%', label: t('u.fw.bench') }, { w: '39%', label: t('u.fw.what') },
+    ], fwRows, null, 900)}
+  </div>
   <div class="sec-head" style="margin-top:0"><p>${esc(t('u.desc'))}</p><div><button class="btn primary" data-add="metric">${esc(t('u.addMetric'))}</button></div></div>
+  <div class="help" style="margin:-8px 0 10px">${esc(t('s.dummyNote'))}</div>
   <div class="card flat"><div class="toolbar">
     <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg><input data-q="metrics" placeholder="${esc(t('c.search'))}" value="${esc((FILTER.metrics || {}).q || '')}"></div>
     <select data-sel="metrics" data-f="plant"><option value="">${esc(t('F.plant'))}: ${esc(t('c.all'))}</option>${plantOpts.map((x) => `<option value="${x}" ${(FILTER.metrics || {}).plant === x ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select>
     <select data-sel="metrics" data-f="metric"><option value="">${esc(t('F.metric'))}: ${esc(t('c.all'))}</option>${metOpts.map((x) => `<option value="${x}" ${(FILTER.metrics || {}).metric === x ? 'selected' : ''}>${esc(E('metric', x))}</option>`).join('')}</select>
+    <select data-sel="metrics" data-f="source"><option value="">${esc(t('F.source'))}: ${esc(t('c.all'))}</option>${['real', 'dummy'].map((c) => `<option value="${c}" ${(FILTER.metrics || {}).source === c ? 'selected' : ''}>${esc(E('source', c))}</option>`).join('')}</select>
     <span class="count">${fmtInt(rows.length)} ${esc(t('c.total'))}</span></div>
     ${tableHtml(cols, body, pg.pager, 900)}</div>`;
 
@@ -1685,7 +1760,7 @@ const E_TYPES = {
     coll: 'metrics', idKey: 'metric_id', prefix: 'M-', title: 'f.metric', sub: 'f.metricSub',
     fields: [
       { k: 'metric_id', t: 'text' }, { k: 'plant', t: 'select', opts: ['Cikarang WTP 1 + 2', 'Cikarang WWTP IFAS', 'Cikarang WWTP OD', 'Kendal WTP', 'Kendal WWTP 1A', 'Kendal WWTP 1B', 'Kendal WWTP 1B ext', 'Solid waste'], req: 1 },
-      { k: 'metric', t: 'select', g: 'metric', req: 1 }, { k: 'period', t: 'text', req: 1 }, { k: 'value', t: 'number', req: 1, label: 'F.valueNum' }, { k: 'unit', t: 'text' },
+      { k: 'metric', t: 'select', g: 'metric', req: 1 }, { k: 'period', t: 'text', req: 1 }, { k: 'value', t: 'number', req: 1, label: 'F.valueNum' }, { k: 'unit', t: 'text' }, { k: 'source', t: 'select', g: 'source', req: 1 },
     ],
   },
   plant: {
