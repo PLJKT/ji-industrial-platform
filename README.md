@@ -69,7 +69,7 @@ machinery & automation, electronics & electrical, chemicals, automotive componen
 furniture, building materials, logistics & warehousing, trade & distribution, services &
 consulting, finance & investment, private individual and other.
 
-Each asset row also carries two bilingual Yes/No statuses. **Location identification** is derived from the resolved road coordinate: Yes when the record has a road-level pin, No when the road is still pending. **Survey** records whether an on-site survey has been completed; it is a manual flag defaulting to No until building specs are captured, and it can be edited in the asset record.
+Each asset row also carries two bilingual Yes/No statuses. **Location identification** is derived from the resolved road coordinate: Yes when the record has a road-level pin, No when the road is still pending. **Survey** records whether someone has visited the factory site to verify the register's data (area, condition, contact, terms) against the physical premises; it is a manual flag defaulting to No until that site check is done, and it can be edited in the asset record.
 
 The asset detail drawer embeds a Google Maps frame queried from street address, block and the Jababeka
 Cikarang estate; a link opens the same query in Google Maps. No API key or stored coordinates are

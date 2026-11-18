@@ -796,6 +796,8 @@ const GLOSS = {
   serviceCharge: { t: ['Service charge', 'Service charge'], d: ['A monthly estate fee per m² on top of rent, covering security, roads, drainage and common-area upkeep. Listed at Rp 1,500–3,000 per m² per month and normally excluded from the headline rent.', 'Biaya kawasan bulanan per m² di luar sewa, mencakup keamanan, jalan, drainase, dan pemeliharaan area bersama. Tercatat Rp 1.500–3.000 per m² per bulan dan biasanya tidak termasuk dalam sewa utama.'] },
   deposit: { t: ['Security deposit', 'Deposit jaminan'], d: ['Refundable cash held by the owner, usually two to three months of rent, paid partly on the offering letter and the rest at lease signing. It protects the owner against early termination, not against wear.', 'Uang yang ditahan pemilik dan dapat dikembalikan, biasanya dua sampai tiga bulan sewa, dibayar sebagian saat surat penawaran dan sisanya saat penandatanganan. Melindungi pemilik dari penghentian dini, bukan dari keausan.'] },
   escalation: { t: ['Annual escalation', 'Eskalasi tahunan'], d: ['The fixed annual increase applied to rent in a multi-year lease, commonly 5–10%. It must be stated explicitly; otherwise the rent stays flat for the whole term.', 'Kenaikan tahunan tetap pada sewa dalam kontrak bertahun, umumnya 5–10%. Harus dinyatakan tegas; bila tidak, sewa tetap sepanjang jangka.'] },
+  located: { t: ['Location identification', 'Identifikasi lokasi'], d: ['Yes when the record’s road and parcel can be pinned on the estate map; No means the address is still unresolved and pending parcel coordinates.', 'Ya bila jalan dan kavling catatan dapat ditandai pada peta kawasan; Tidak berarti alamat belum terpetakan dan menunggu koordinat kavling.'] },
+  survey: { t: ['On-site survey', 'Survei lapangan'], d: ['Yes means someone visited the factory site to verify the register’s data (area, condition, contact, terms) against the physical premises; No means the record still rests on desk-level information and needs a site visit.', 'Ya berarti seseorang sudah mengunjungi lokasi pabrik untuk memverifikasi data catatan (luas, kondisi, kontak, syarat) terhadap bangunan fisik; Tidak berarti catatan masih berdasar data meja dan perlu kunjungan lapangan.'] },
 };
 
 /* ================= STATE & HELPERS ================= */
@@ -1267,7 +1269,7 @@ function viewAssets() {
     }).join('') || emptyRow(cols.length);
     const located = STATE.assets.filter((a) => a.geo === 'road' && a.lat !== '' && a.lon !== '');
     const pendingN = STATE.assets.length - located.length;
-    const htmlView = tabs + termLine(['occupancy', 'clearance', 'serviceCharge', 'deposit', 'escalation']) + `<div class="sec-head" style="margin-top:0"><p>${esc(t('a.descAssets'))}</p><div><button class="btn primary" data-add="asset">${esc(t('a.addAsset'))}</button></div></div>
+    const htmlView = tabs + termLine(['occupancy', 'clearance', 'serviceCharge', 'deposit', 'escalation', 'located', 'survey']) + `<div class="sec-head" style="margin-top:0"><p>${esc(t('a.descAssets'))}</p><div><button class="btn primary" data-add="asset">${esc(t('a.addAsset'))}</button></div></div>
       <div class="card flat">
         <div class="toolbar">
           <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg><input data-q="assets" placeholder="${esc(t('c.search'))}" value="${esc(f.q || '')}"></div>
