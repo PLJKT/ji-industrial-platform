@@ -123,7 +123,16 @@ Seed register: 203 vacant plots from the 17 Nov 2026 workbook, matched to 185 un
 has them; 194 plots carry a recorded land area (344,717 m² total, whole square metres rounded half up) and 9 plots leave the area blank
 because the workbook has none. Building size, utility connections, commercial terms, compliance,
 quality and verification fields are left blank on purpose and completed during owner follow-up.
-`demands`, `deals`, `leads` and `metrics` start empty; `plants` keeps the 10 reported treatment units above.
+`demands`, `leads` and `metrics` start empty; `plants` keeps the 10 reported treatment units above.
+
+`deals` holds service contracts. The revenue-line taxonomy follows estate-operator charges
+cross-checked across IEAT estate tariffs, the Jababeka CODB schedule and shared-utility SEZ
+sources: permits and compliance, energy and power, clean water supply, environmental
+treatment, solid and hazardous waste, estate management, people, supply chain, and finance
+and insurance. Each contract also carries a **Data source** flag: `Real` (`Nyata`) for a
+signed agreement and `Dummy` for a format sample. The 10 seeded rows are all `Dummy` —
+their tenant names and values exist only to demonstrate the table and filter format and are
+not real contracts; signed agreements are entered with `Real`.
 
 ## Run locally
 
