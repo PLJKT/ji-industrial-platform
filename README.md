@@ -13,7 +13,7 @@ Data can be exported to a JSON snapshot and re-imported on another device.
 | View | Purpose | Records |
 | --- | --- | --- |
 | Operations overview | Three workstream cards, six portfolio KPIs, four charts, a three-phase roadmap, and a data-basis / open-items panel | derived |
-| Asset register | One asset-centric register: each vacant plot joins its owner name, business industry, contact, motive, ask price, pressure and KYC, plus matched demand | assets, owners, demands |
+| Asset register | One asset-centric register: each vacant plot joins its owner name, business industry, contact, location identification, survey status, motive, ask price, pressure and KYC, plus matched demand | assets, owners, demands |
 | Service revenue | Paid services sold through the one-stop office, and survey leads | deals, leads |
 | Water & waste | Two tabs: design capacity register by plant and phase, and monthly readings (loading, energy, compliance, reuse, sludge, unit cost) | plants, metrics |
 | Glossary | Regulatory and technical terms with definitions in both languages | 20 entries |
@@ -68,6 +68,8 @@ plantation, pharma & healthcare, textile & apparel, plastic & packaging, metal &
 machinery & automation, electronics & electrical, chemicals, automotive components, wood &
 furniture, building materials, logistics & warehousing, trade & distribution, services &
 consulting, finance & investment, private individual and other.
+
+Each asset row also carries two bilingual Yes/No statuses. **Location identification** is derived from the resolved road coordinate: Yes when the record has a road-level pin, No when the road is still pending. **Survey** records whether an on-site survey has been completed; it is a manual flag defaulting to No until building specs are captured, and it can be edited in the asset record.
 
 The asset detail drawer embeds a Google Maps frame queried from street address, block and the Jababeka
 Cikarang estate; a link opens the same query in Google Maps. No API key or stored coordinates are
