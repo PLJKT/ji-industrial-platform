@@ -71,9 +71,10 @@ consulting, finance & investment, private individual and other.
 
 Each asset row also carries two bilingual Yes/No statuses. **Location identification** is derived from the resolved road coordinate: Yes when the record has a road-level pin, No when the road is still pending. **Survey** records whether someone has visited the factory site to verify the register's data (area, condition, contact, terms) against the physical premises; it is a manual flag defaulting to No until that site check is done, and it can be edited in the asset record.
 
-The asset detail drawer embeds a Google Maps frame queried from street address, block and the Jababeka
-Cikarang estate; a link opens the same query in Google Maps. No API key or stored coordinates are
-required, and an imprecise address falls back to the estate area.
+The asset detail drawer embeds a Google Maps frame only when the record's location is
+identified: the frame pins that single asset by its stored coordinates, and a link opens the
+same query in Google Maps. Records whose road is still pending show no map card at all. No API
+key is required.
 
 Below the asset register table, a wide Leaflet map (OpenStreetMap tiles, no API key) plots every
 asset whose road was resolved offline once during the build; markers cluster on the map and a popup

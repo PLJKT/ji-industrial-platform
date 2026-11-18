@@ -1767,7 +1767,9 @@ function assetDetailExtra(rec) {
   if (fit) rows.push('<dt>' + esc(t('d.assetFitout')) + '</dt><dd class="mono">' + esc(fmtRpShort(fit)) + '</dd>');
   const addrParts = [rec.alamat, rec.blok ? 'Blok ' + rec.blok : '', 'Kawasan Industri Jababeka', 'Cikarang, Bekasi, Jawa Barat']
     .map((x) => String(x || '').trim()).filter(Boolean);
-  const q = encodeURIComponent(addrParts.join(', '));
+  const addrQ = encodeURIComponent(addrParts.join(', '));
+  const located = rec.geo === 'road' && rec.lat !== '' && rec.lon !== '';
+  const mapQ = located ? encodeURIComponent(rec.lat + ',' + rec.lon) : addrQ;
   let html = '';
   if (rows.length) {
     html += '<div class="card flat" style="margin-top:18px;border:1px solid var(--line)">'
@@ -1776,11 +1778,13 @@ function assetDetailExtra(rec) {
   if (rec.owner_id) {
     html += '<div class="card flat" style="margin-top:18px;border:1px solid var(--line)"><button class="btn ghost" data-open-owner="' + esc(rec.owner_id) + '">' + esc(t('a.openOwner')) + '</button></div>';
   }
-  html += '<div class="card flat map-card" style="margin-top:18px;border:1px solid var(--line)">'
-    + '<div class="map-head"><span>' + esc(t('f.map')) + '</span>'
-    + '<a target="_blank" rel="noopener" href="https://www.google.com/maps?q=' + q + '">' + esc(t('f.mapOpen')) + '</a></div>'
-    + '<iframe title="' + esc(t('f.map')) + '" src="https://www.google.com/maps?q=' + q + '&output=embed" loading="lazy" referrerpolicy="no-referrer"></iframe>'
-    + '</div>';
+  if (located) {
+    html += '<div class="card flat map-card" style="margin-top:18px;border:1px solid var(--line)">'
+      + '<div class="map-head"><span>' + esc(t('f.map')) + '</span>'
+      + '<a target="_blank" rel="noopener" href="https://www.google.com/maps?q=' + mapQ + '">' + esc(t('f.mapOpen')) + '</a></div>'
+      + '<iframe title="' + esc(t('f.map')) + '" src="https://www.google.com/maps?q=' + mapQ + '&output=embed" loading="lazy" referrerpolicy="no-referrer"></iframe>'
+      + '</div>';
+  }
   return html;
 }
 
