@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>JI Industrial Platform — Asset, Service &amp; Utility Operations</title>
-<meta name="description" content="Bilingual operations platform for Jababeka Infrastructure: vacant asset register, one-stop service revenue, and water / waste utility performance.">
+<title>JI Industrial Platform — Asset &amp; Service Operations</title>
+<meta name="description" content="Bilingual operations platform for Jababeka Infrastructure: vacant asset register and one-stop service revenue.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230E1A2B'/%3E%3Ctext x='16' y='22' font-family='Georgia,serif' font-size='15' fill='%23D8A24A' text-anchor='middle'%3EJI%3C/text%3E%3C/svg%3E">
 <script src="https://fastly.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
@@ -71,7 +71,7 @@ h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-0.015em}
 .notice b{font-weight:600}
 
 /* ---------- BOD program cards ---------- */
-.prog-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:16px}
+.prog-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-bottom:16px}
 .prog{background:#FFF;border:1px solid var(--line);padding:16px 18px;display:flex;flex-direction:column;gap:10px;min-width:0}
 .prog .p-top{display:flex;align-items:center;gap:10px}
 .prog .p-icon{width:30px;height:30px;border:1px solid var(--line);display:grid;place-items:center;color:var(--ink-2);flex:0 0 30px}
@@ -362,7 +362,7 @@ const STR = {
   'app.name': ['JI Platform', 'JI Platform'],
   'app.brandSub': ['Industrial operations', 'Operasi kawasan industri'],
   'app.foot': ['Internal operating system · 2026', 'Sistem operasi internal · 2026'],
-  'app.docTitle': ['JI Industrial Platform — Asset, Service & Utility Operations', 'JI Industrial Platform — Aset, Layanan & Utilitas'],
+  'app.docTitle': ['JI Industrial Platform — Asset & Service Operations', 'JI Industrial Platform — Operasi Aset & Layanan'],
 
   'nav.g1': ['Operations', 'Operasional'],
   'nav.g2': ['Reference', 'Referensi'],
@@ -389,7 +389,7 @@ const STR = {
   'c.required': ['Required', 'Wajib'],
   'c.select': ['Select', 'Pilih'],
   'c.demo': ['Live vacant-asset register', 'Daftar aset idle nyata'],
-  'c.demoText': ['203 vacant plots from the 17 Nov 2026 workbook; commercial, compliance and quality fields stay blank pending owner verification. Service contracts, leads and utility readings include Dummy format samples only; Real records come from registered data.', '203 kavling kosong dari buku kerja 17 Nov 2026; bidang komersial, kepatuhan, dan kualitas dikosongkan menunggu verifikasi pemilik. Kontrak layanan, prospek, dan pembacaan utilitas memuat contoh format Dummy saja; catatan Real berasal dari data tercatat.'],
+  'c.demoText': ['203 vacant plots from the 17 Nov 2026 workbook; commercial, compliance and quality fields stay blank pending owner verification. Service contracts and leads include Dummy format samples only; Real records come from registered data.', '203 kavling kosong dari buku kerja 17 Nov 2026; bidang komersial, kepatuhan, dan kualitas dikosongkan menunggu verifikasi pemilik. Kontrak layanan dan prospek memuat contoh format Dummy saja; catatan Real berasal dari data tercatat.'],
   'c.saved': ['Record saved', 'Catatan tersimpan'],
   'c.deleted': ['Record deleted', 'Catatan dihapus'],
   'c.dupId': ['That ID is already in use', 'ID tersebut sudah dipakai'],
@@ -407,7 +407,7 @@ const STR = {
   'c.of': ['of', 'dari'],
 
   'v.dashboard.title': ['Operations overview', 'Ringkasan operasional'],
-  'v.dashboard.sub': ['Three strategic workstreams in one place: vacant asset matching, one-stop service revenue, and water & waste improvement.', 'Tiga lini strategis dalam satu tempat: pencocokan aset kosong, pendapatan layanan terpadu, dan peningkatan air & limbah.'],
+  'v.dashboard.sub': ['Two strategic workstreams in one place: vacant asset matching and one-stop service revenue.', 'Dua lini strategis dalam satu tempat: pencocokan aset kosong dan pendapatan layanan terpadu.'],
   'v.assets.title': ['Asset register', 'Register aset'],
   'v.assets.sub': ['Vacant and underused factories, owner terms and matched demand in one record chain.', 'Pabrik kosong dan kurang termanfaatkan, persyaratan pemilik, dan permintaan yang cocok dalam satu rantai catatan.'],
   'v.services.title': ['Service revenue', 'Pendapatan layanan'],
@@ -1139,16 +1139,9 @@ function viewDashboard() {
   const stageData = stages.map((s) => STATE.demands.filter((d) => d.stage === s).length);
   const cats = ['permit', 'energy', 'water', 'environment', 'waste', 'property', 'hr', 'supply', 'finance'];
   const catData = cats.map((c) => STATE.deals.filter((d) => d.category === c && d.svcStatus !== 'quoted' && d.svcStatus !== 'lost').reduce((s, d) => s + Number(d.value), 0));
-  const months = Array.from(new Set(STATE.metrics.map((m) => m.period))).sort();
-  const e2 = metricSeries('Cikarang WWTP IFAS', 'energy').map((m) => m.value);
-  const r2 = metricSeries('Cikarang WWTP IFAS', 'reuse').map((m) => m.value);
 
   const stale = STATE.assets.filter((a) => daysAgo(a.verified) > 90);
   const noDemand = STATE.assets.filter((a) => a.quality >= 75 && !STATE.demands.some((d) => d.assetLink === a.asset_id && OPEN_STAGES.includes(d.stage)));
-  const lowReuse = ['Cikarang WWTP IFAS', 'Kendal WWTP 1B'].map((p) => {
-    const s = metricSeries(p, 'reuse');
-    return { plant: p, v: s.length ? s[s.length - 1].value : null };
-  }).filter((x) => x.v != null && x.v < 10);
 
   const progCard = (view, icon, title, metric, desc, act) => `
   <div class="prog">
@@ -1161,12 +1154,11 @@ function viewDashboard() {
   el('view').innerHTML = `
   <div class="notice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg><div><b>${esc(t('c.demo'))}</b> — ${esc(t('c.demoText'))}</div></div>
 
-  ${termLine(['occupancy', 'leadscore', 'reuse'])}
+  ${termLine(['occupancy', 'leadscore'])}
 
   <div class="prog-grid">
     ${progCard('assets', ICONS.assets, t('d.prog.asset.title'), t('d.prog.asset.metric', { n: fmtInt(k.idle), t: fmtInt(k.total) }), t('d.prog.asset.desc'), t('d.prog.asset.act'))}
     ${progCard('services', ICONS.services, t('d.prog.service.title'), t('d.prog.service.metric', { n: fmtInt(k.delivered) }), t('d.prog.service.desc'), t('d.prog.service.act'))}
-    ${progCard('utilities', ICONS.utilities, t('d.prog.utility.title'), t('d.prog.utility.metric', { r: pct(k.reuse, 1) }), t('d.prog.utility.desc'), t('d.prog.utility.act'))}
   </div>
 
   <div class="grid g-3" style="margin-bottom:16px">
@@ -1183,9 +1175,8 @@ function viewDashboard() {
     <div class="card"><div class="card-head"><h3>${esc(t('d.stage'))}</h3><span class="hint">${fmtInt(STATE.demands.length)} ${esc(t('c.total'))}</span></div><div id="ch-stage" class="chart"></div></div>
   </div>
 
-  <div class="grid g-2" style="margin-top:16px">
+  <div class="grid" style="margin-top:16px">
     <div class="card"><div class="card-head"><h3>${esc(t('d.line'))}</h3><span class="hint">${esc(t('s.kpi.revenue'))} · ${fmtRpShort(k.revenue)}</span></div><div id="ch-line" class="chart tall"></div></div>
-    <div class="card"><div class="card-head"><h3>${esc(t('d.trend'))}</h3><span class="hint">${esc(t('d.trend.unit'))}</span></div><div id="ch-trend" class="chart tall"></div></div>
   </div>
 
   <div class="sec-head"><div><h2>${esc(t('d.roadmap'))}</h2></div></div>
@@ -1195,21 +1186,12 @@ function viewDashboard() {
     <div class="stage"><div class="s-no">03</div><h4>${esc(t('d.r3.title'))}</h4><p>${esc(t('d.r3.desc'))}</p></div>
   </div>
 
-  <div class="grid g-2" style="margin-top:16px">
+  <div class="grid" style="margin-top:16px">
     <div class="card flat">
       <div class="card-head" style="padding:14px 20px 0"><h3>${esc(t('d.attention'))}</h3></div>
       <div class="list" style="padding:0 20px 12px">
         <div class="li"><span class="tag">${esc(t('d.tag.action'))}</span><div class="body"><b>${fmtInt(noDemand.length)} ${esc(t('d.noDemand'))}</b><span>${noDemand.slice(0, 4).map((a) => esc(a.asset_id)).join(' · ') || '—'}</span></div><div class="act"><button class="btn ghost" data-goto="assets">${esc(t('a.tab.assets'))}</button></div></div>
         <div class="li"><span class="tag">${esc(t('d.tag.data'))}</span><div class="body"><b>${fmtInt(stale.length)} ${esc(t('d.stale'))}</b><span>${stale.slice(0, 4).map((a) => esc(a.asset_id + ' · ' + fmtDate(a.verified))).join('  |  ') || '—'}</span></div><div class="act"><button class="btn ghost" data-goto="assets">${esc(t('a.tab.assets'))}</button></div></div>
-        <div class="li"><span class="tag">${esc(t('d.tag.utility'))}</span><div class="body"><b>${fmtInt(lowReuse.length)} ${esc(t('d.belowTarget'))}</b><span>${lowReuse.map((x) => esc(x.plant + ' · ' + pct(x.v, 1))).join('  |  ') || '—'}</span></div><div class="act"><button class="btn ghost" data-goto="utilities">${esc(t('nav.utilities'))}</button></div></div>
-      </div>
-    </div>
-    <div class="card note-card">
-      <div class="card-head"><h3>${esc(t('d.basis'))}</h3></div>
-      <div class="basis-list">
-        <div class="basis-line"><span class="tag">DATA</span><p>${esc(t('d.basis1'))}</p></div>
-        <div class="basis-line"><span class="tag">CIKARANG</span><p>${esc(t('d.basis2'))}</p></div>
-        <div class="basis-line"><span class="tag">KENDAL</span><p>${esc(t('d.basis3'))}</p></div>
       </div>
     </div>
   </div>`;
@@ -1232,17 +1214,6 @@ function viewDashboard() {
     xAxis: Object.assign({}, AXIS, { type: 'value', axisLabel: { show: false }, axisLine: { show: false }, splitLine: { show: false } }),
     yAxis: Object.assign({}, AXIS, { type: 'category', data: cats.map((c) => E('category', c)), inverse: true, axisLabel: { color: '#3C4552', fontSize: 11, width: 152, overflow: 'truncate' }, splitLine: { show: false } }),
     series: [{ type: 'bar', data: catData, barWidth: 13, itemStyle: { color: '#A9701C' }, label: { show: true, position: 'right', fontSize: 10.5, color: '#6C727C', formatter: (p) => fmtRpShort(p.value) } }],
-  });
-  chart('ch-trend', {
-    grid: { left: 48, right: 52, top: 22, bottom: 44 },
-    tooltip: { trigger: 'axis' },
-    legend: { bottom: 0, left: 0, itemWidth: 10, itemHeight: 8, textStyle: { fontSize: 10.5, color: '#3C4552' } },
-    xAxis: Object.assign({ type: 'category', data: months.map(monthLabel), boundaryGap: false }, AXIS),
-    yAxis: [Object.assign({ type: 'value', name: 'kWh/m³', nameTextStyle: { fontSize: 10, color: '#9AA0A8' }, scale: true }, AXIS), Object.assign({ type: 'value', name: '%', nameTextStyle: { fontSize: 10, color: '#9AA0A8' }, max: 20, min: 0 }, AXIS)],
-    series: [
-      { name: 'kWh/m³', type: 'line', smooth: true, symbolSize: 5, data: e2, itemStyle: { color: '#182A42' }, lineStyle: { width: 2 } },
-      { name: `${t('u.kpi.reuse')} %`, type: 'line', smooth: true, symbolSize: 5, yAxisIndex: 1, data: r2, itemStyle: { color: '#A9701C' }, lineStyle: { width: 2, type: 'dashed' } },
-    ],
   });
 }
 function kpiCard(label, value, foot, tone) {
@@ -1684,7 +1655,6 @@ function viewSettings() {
         <p style="margin:0 0 10px;font-size:11.5px;color:var(--muted)">${esc(t('st.own.desc'))}</p>
         ${ownRow(t('st.own.assets'), t('st.own.teamAssets'))}
         ${ownRow(t('st.own.services'), t('st.own.teamServices'))}
-        ${ownRow(t('st.own.utilities'), t('st.own.teamUtilities'))}
       </div>
     </div></div>`;
 }
@@ -2047,7 +2017,7 @@ const ICONS = {
 function renderNav() {
   const item = (v, k) => `<div class="nav-item ${VIEW === v ? 'active' : ''}" data-view="${v}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">${ICONS[v]}</svg><span>${esc(t(k))}</span></div>`;
   el('nav').innerHTML = '<div class="nav-label">' + esc(t('nav.g1')) + '</div>'
-    + item('dashboard', 'nav.dashboard') + item('assets', 'nav.assets') + item('services', 'nav.services') + item('utilities', 'nav.utilities')
+    + item('dashboard', 'nav.dashboard') + item('assets', 'nav.assets') + item('services', 'nav.services')
     + '<div class="nav-label">' + esc(t('nav.g2')) + '</div>' + item('glossary', 'nav.glossary') + item('settings', 'nav.settings');
   el('brandName').textContent = t('app.name');
   el('brandSub').textContent = t('app.brandSub');
@@ -2061,6 +2031,7 @@ function renderNav() {
 }
 
 function renderView() {
+  if (VIEW === 'utilities') VIEW = 'dashboard';
   SEEN = {};
   clearCharts();
   const title = t('v.' + VIEW + '.title');
@@ -2083,6 +2054,7 @@ function renderView() {
 }
 
 function go(view) {
+  if (view === 'utilities') view = 'dashboard';
   VIEW = view;
   SEEN = {};
   renderNav();
@@ -2225,7 +2197,7 @@ function init() {
   try {
     const qp = new URLSearchParams(location.search);
     const v = qp.get('v');
-    if (['dashboard', 'assets', 'services', 'utilities', 'glossary', 'settings'].includes(v)) VIEW = v;
+    if (['dashboard', 'assets', 'services', 'glossary', 'settings'].includes(v)) VIEW = v;
     const tb = qp.get('tab');
     if (tb && TAB[v] !== undefined) TAB[v] = tb;
     if (qp.get('lang') === 'id') LANG = 'id';
