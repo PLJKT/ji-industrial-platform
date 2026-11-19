@@ -8,16 +8,16 @@ Bilingual English (default) and Indonesian, purpose-built for internal operating
 ## What this is
 
 A single-page static system. No server, no account, no database. Records live in the browser's
-`localStorage` under the key `ji_platform_v11`; the language choice lives under `ji_lang`.
+`localStorage` under the key `ji_platform_v12`; the language choice lives under `ji_lang`.
 Data can be exported to a JSON snapshot and re-imported on another device.
 
 | View | Purpose | Records |
 | --- | --- | --- |
 | Operations overview | Two workstream cards, six portfolio KPIs, three charts, a three-phase roadmap, and an action / data attention panel | derived |
-| Asset register | One asset-centric register: each vacant plot joins its owner name, business industry, contact, location identification, survey status, motive, ask price, pressure and KYC, plus matched demand | assets, owners, demands |
+| Asset register | One asset-centric register: each vacant plot joins its owner name, business industry, contact, zone, building type, building area, location identification, survey status, motive, ask price, pressure and KYC, plus matched demand | assets, owners, demands |
 | Service revenue | Paid services sold through the one-stop office, and survey leads | deals, leads |
 | ~~Water & waste~~ | Hidden from navigation in this release. The plants / metrics register, efficiency indicator framework and readings view are kept in the code and data for future re-enablement | plants, metrics (retained) |
-| Glossary | Regulatory and technical terms with definitions in both languages | 31 entries |
+| Glossary | Regulatory and technical terms with definitions in both languages | 32 entries |
 | Settings | Language, import / export, storage status, record ownership, data rules | — |
 
 ## Board-review overview
@@ -53,25 +53,30 @@ decision authority can change without rewriting the property; the register view 
 onto each asset row, and the full owner record opens from the asset drawer.
 
 `assets` mirrors the intake workbook (`JI 闲置资产登记模板`, sheet `资产主表`) field for field: asset
-ID, estate, block / lot, address, owner ID, owner contact, land area, building area, floors, clear
-height, floor load, loading docks, power, water, wastewater connection, gas or steam, permits, land
-title, status, owner intent, asking price, condition, retrofit estimate, data quality, last verified,
-access tier and notes. All fields are editable in the form, including the ID; renaming an asset
-keeps demand links pointing at the renamed record.
+ID, estate, zone, block / lot, address, owner ID, owner contact, land area, building area, building
+type, floors, clear height, floor load, loading docks, power, water, wastewater connection, gas or
+steam, permits, land title, status, owner intent, asking price, condition, retrofit estimate, data
+quality, last verified, access tier and notes. All fields are editable in the form, including the ID;
+renaming an asset keeps demand links pointing at the renamed record.
+
+`zone` records the Cikarang-corridor sub-zone from the ledger screenshots (KIJ 1–6, UKM); the parent
+estate field still reads Cikarang. `btype` records the ledger building-type code (TOB, SFB, SIB,
+Kavling, BizPark, SMH, E-Space, COB); the codes are kept as reported and their full expansions are to
+be confirmed against the estate master plan.
 
 `owners` carries name, business industry, contact, legal form, beneficial owner, ownership
 structure, motive, floor / asking price, time pressure, encumbrances, transaction preference,
 commission tolerance, decision authority and KYB. The register joins the owner's industry onto
-each asset row under the Industry column. Industry is recorded against public company profiles
-where one could be verified; the remainder follow strong company-name tokens. Pure personal-name
-records are marked `Private individual`, and companies that could not be verified stay blank (`—`)
-rather than being guessed. The 18-key bilingual taxonomy covers food & beverage, agriculture &
-plantation, pharma & healthcare, textile & apparel, plastic & packaging, metal & machinery,
+each asset row under the Industry column. Industry follows the category recorded in the ledger
+screenshots, which overrides the earlier name-based mapping; where the screenshot category is blank
+the prior mapping is kept, and companies that could not be verified stay blank (`—`) rather than
+being guessed. The 18-key bilingual taxonomy covers food & beverage, agriculture & plantation,
+pharma & healthcare, textile & apparel, plastic & packaging, metal & machinery,
 machinery & automation, electronics & electrical, chemicals, automotive components, wood &
 furniture, building materials, logistics & warehousing, trade & distribution, services &
 consulting, finance & investment, private individual and other.
 
-Each asset row also carries two bilingual Yes/No statuses. **Location identification** is derived from the resolved road coordinate: Yes when the record has a road-level pin, No when the road is still pending. **Survey** records whether someone has visited the factory site to verify the register's data (area, condition, contact, terms) against the physical premises; it is a manual flag defaulting to No until that site check is done, and it can be edited in the asset record.
+Each asset row also carries two bilingual Yes/No statuses. **Location identification** is derived from the resolved road coordinate: Yes when the record has a road-level pin, No when the road is still pending. **Survey** records whether someone has visited the factory site to verify the register's data (area, condition, contact, terms) against the physical premises; it is a manual flag, defaulting to No until that site check is done. Of the 203 records, 3 are marked surveyed from the yellow-highlighted rows in the ledger screenshots; the rest are No. It can be edited in the asset record.
 
 The asset detail drawer embeds a Google Maps frame only when the record's location is
 identified: the frame pins that single asset by its stored coordinates, and a link opens the
@@ -99,7 +104,8 @@ service charge Rp 1,500–3,000 per m² per month, deposit two to three months, 
 with 5–10% annual escalation, VAT excluded.
 
 Sorting covers the key metrics: recently verified, rent per m², asking price high to low and low to
-high, building area, land area, clear height, connected power, data quality and availability date.
+high, building area, land area, zone, building type, clear height, connected power, data quality and
+availability date.
 Asking price is normalised to Rp per m² using building area when the record is quoted as a total, so
 one ranking holds across both quoting conventions.
 
@@ -130,8 +136,12 @@ register is supplied.
 Seed register: 203 vacant plots from the 17 Nov 2026 workbook, matched to 185 unique owner records
 (one owner can hold several plots). Land area and owner contact are carried over where the workbook
 has them; 194 plots carry a recorded land area (344,717 m² total, whole square metres rounded half up) and 9 plots leave the area blank
-because the workbook has none. Building size, utility connections, commercial terms, compliance,
-quality and verification fields are left blank on purpose and completed during owner follow-up.
+because the workbook has none. Building area, building type and zone are filled from the 11 ledger
+screenshots, anchored by block + land area: 141 plots carry a built-up area (69,817 m² total) and 62
+plots are recorded as 0 m² (kavling / empty plot). Industry category and the survey flag come from the
+same screenshots; the reconciliation, anchor exceptions and source-internal inconsistencies are
+listed in `enrich_diff_report.md`. Utility connections, commercial terms, compliance, data quality
+and verification dates remain blank on purpose and are completed during owner follow-up.
 `demands` starts empty; `plants` keeps the 10 reported treatment units above, and `metrics` is seeded
 with 21 Dummy format readings for 2026-10 (flow, energy, compliance, removal, reuse, sludge, chemical
 dose, unit cost) so the hidden utility table, filters and KPI aggregations can be tested before real
