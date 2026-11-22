@@ -201,6 +201,14 @@ surveyed. It is derived from the register, not a second register:
 
 Open `index.html` in a browser. Publishing through GitHub Pages serves the same file.
 
+## Documentation map
+
+- `README.md` (this file) — what the console does, the data model, field meanings and operating rules.
+- `DEVELOPMENT.md` — code map, the contracts that must hold (language pairs, field schema, completion
+  formula, photo pipeline, storage version), the test harness and the release checklist.
+- `enrich_diff_report.md` — the evidence trail behind the screenshot enrichment: per-record anchors,
+  exceptions and source inconsistencies.
+
 ## Publish on GitHub Pages
 
 Settings → Pages → Source: *Deploy from a branch* → Branch: `main`, folder `/ (root)` → Save.
