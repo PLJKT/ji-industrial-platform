@@ -8,16 +8,18 @@ Bilingual English (default) and Indonesian, purpose-built for internal operating
 ## What this is
 
 A single-page static system. No server, no account, no database. Records live in the browser's
-`localStorage` under the key `ji_platform_v12`; the language choice lives under `ji_lang`.
-Data can be exported to a JSON snapshot and re-imported on another device.
+`localStorage` under the key `ji_platform_v13`; the language choice lives under `ji_lang`.
+Data can be exported to a JSON snapshot and re-imported on another device. Validation photos are
+browser-local Blobs in IndexedDB and travel with the browser profile, not with the JSON snapshot.
 
 | View | Purpose | Records |
 | --- | --- | --- |
 | Operations overview | Two workstream cards, six portfolio KPIs, three charts, a three-phase roadmap, and an action / data attention panel | derived |
 | Asset register | One asset-centric register: each vacant plot joins its owner name, business industry, contact, zone, building type, building area, location identification, survey status, motive, ask price, pressure and KYC, plus matched demand | assets, owners, demands |
+| Data validation | Field verification queue for every asset not yet surveyed: planned date, person in charge, result, evidence in register format, completion score and compressed JPG photo proof | assets, validations |
 | Service revenue | Paid services sold through the one-stop office, and survey leads | deals, leads |
 | ~~Water & waste~~ | Hidden from navigation in this release. The plants / metrics register, efficiency indicator framework and readings view are kept in the code and data for future re-enablement | plants, metrics (retained) |
-| Glossary | Regulatory and technical terms with definitions in both languages | 32 entries |
+| Glossary | Regulatory and technical terms with definitions in both languages | 34 entries |
 | Settings | Language, import / export, storage status, record ownership, data rules | — |
 
 ## Board-review overview
@@ -158,6 +160,42 @@ every visible record in the register regardless of its source flag; the flag mar
 estate tariffs, the Jababeka CODB schedule and shared-utility SEZ sources: permits and
 compliance, energy and power, clean water supply, environmental treatment, solid and
 hazardous waste, estate management, people, supply chain, and finance and insurance.
+
+## Data validation
+
+The **Data validation** page (`?v=validation`) records the field check of each asset that is not yet
+surveyed. It is derived from the register, not a second register:
+
+- **Automatic enrolment.** Every asset whose register row still says `Survey = No` gets a validation
+  record on load (`syncValidations`). Today that is 200 of 203; the 3 already surveyed stay out.
+  New assets added through the form are enrolled on the next save. Records are never deleted when an
+  asset is later surveyed, so the visit history stays visible and the row keeps showing
+  `Survey = Yes` in the Register column.
+- **Schedule and result.** Planned survey date, person in charge, result (`Pending`, `Scheduled`,
+  `Surveyed`, `Access blocked`, `Data mismatch`), actual survey date and findings / discrepancies.
+  Setting the result to `Surveyed` writes `Survey = Yes` back to the register (and fills the
+  verification date when it is empty); the register keeps the single Survey column, so the page can
+  never disagree with it.
+- **Evidence in register format.** The evidence block reuses the asset register field list — same
+  keys, order and section headings (identity, physical, compliance, commercial, quality) — with
+  `asset_id`, `survey` and `verified` handled in the schedule block instead. Under each field the
+  current register value is shown as a reference hint (only where the register has a value), so a
+  surveyor can see what is being confirmed.
+- **Completion.** `50% evidence coverage + 30% schedule and result (date, person, result, one third
+  each) + 20% at least one photo`. A pre-filled register value on its own therefore never reads as
+  finished work; the drawer shows the three components and the total, updated live while typing.
+- **Photo evidence.** JPG only, unlimited count. Each file is redrawn on a canvas at 720 px on the
+  long side and re-encoded as JPEG (quality 0.62, typically 5–120 KB), then stored as a Blob in
+  IndexedDB (`ji_validation_photos`); the record keeps only `{id, w, h, bytes}`. This keeps the
+  5 MB localStorage quota for the register itself. Photos can be removed individually; unsaved field
+  edits survive an upload or delete.
+- **List controls.** KPIs (in queue, scheduled, result recorded, average completion), then search,
+  zone, building type, result and completion-band filters, sorting (completion low to high / high to
+  low, planned date, recently updated) and 12 rows per page.
+- **Storage.** `STATE.validations[]` with one record per asset: `asset_id`, `plannedDate`, `pic`,
+  `outcome`, `checkedAt`, `findings`, `evidence{}`, `photos[]`, `updatedAt`. Local storage key
+  `ji_platform_v13`. Photo blobs are browser-local and are not part of the exported JSON, which
+  carries the metadata only.
 
 ## Run locally
 

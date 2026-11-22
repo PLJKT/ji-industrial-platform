@@ -258,6 +258,36 @@ td.date{white-space:nowrap;color:var(--muted);font-size:12px}
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#F3F1EC;padding:10px 18px;font-size:12px;opacity:0;pointer-events:none;transition:.2s;z-index:95;border-left:2px solid #D8A24A}
 .toast.on{opacity:1;transform:translateX(-50%)}
 
+/* ---------- data validation ---------- */
+.dv-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.dv-panel{background:#FFF;border:1px solid var(--line);padding:16px 18px;margin-bottom:16px}
+.dv-panel .dv-big{display:flex;align-items:baseline;gap:9px}
+.dv-panel .dv-big b{font-size:31px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.1}
+.dv-panel .dv-big span{font-size:11.5px;color:var(--muted)}
+.dv-rows{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.dv-row{display:grid;grid-template-columns:170px minmax(0,1fr) 76px;gap:12px;align-items:center;font-size:11.5px;color:var(--muted)}
+.dv-row .n{text-align:right;font-variant-numeric:tabular-nums;color:var(--text)}
+.pbar{position:relative;height:6px;background:var(--line-2);width:100%;min-width:52px;overflow:hidden}
+.pbar i{position:absolute;left:0;top:0;height:100%;background:var(--teal);transition:width .2s}
+.pbar.amber i{background:var(--amber)}
+.pbar.red i{background:var(--red)}
+.pcell{display:flex;align-items:center;gap:8px}
+.pcell b{font-size:11.5px;font-variant-numeric:tabular-nums;min-width:33px;text-align:right;color:#3D4756}
+.pgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.ph{border:1px solid var(--line);background:#FCFBF8;position:relative;display:block}
+.ph img{display:block;width:100%;height:92px;object-fit:cover;background:#EDEAE3}
+.ph .pm{display:flex;justify-content:space-between;gap:6px;padding:5px 7px;font-size:10px;color:var(--faint);font-variant-numeric:tabular-nums}
+.ph .px{position:absolute;top:6px;right:6px;width:22px;height:22px;border:1px solid var(--line);background:#FFF;cursor:pointer;font-size:12px;line-height:1;display:grid;place-items:center;color:var(--red);padding:0}
+.ph .px:hover{border-color:#E4C6BE;background:var(--red-soft)}
+.dv-up{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0 10px}
+.dv-empty{border:1px dashed var(--line);padding:18px;text-align:center;font-size:11.5px;color:var(--faint)}
+.dv-ref{font-size:10.5px;color:var(--faint);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dv-note{font-size:11px;color:var(--faint);margin-top:8px;line-height:1.55}
+.dv-tag{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-right:4px}
+@media (max-width:1180px){.dv-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:980px){.pgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.dv-row{grid-template-columns:130px minmax(0,1fr) 64px}}
+@media (max-width:560px){.pgrid{grid-template-columns:1fr}.dv-kpis{grid-template-columns:1fr}}
+
 @media (max-width:1180px){.g-4{grid-template-columns:repeat(2,minmax(0,1fr))}.g-3{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:980px){
   .app{grid-template-columns:1fr;align-content:start}
@@ -368,6 +398,7 @@ const STR = {
   'nav.g2': ['Reference', 'Referensi'],
   'nav.dashboard': ['Overview', 'Ringkasan'],
   'nav.assets': ['Asset register', 'Register aset'],
+  'nav.validation': ['Data validation', 'Validasi data'],
   'nav.services': ['Service revenue', 'Pendapatan layanan'],
   'nav.utilities': ['Water & waste', 'Air & limbah'],
   'nav.glossary': ['Glossary', 'Glosarium'],
@@ -408,6 +439,66 @@ const STR = {
 
   'v.dashboard.title': ['Operations overview', 'Ringkasan operasional'],
   'v.dashboard.sub': ['Two strategic workstreams in one place: vacant asset matching and one-stop service revenue.', 'Dua lini strategis dalam satu tempat: pencocokan aset kosong dan pendapatan layanan terpadu.'],
+  'v.validation.title': ['Data validation', 'Validasi data'],
+  'v.validation.sub': ['One row per asset that is not yet surveyed: planned survey, person in charge, result, evidence in register format and photo proof.', 'Satu baris per aset yang belum disurvei: rencana survei, penanggung jawab, hasil, bukti dalam format register, dan bukti foto.'],
+
+  'dv.note': ['Every asset still marked Survey = No in the register is queued here automatically. Completion = 50% evidence coverage + 30% schedule and result + 20% photo proof. Setting the result to Surveyed writes Survey = Yes back to the register.', 'Setiap aset yang masih bertanda Survey = No pada register otomatis masuk antrean di sini. Penyelesaian = 50% cakupan bukti + 30% jadwal dan hasil + 20% bukti foto. Menetapkan hasil Surveyed menulis Survey = Yes kembali ke register.'],
+  'dv.kpi.queue': ['In queue', 'Dalam antrean'],
+  'dv.kpi.queueFoot': ['not yet surveyed in the register', 'belum disurvei pada register'],
+  'dv.kpi.scheduled': ['Scheduled', 'Sudah dijadwalkan'],
+  'dv.kpi.scheduledFoot': ['with a planned survey date', 'memiliki tanggal rencana survei'],
+  'dv.kpi.surveyed': ['Result recorded', 'Hasil tercatat'],
+  'dv.kpi.surveyedFoot': ['marked Surveyed so far', 'ditandai Surveyed sejauh ini'],
+  'dv.kpi.avg': ['Average completion', 'Rata-rata penyelesaian'],
+  'dv.kpi.avgFoot': ['rows already at 100%', 'baris sudah 100%'],
+  'dv.f.result': ['Result', 'Hasil'],
+  'dv.f.comp': ['Completion', 'Penyelesaian'],
+  'dv.f.zero': ['Not started (0%)', 'Belum mulai (0%)'],
+  'dv.f.part': ['In progress 1–99%', 'Sedang berjalan 1–99%'],
+  'dv.f.done': ['Complete (100%)', 'Lengkap (100%)'],
+  'dv.col.plan': ['Planned survey', 'Rencana survei'],
+  'dv.col.pic': ['Person in charge', 'Penanggung jawab'],
+  'dv.col.result': ['Result', 'Hasil'],
+  'dv.col.comp': ['Completion', 'Penyelesaian'],
+  'dv.col.photo': ['Photos', 'Foto'],
+  'dv.col.updated': ['Updated', 'Diperbarui'],
+  'dv.col.reg': ['Register', 'Register'],
+  'dv.sec.schedule': ['Schedule and result', 'Jadwal dan hasil'],
+  'dv.sec.evidence': ['Evidence, same fields as the asset register', 'Bukti, kolom sama dengan register aset'],
+  'dv.sec.photos': ['Photo evidence', 'Bukti foto'],
+  'dv.planDate': ['Planned survey date', 'Tanggal rencana survei'],
+  'dv.pic': ['Person in charge', 'Penanggung jawab'],
+  'dv.outcome': ['Result', 'Hasil'],
+  'dv.checkedAt': ['Actual survey date', 'Tanggal survei aktual'],
+  'dv.findings': ['Findings and discrepancies', 'Temuan dan selisih'],
+  'dv.findingsHelp': ['What the visit confirmed, and any difference against the register value.', 'Apa yang dikonfirmasi kunjungan, dan selisih terhadap nilai register.'],
+  'dv.compTitle': ['Completion', 'Penyelesaian'],
+  'dv.compEvidence': ['Evidence coverage', 'Cakupan bukti'],
+  'dv.compCore': ['Schedule and result', 'Jadwal dan hasil'],
+  'dv.compPhoto': ['Photo proof', 'Bukti foto'],
+  'dv.formula': ['Completion = 50% evidence coverage + 30% schedule and result + 20% photo proof.', 'Penyelesaian = 50% cakupan bukti + 30% jadwal dan hasil + 20% bukti foto.'],
+  'dv.photoCount': ['photos', 'foto'],
+  'dv.photoOne': ['photo added', 'foto ditambahkan'],
+  'dv.photoMany': ['photos added', 'foto ditambahkan'],
+  'dv.pts': ['pts', 'poin'],
+  'dv.fields': ['fields', 'kolom'],
+  'dv.upload': ['Upload JPG photos', 'Unggah foto JPG'],
+  'dv.uploadHelp': ['JPG only, no limit on the number of files. Each photo is resized to a 720 px thumbnail before it is stored in this browser.', 'Hanya JPG, jumlah berkas tidak dibatasi. Setiap foto diperkecil menjadi thumbnail 720 px sebelum disimpan di peramban ini.'],
+  'dv.noPhoto': ['No photos on this record yet.', 'Belum ada foto pada catatan ini.'],
+  'dv.remove': ['Remove', 'Hapus'],
+  'dv.saved': ['Validation saved', 'Validasi tersimpan'],
+  'dv.badType': ['Only JPG files are accepted.', 'Hanya berkas JPG yang diterima.'],
+  'dv.badFile': ['That image could not be read.', 'Gambar tersebut tidak dapat dibaca.'],
+  'dv.compressing': ['Resizing photo…', 'Memperkecil foto…'],
+  'dv.full': ['Browser storage is full. Export the JSON, then remove photos from finished records.', 'Penyimpanan peramban penuh. Ekspor JSON, lalu hapus foto dari catatan yang sudah selesai.'],
+  'dv.regNo': ['Survey = No in the register', 'Survey = No pada register'],
+  'dv.regYes': ['Survey = Yes in the register', 'Survey = Yes pada register'],
+  'dv.ref': ['Register', 'Register'],
+  'dv.openHint': ['Open a row to record the schedule, evidence and photos.', 'Buka satu baris untuk mencatat jadwal, bukti, dan foto.'],
+  'dv.queueNote': ['The queue is derived from the register: an asset leaves it only when its Survey column is set to Yes.', 'Antrean diturunkan dari register: aset keluar hanya bila kolom Survey diatur ke Yes.'],
+  'dv.inQueue': ['Queued', 'Dalam antrean'],
+  'dv.cleared': ['Registered', 'Terdaftar'],
+
   'v.assets.title': ['Asset register', 'Register aset'],
   'v.assets.sub': ['Vacant and underused factories, owner terms and matched demand in one record chain.', 'Pabrik kosong dan kurang termanfaatkan, persyaratan pemilik, dan permintaan yang cocok dalam satu rantai catatan.'],
   'v.services.title': ['Service revenue', 'Pendapatan layanan'],
@@ -671,6 +762,10 @@ const STR = {
   'd.assetRent': ['Gross monthly rent at full building area', 'Sewa bruto bulanan pada luas bangunan penuh'],
   'd.assetDeposit': ['Security deposit at quoted months', 'Deposit jaminan pada jumlah bulan yang tercantum'],
   'd.assetFitout': ['Fit-out budget at quoted rate', 'Anggaran fit-out pada tarif yang tercantum'],
+  's.updatedDesc': ['Recently updated', 'Baru diperbarui'],
+  's.planAsc': ['Planned survey, soonest first', 'Rencana survei, terdekat'],
+  's.compDesc': ['Completion, high to low', 'Penyelesaian, tinggi ke rendah'],
+  's.compAsc': ['Completion, low to high', 'Penyelesaian, rendah ke tinggi'],
   's.label': ['Sort', 'Urutkan'],
   's.verified': ['Recently verified', 'Terverifikasi terbaru'],
   's.rentDesc': ['Rent per m², high to low', 'Sewa per m², tinggi ke rendah'],
@@ -793,6 +888,7 @@ const ENUM = {
   willing: { yes: ['Ready to pay', 'Siap membayar'], price: ['Price sensitive', 'Peka harga'], no: ['Not willing', 'Tidak bersedia'] },
   budgetBand: { lt50: ['Below Rp 50 m', 'Di bawah Rp 50 jt'], '50_150': ['Rp 50–150 m', 'Rp 50–150 jt'], '150_500': ['Rp 150–500 m', 'Rp 150–500 jt'], gt500: ['Above Rp 500 m', 'Di atas Rp 500 jt'] },
   decision: { owner: ['Owner', 'Pemilik'], gm: ['General manager', 'Manajer umum'], finance: ['Finance', 'Keuangan'], plant: ['Plant manager', 'Manajer pabrik'] },
+  voutcome: { pending: ['Pending', 'Tertunda'], scheduled: ['Scheduled', 'Dijadwalkan'], surveyed: ['Surveyed', 'Tersurvei'], blocked: ['Access blocked', 'Akses terhalang'], mismatch: ['Data mismatch', 'Data tidak sesuai'] },
 };
 
 /* Glossary: term and definition in both languages. */
@@ -806,6 +902,7 @@ const GLOSS = {
   accreditation: { t: ['Estate accreditation', 'Akreditasi kawasan'], d: ['A scored assessment weighting infrastructure 50%, environment 25% and management services 25%. Accreditation is a public signal, not a land title.', 'Penilaian berskor dengan bobot infrastruktur 50%, lingkungan 25%, dan layanan manajemen 25%. Akreditasi adalah sinyal publik, bukan bukti kepemilikan tanah.'] },
   tkdn: { t: ['TKDN', 'TKDN'], d: ['Local content requirement. Government and state-owned projects typically require at least 25% domestic content, which affects equipment sourcing for utility upgrades.', 'Persyaratan kandungan lokal. Proyek pemerintah dan BUMN umumnya mensyaratkan minimal 25% kandungan dalam negeri, yang memengaruhi pengadaan peralatan untuk peningkatan utilitas.'] },
   ifas: { t: ['IFAS', 'IFAS'], d: ['Integrated fixed-film activated sludge: suspended biomass plus fixed media in the same tank, used to raise capacity within an existing footprint.', 'Lumpur aktif dengan film tetap terintegrasi: biomassa tersuspensi plus media tetap dalam tangki yang sama, dipakai menaikkan kapasitas pada lahan yang ada.'] },
+  fieldverify: { t: ['Data validation', 'Validasi data'], d: ['Field check of an asset already in the register: a scheduled site visit confirms or corrects the recorded fields and attaches photo proof, so occupancy and area figures can be defended in due diligence.', 'Pemeriksaan lapangan atas aset yang sudah tercatat di register: kunjungan terjadwal mengonfirmasi atau memperbaiki kolom tercatat dan melampirkan bukti foto, sehingga angka keterisian dan luas dapat dipertanggungjawabkan dalam uji tuntas.'] },
   zone: { t: ['Zone', 'Zona'], d: ['Sub-zone inside the Cikarang corridor as recorded in the estate ledger: KIJ 1–6 and UKM. The parent estate remains Cikarang.', 'Subzona di dalam koridor Cikarang sesuai catatan kawasan: KIJ 1–6 dan UKM. Kawasan induk tetap Cikarang.'] },
   btype: { t: ['Building type', 'Jenis bangunan'], d: ['Ledger code for the building form: TOB, SFB, SIB, Kavling, BizPark, SMH, E-Space, COB. Full expansions are to be confirmed against the estate master plan.', 'Kode formulir bangunan pada ledger: TOB, SFB, SIB, Kavling, BizPark, SMH, E-Space, COB. Kepanjangan dikonfirmasi dengan rencana induk kawasan.'] },
   reuse: { t: ['Effluent reuse', 'Daur ulang efluen'], d: ['Treated wastewater sent back to cooling, boiler feed or site washing. Above 20% earns the top environment score in accreditation.', 'Air limbah terolah yang dikembalikan ke pendinginan, air umpan boiler, atau pencucian area. Di atas 20% memperoleh skor lingkungan tertinggi dalam akreditasi.'] },
@@ -833,7 +930,7 @@ const GLOSS = {
 };
 
 /* ================= STATE & HELPERS ================= */
-const LS_KEY = 'ji_platform_v12';
+const LS_KEY = 'ji_platform_v13';
 let LANG = 'en';
 let STATE = null;
 let VIEW = 'dashboard';
@@ -983,7 +1080,7 @@ function seedData() {
     { plant_id: 'PLT-KDL-WW-1BX', estate: 'Kendal', name: 'WWTP 1B extension', phase: 'p1', ptype: 'wwtp', tech: 'mbbr', cap: 16200, cup: 'm3d', pstatus: 'operating', counted: 'yes', pnote: '' },
     { plant_id: 'PLT-KDL-WW-NEW', estate: 'Kendal', name: 'WWTP new build', phase: 'p1', ptype: 'wwtp', tech: 'tbd', cap: 16000, cup: 'm3d', pstatus: 'planned', counted: 'no', pnote: '' },
   ];
-  return { owners: REAL_OWNERS, assets: REAL_ASSETS, demands: [], deals: DUMMY_DEALS, leads: DUMMY_LEADS, metrics: DUMMY_METRICS, plants: PLANTS };
+  return { owners: REAL_OWNERS, assets: REAL_ASSETS, demands: [], deals: DUMMY_DEALS, leads: DUMMY_LEADS, metrics: DUMMY_METRICS, plants: PLANTS, validations: [] };
 }
 
 /* ================= STORAGE ================= */
@@ -1013,16 +1110,19 @@ function loadData() {
         (parsed.deals || []).forEach((d) => { if (d.source == null) d.source = 'real'; });
         (parsed.leads || []).forEach((l) => { if (l.source == null) l.source = 'real'; });
         (parsed.metrics || []).forEach((m) => { if (m.source == null) m.source = 'real'; });
+        parsed.validations = parsed.validations || [];
+        syncValidations(parsed);
         return parsed;
       }
     } catch (e) { /* fall through to demo */ }
   }
   const seeded = seedData();
+  syncValidations(seeded);
   try { localStorage.setItem(LS_KEY, JSON.stringify(seeded)); } catch (e) { /* private mode or file:// */ }
   return seeded;
 }
 function save() {
-  try { localStorage.setItem(LS_KEY, JSON.stringify(STATE)); } catch (e) { toast(t('c.badFile')); }
+  try { localStorage.setItem(LS_KEY, JSON.stringify(STATE)); } catch (e) { toast(t('dv.full')); }
 }
 
 /* ================= SHARED UI ================= */
@@ -1978,6 +2078,7 @@ function saveForm(entity) {
   } else {
     (STATE[meta.coll] = STATE[meta.coll] || []).push(rec);
   }
+  syncValidations(STATE);
   save();
   closeDrawer();
   toast(t('c.saved'));
@@ -2016,6 +2117,7 @@ function importJson(file) {
       if (!parsed || !parsed.assets || !parsed.owners) throw new Error('shape');
       if (!parsed.plants) parsed.plants = seedData().plants;
       STATE = parsed;
+      syncValidations(STATE);
       save();
       toast(t('c.imported'));
       renderView();
@@ -2029,6 +2131,7 @@ let DRAWER = { entity: null, id: null };
 const ICONS = {
   dashboard: '<path d="M4 13h6V4H4v9zM14 20h6v-9h-6v9zM4 20h6v-4H4v4zM14 8h6V4h-6v4z"/>',
   assets: '<path d="M3 21V8l6-4 6 4v13M15 21V11l6-4v14M3 21h18M7 12h2M7 16h2M17 14h2"/>',
+  validation: '<rect x="5" y="4" width="14" height="17" rx="1.5"/><path d="M9 4V3h6v1.5M9 11.5l2 2 4-4M8.5 18h7"/>',
   services: '<path d="M4 7h16v13H4zM4 7l3-3h10l3 3M8 13h8"/>',
   utilities: '<path d="M12 3c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11z"/>',
   glossary: '<path d="M4 5h7a3 3 0 0 1 3 3v11a3 3 0 0 0-3-3H4zM20 5h-4a3 3 0 0 0-3 3v11a3 3 0 0 1 3-3h4z"/>',
@@ -2037,7 +2140,7 @@ const ICONS = {
 function renderNav() {
   const item = (v, k) => `<div class="nav-item ${VIEW === v ? 'active' : ''}" data-view="${v}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">${ICONS[v]}</svg><span>${esc(t(k))}</span></div>`;
   el('nav').innerHTML = '<div class="nav-label">' + esc(t('nav.g1')) + '</div>'
-    + item('dashboard', 'nav.dashboard') + item('assets', 'nav.assets') + item('services', 'nav.services')
+    + item('dashboard', 'nav.dashboard') + item('assets', 'nav.assets') + item('validation', 'nav.validation') + item('services', 'nav.services')
     + '<div class="nav-label">' + esc(t('nav.g2')) + '</div>' + item('glossary', 'nav.glossary') + item('settings', 'nav.settings');
   el('brandName').textContent = t('app.name');
   el('brandSub').textContent = t('app.brandSub');
@@ -2060,6 +2163,7 @@ function renderView() {
   el('topSub').textContent = sub;
   if (VIEW === 'dashboard') viewDashboard();
   else if (VIEW === 'assets') viewAssets();
+  else if (VIEW === 'validation') viewValidation();
   else if (VIEW === 'services') viewServices();
   else if (VIEW === 'utilities') viewUtilities();
   else if (VIEW === 'glossary') viewGlossary();
@@ -2069,8 +2173,8 @@ function renderView() {
   else {
     el('nav').querySelectorAll('.nav-item').forEach((n) => n.classList.toggle('active', n.dataset.view === VIEW));
   }
-  el('searchBox').style.display = ['glossary', 'settings'].includes(VIEW) ? 'none' : '';
-  el('btnNew').style.display = ['glossary', 'settings'].includes(VIEW) ? 'none' : '';
+  el('searchBox').style.display = ['glossary', 'settings', 'validation'].includes(VIEW) ? 'none' : '';
+  el('btnNew').style.display = ['glossary', 'settings', 'validation'].includes(VIEW) ? 'none' : '';
 }
 
 function go(view) {
@@ -2079,6 +2183,433 @@ function go(view) {
   SEEN = {};
   renderNav();
   renderView();
+}
+
+/* ================= DATA VALIDATION ================= */
+/* The evidence block reuses the asset register field list — same keys, same order,
+   same section headings — so a validated row can be compared field by field.
+   Asset ID, Survey and Verified live in the schedule block instead of here. */
+const VAL_SKIP = { asset_id: 1, survey: 1, verified: 1 };
+const valFields = () => E_TYPES.asset.fields.filter((f) => !VAL_SKIP[f.k]);
+
+function emptyEvidence() {
+  const o = {};
+  valFields().forEach((f) => { o[f.k] = ''; });
+  return o;
+}
+function newValidation(assetId) {
+  return { asset_id: assetId, plannedDate: '', pic: '', outcome: 'pending', checkedAt: '', findings: '', evidence: emptyEvidence(), photos: [], updatedAt: '' };
+}
+
+/* Auto-enrolment. Every asset still marked Survey = No in the register gets a
+   validation record; records are never dropped, so the history of a visit stays
+   visible after the asset itself has been marked as surveyed. */
+function syncValidations(state) {
+  if (!state || !Array.isArray(state.assets)) return 0;
+  state.validations = Array.isArray(state.validations) ? state.validations : [];
+  const ids = new Set(state.validations.filter((v) => v && v.asset_id).map((v) => v.asset_id));
+  let added = 0;
+  state.assets.filter((a) => a.survey !== 'yes').forEach((a) => {
+    if (!ids.has(a.asset_id)) { state.validations.push(newValidation(a.asset_id)); ids.add(a.asset_id); added++; }
+  });
+  state.validations.forEach((v) => {
+    if (!v.evidence) v.evidence = emptyEvidence();
+    if (!Array.isArray(v.photos)) v.photos = [];
+    if (!v.outcome) v.outcome = 'pending';
+    Object.keys(emptyEvidence()).forEach((k) => { if (v.evidence[k] == null) v.evidence[k] = ''; });
+  });
+  return added;
+}
+
+function valEvidenceN(rec) {
+  let n = 0;
+  valFields().forEach((f) => { const v = rec.evidence ? rec.evidence[f.k] : ''; if (v != null && String(v).trim() !== '') n++; });
+  return n;
+}
+/* Completion: evidence coverage 50%, schedule and result 30%, photo proof 20%.
+   A register value copied over alone never reads as finished field work. */
+function valScore(rec) {
+  const fs = valFields();
+  const evN = valEvidenceN(rec);
+  const ev = fs.length ? evN / fs.length : 1;
+  const coreN = [rec.plannedDate ? 1 : 0, String(rec.pic || '').trim() ? 1 : 0, rec.outcome && rec.outcome !== 'pending' ? 1 : 0].reduce((a, b) => a + b, 0);
+  const phN = (rec.photos || []).length;
+  const total = Math.round(100 * (0.5 * ev + 0.3 * (coreN / 3) + 0.2 * (phN ? 1 : 0)));
+  return { ev, evN, evT: fs.length, coreN, phN, total };
+}
+
+/* Photo evidence. Unlimited uploads would blow the 5 MB localStorage quota, so each
+   JPG is redrawn on a canvas at 720 px and the blob is kept in IndexedDB; the record
+   only stores {id, w, h, bytes}. Degrades to inline data URLs if IndexedDB is absent. */
+const PH = {
+  db: null, booted: false, broken: false, cache: new Map(),
+  boot() {
+    if (this.booted) return Promise.resolve(this.db);
+    this.booted = true;
+    if (typeof indexedDB === 'undefined') { this.broken = true; return Promise.resolve(null); }
+    return new Promise((res) => {
+      try {
+        const rq = indexedDB.open('ji_validation_photos', 1);
+        rq.onupgradeneeded = () => { const d = rq.result; if (!d.objectStoreNames.contains('p')) d.createObjectStore('p'); };
+        rq.onsuccess = () => { PH.db = rq.result; res(PH.db); };
+        rq.onerror = () => { PH.broken = true; res(null); };
+      } catch (e) { PH.broken = true; res(null); }
+    });
+  },
+  put(id, blob) {
+    return this.boot().then((db) => new Promise((res) => {
+      if (!db) return res('');
+      try {
+        const tx = db.transaction('p', 'readwrite');
+        tx.objectStore('p').put(blob, id);
+        tx.oncomplete = () => res(id);
+        tx.onerror = () => res('');
+      } catch (e) { res(''); }
+    }));
+  },
+  get(id) {
+    if (this.cache.has(id)) return Promise.resolve(this.cache.get(id));
+    return this.boot().then((db) => new Promise((res) => {
+      if (!db) return res('');
+      try {
+        const rq = db.transaction('p', 'readonly').objectStore('p').get(id);
+        rq.onsuccess = () => {
+          const blob = rq.result;
+          if (!blob) return res('');
+          const url = URL.createObjectURL(blob);
+          PH.cache.set(id, url);
+          res(url);
+        };
+        rq.onerror = () => res('');
+      } catch (e) { res(''); }
+    }));
+  },
+  forget(id) {
+    const u = this.cache.get(id);
+    if (u) { try { URL.revokeObjectURL(u); } catch (e) {} this.cache.delete(id); }
+  },
+  del(id) {
+    this.forget(id);
+    return this.boot().then((db) => { if (!db) return; try { db.transaction('p', 'readwrite').objectStore('p').delete(id); } catch (e) {} });
+  },
+};
+
+/* Canvas resize to JPEG. maxSide 720 and quality 0.62 land near 60–140 KB for a
+   phone photo, which keeps a wall of thumbnails responsive without losing detail
+   that matters for a site inspection. */
+function shrinkToJpeg(file, maxSide, quality) {
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const w0 = img.naturalWidth || img.width;
+        const h0 = img.naturalHeight || img.height;
+        const k = Math.min(1, maxSide / Math.max(w0, h0));
+        const w = Math.max(1, Math.round(w0 * k));
+        const h = Math.max(1, Math.round(h0 * k));
+        const cv = document.createElement('canvas');
+        cv.width = w; cv.height = h;
+        const cx = cv.getContext('2d');
+        cx.fillStyle = '#FFFFFF';
+        cx.fillRect(0, 0, w, h);
+        cx.drawImage(img, 0, 0, w, h);
+        cv.toBlob((blob) => {
+          URL.revokeObjectURL(url);
+          if (!blob) return rej(new Error('encode'));
+          res({ blob, w, h });
+        }, 'image/jpeg', quality);
+      } catch (e) { URL.revokeObjectURL(url); rej(e); }
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('decode')); };
+    img.src = url;
+  });
+}
+
+function regHint(k, a) {
+  const f = E_TYPES.asset.fields.find((x) => x.k === k);
+  const v = a[k];
+  if (v == null || String(v).trim() === '') return '—';
+  if (f && f.t === 'select') return f.opts ? String(v) : E(f.g, v);
+  if (f && f.t === 'number') return (k === 'land' || k === 'build') ? fmtArea(v) + ' m²' : fmtInt(v);
+  if (f && f.t === 'date') return fmtDate(v);
+  return String(v);
+}
+
+const VAL_SORTS = {
+  compAsc: (a, b) => a.score - b.score,
+  compDesc: (a, b) => b.score - a.score,
+  planAsc: (a, b) => String(a.plan || '9999-12-31').localeCompare(String(b.plan || '9999-12-31')),
+  updatedDesc: (a, b) => String(b.upd || '').localeCompare(String(a.upd || '')),
+};
+
+function valBar(score) {
+  const tone = score >= 100 ? '' : score > 0 ? 'amber' : 'red';
+  return '<div class="pcell"><div class="pbar ' + tone + '"><i style="width:' + Math.max(0, Math.min(100, score)) + '%"></i></div><b>' + score + '%</b></div>';
+}
+function valChip(code) {
+  const tone = code === 'surveyed' ? 'c-teal' : code === 'scheduled' ? 'c-amber' : (code === 'blocked' || code === 'mismatch') ? 'c-red' : 'c-neutral';
+  return '<span class="chip ' + tone + '"><i></i>' + esc(E('voutcome', code)) + '</span>';
+}
+
+function viewValidation() {
+  if (syncValidations(STATE)) save();
+  const ownerMap = new Map(STATE.owners.map((o) => [o.id, o]));
+  const assetMap = new Map(STATE.assets.map((a) => [a.asset_id, a]));
+  const all = STATE.validations.filter((v) => assetMap.has(v.asset_id)).map((v) => {
+    const a = assetMap.get(v.asset_id);
+    const o = ownerMap.get(a.owner_id) || null;
+    return { rec: v, a, o, name: o ? o.name : '', score: valScore(v).total, plan: v.plannedDate || '', ph: (v.photos || []).length, upd: v.updatedAt || '' };
+  });
+  const f = FILTER.validation || {};
+  let rows = all;
+  if (f.zone) rows = rows.filter((r) => r.a.zone === f.zone);
+  if (f.btype) rows = rows.filter((r) => r.a.btype === f.btype);
+  if (f.outcome) rows = rows.filter((r) => (r.rec.outcome || 'pending') === f.outcome);
+  if (f.comp === 'zero') rows = rows.filter((r) => r.score === 0);
+  else if (f.comp === 'done') rows = rows.filter((r) => r.score >= 100);
+  else if (f.comp === 'part') rows = rows.filter((r) => r.score > 0 && r.score < 100);
+  const q = (f.q || '').toLowerCase().trim();
+  if (q) rows = rows.filter((r) => [r.a.asset_id, r.name, r.a.blok, r.a.zone, r.plan, r.rec.pic, r.rec.findings].some((x) => String(x == null ? '' : x).toLowerCase().includes(q)));
+  const sortKey = f.sort || 'compAsc';
+  rows = rows.slice().sort(VAL_SORTS[sortKey] || VAL_SORTS.compAsc);
+
+  const queued = all.filter((r) => r.a.survey !== 'yes').length;
+  const sched = all.filter((r) => r.plan).length;
+  const marked = all.filter((r) => r.rec.outcome === 'surveyed').length;
+  const avg = all.length ? Math.round(all.reduce((s, r) => s + r.score, 0) / all.length) : 0;
+  const at100 = all.filter((r) => r.score >= 100).length;
+
+  const cols = [
+    { w: '11%', label: 'ID' }, { w: '6%', label: t('F.blok') }, { w: '18%', label: t('F.name') },
+    { w: '5%', label: t('F.zone') }, { w: '8%', label: t('dv.col.plan') },
+    { w: '10%', label: t('dv.col.pic') }, { w: '9%', label: t('dv.col.result') },
+    { w: '12%', label: t('dv.col.comp') }, { w: '6%', label: t('dv.col.photo'), align: 'right' },
+    { w: '8%', label: t('dv.col.updated') }, { w: '7%', label: t('dv.col.reg') },
+  ];
+  const p = paginate('validation', rows, 12);
+  const body = p.slice.map((r) => `<tr data-entity="validation" data-id="${esc(r.a.asset_id)}">
+      <td class="mono">${esc(r.a.asset_id)}</td><td class="mono">${esc(r.a.blok || '—')}</td>
+      <td><div class="oname">${esc(r.name || '—')}</div><div class="osub">${esc(r.a.owner_id || '—')}</div></td>
+      <td class="mono">${esc(r.a.zone ? E('zone', r.a.zone) : '—')}</td>
+      <td class="date">${esc(fmtDate(r.plan))}</td>
+      <td>${esc(r.rec.pic || '—')}</td>
+      <td>${valChip(r.rec.outcome || 'pending')}</td>
+      <td>${valBar(r.score)}</td>
+      <td class="num">${r.ph ? fmtInt(r.ph) : '—'}</td>
+      <td class="date">${esc(r.upd ? fmtDate(r.upd) : '—')}</td>
+      <td>${chipFor('yesno', r.a.survey === 'yes' ? 'yes' : 'no')}</td></tr>`).join('') || emptyRow(cols.length);
+
+  el('view').innerHTML = `<div class="notice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg><div>${esc(t('dv.note'))}</div></div>
+  ${termLine(['fieldverify', 'survey', 'zone', 'btype'])}
+  <div class="dv-kpis">
+    ${kpiCard(t('dv.kpi.queue'), fmtInt(queued), t('dv.kpi.queueFoot'), '')}
+    ${kpiCard(t('dv.kpi.scheduled'), fmtInt(sched), t('dv.kpi.scheduledFoot'), '')}
+    ${kpiCard(t('dv.kpi.surveyed'), fmtInt(marked), t('dv.kpi.surveyedFoot'), 't')}
+    ${kpiCard(t('dv.kpi.avg'), pct(avg, 0), t('dv.kpi.avgFoot', { n: fmtInt(at100) }), 'r')}
+  </div>
+  <div class="card flat">
+    <div class="toolbar">
+      <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg><input data-q="validation" placeholder="${esc(t('c.search'))}" value="${esc(f.q || '')}"></div>
+      <select data-sel="validation" data-f="zone"><option value="">${esc(t('a.filterZone'))}: ${esc(t('c.all'))}</option>${Object.keys(ENUM.zone).map((s) => `<option value="${s}" ${f.zone === s ? 'selected' : ''}>${esc(E('zone', s))}</option>`).join('')}</select>
+      <select data-sel="validation" data-f="btype"><option value="">${esc(t('a.filterType'))}: ${esc(t('c.all'))}</option>${Object.keys(ENUM.btype).map((s) => `<option value="${s}" ${f.btype === s ? 'selected' : ''}>${esc(E('btype', s))}</option>`).join('')}</select>
+      <select data-sel="validation" data-f="outcome"><option value="">${esc(t('dv.f.result'))}: ${esc(t('c.all'))}</option>${Object.keys(ENUM.voutcome).map((s) => `<option value="${s}" ${f.outcome === s ? 'selected' : ''}>${esc(E('voutcome', s))}</option>`).join('')}</select>
+      <select data-sel="validation" data-f="comp"><option value="">${esc(t('dv.f.comp'))}: ${esc(t('c.all'))}</option><option value="zero" ${f.comp === 'zero' ? 'selected' : ''}>${esc(t('dv.f.zero'))}</option><option value="part" ${f.comp === 'part' ? 'selected' : ''}>${esc(t('dv.f.part'))}</option><option value="done" ${f.comp === 'done' ? 'selected' : ''}>${esc(t('dv.f.done'))}</option></select>
+      <select data-sel="validation" data-f="sort" aria-label="${esc(t('s.label'))}">${Object.keys(VAL_SORTS).map((s) => `<option value="${s}" ${sortKey === s ? 'selected' : ''}>${esc(t('s.label'))}: ${esc(t('s.' + s))}</option>`).join('')}</select>
+      <span class="count">${fmtInt(rows.length)} ${esc(t('c.total'))}</span>
+    </div>
+    ${tableHtml(cols, body, p.pager, 1140)}
+  </div>
+  <div class="dv-note">${esc(t('dv.queueNote'))} ${esc(t('dv.openHint'))}</div>`;
+}
+
+/* ---------- validation drawer ---------- */
+function photosHtml(rec) {
+  const items = rec.photos || [];
+  if (!items.length) return '<div class="dv-empty">' + esc(t('dv.noPhoto')) + '</div>';
+  return '<div class="pgrid">' + items.map((p) => `<div class="ph" data-ph="${esc(p.id)}">
+      <button class="px" data-vphoto-del="${esc(p.id)}" data-vasset="${esc(rec.asset_id)}" aria-label="${esc(t('dv.remove'))}">×</button>
+      <img alt="${esc(rec.asset_id)}">
+      <div class="pm"><span>${fmtInt(p.w)}×${fmtInt(p.h)}</span><span>${fmtInt(Math.round((p.bytes || 0) / 1024))} KB</span></div>
+    </div>`).join('') + '</div>';
+}
+
+function evidenceHtml(rec, a) {
+  let lastSec = null;
+  return valFields().map((f) => {
+    const val = rec.evidence[f.k] == null ? '' : rec.evidence[f.k];
+    let input = '';
+    if (f.t === 'select') {
+      const opts = f.opts || Object.keys(ENUM[f.g] || {});
+      input = '<select data-ev="' + f.k + '"><option value="">' + esc(t('c.select')) + '</option>'
+        + opts.map((o) => '<option value="' + esc(o) + '"' + (String(val) === String(o) ? ' selected' : '') + '>' + esc(f.opts ? o : E(f.g, o)) + '</option>').join('') + '</select>';
+    } else if (f.t === 'textarea') {
+      input = '<textarea data-ev="' + f.k + '">' + esc(val) + '</textarea>';
+    } else {
+      input = '<input data-ev="' + f.k + '" type="' + (f.t === 'number' ? 'number' : f.t === 'date' ? 'date' : 'text') + '" value="' + esc(val) + '"' + (f.t === 'number' ? ' step="any"' : '') + '>';
+    }
+    let head = '';
+    if (f.sec && f.sec !== lastSec) { lastSec = f.sec; head = '<div class="formsec">' + esc(t('sec.' + f.sec)) + '</div>'; }
+    const full = f.t === 'textarea' || ['alamat', 'permits', 'notes', 'contact'].includes(f.k);
+    const hint = regHint(f.k, a);
+    const hintHtml = hint && hint !== '—' ? '<div class="dv-ref" title="' + esc(t('dv.ref') + ': ' + hint) + '">' + esc(t('dv.ref')) + ': ' + esc(hint) + '</div>' : '';
+    return head + '<div class="field' + (full ? ' full' : '') + '"><label>' + esc(t('F.' + f.k)) + '</label>' + input + hintHtml + '</div>';
+  }).join('');
+}
+
+function valDrawer(assetId) {
+  const a = STATE.assets.find((x) => x.asset_id === assetId);
+  const rec = STATE.validations.find((v) => v.asset_id === assetId);
+  if (!a || !rec) return;
+  const keepScroll = el('drawerBody') ? el('drawerBody').scrollTop : 0;
+  const o = STATE.owners.find((x) => x.id === a.owner_id) || null;
+  const s = valScore(rec);
+  const pc = (x) => Math.max(0, Math.min(100, Math.round(x * 100)));
+  const body = `<div data-vdrawer="${esc(assetId)}">
+    <div class="dv-panel">
+      <div class="dv-big"><b id="dvBig">${s.total}%</b><span>${esc(t('dv.compTitle'))}</span></div>
+      <div class="dv-rows">
+        <div class="dv-row"><span>${esc(t('dv.compEvidence'))}</span><div class="pbar"><i id="dvEvBar" style="width:${pc(s.ev)}%"></i></div><span class="n" id="dvEvN">${s.evN}/${s.evT}</span></div>
+        <div class="dv-row"><span>${esc(t('dv.compCore'))}</span><div class="pbar amber"><i id="dvCoreBar" style="width:${pc(s.coreN / 3)}%"></i></div><span class="n" id="dvCoreN">${s.coreN}/3</span></div>
+        <div class="dv-row"><span>${esc(t('dv.compPhoto'))}</span><div class="pbar amber"><i id="dvPhBar" style="width:${s.phN ? 100 : 0}%"></i></div><span class="n" id="dvPhN">${s.phN}</span></div>
+      </div>
+      <div class="dv-note">${esc(t('dv.formula'))}</div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px;font-size:11.5px;color:var(--muted)">
+      <span style="flex:0 0 auto">${chipFor('yesno', a.survey === 'yes' ? 'yes' : 'no')}</span>
+      <span>${esc(a.blok || '—')} · ${esc(a.zone ? E('zone', a.zone) : '—')} · ${esc(a.btype ? E('btype', a.btype) : '—')}</span>
+      <span>${esc(t('F.land'))} <b style="font-weight:600;color:var(--text)">${fmtArea(a.land)}</b> m² · ${esc(t('F.build'))} <b style="font-weight:600;color:var(--text)">${fmtArea(a.build)}</b> m²</span>
+    </div>
+    <div class="fgrid">
+      <div class="formsec">${esc(t('dv.sec.schedule'))}</div>
+      <div class="field"><label>${esc(t('dv.planDate'))}</label><input data-vcore="plannedDate" type="date" value="${esc(rec.plannedDate || '')}"></div>
+      <div class="field"><label>${esc(t('dv.pic'))}</label><input data-vcore="pic" type="text" value="${esc(rec.pic || '')}"></div>
+      <div class="field"><label>${esc(t('dv.outcome'))}</label><select data-vcore="outcome"><option value="">${esc(t('c.select'))}</option>${Object.keys(ENUM.voutcome).map((k) => `<option value="${k}" ${(rec.outcome || 'pending') === k ? 'selected' : ''}>${esc(E('voutcome', k))}</option>`).join('')}</select></div>
+      <div class="field"><label>${esc(t('dv.checkedAt'))}</label><input data-vcore="checkedAt" type="date" value="${esc(rec.checkedAt || '')}"></div>
+      <div class="field full"><label>${esc(t('dv.findings'))}</label><textarea data-vcore="findings">${esc(rec.findings || '')}</textarea><div class="help">${esc(t('dv.findingsHelp'))}</div></div>
+      <div class="formsec">${esc(t('dv.sec.evidence'))}</div>
+      ${evidenceHtml(rec, a)}
+      <div class="formsec">${esc(t('dv.sec.photos'))}</div>
+      <div class="full">
+        <div class="dv-up">
+          <button class="btn" data-vup="${esc(assetId)}">${esc(t('dv.upload'))}</button>
+          <input type="file" accept="image/jpeg,.jpg,.jpeg" multiple hidden data-vphoto="${esc(assetId)}">
+          <span class="help" style="margin-top:0">${esc(t('dv.uploadHelp'))}</span>
+        </div>
+        ${photosHtml(rec)}
+      </div>
+    </div>
+  </div>`;
+  openDrawer(t('nav.validation') + ' · ' + assetId, (o ? o.name : '') + ' · ' + (a.kawasan || ''), body,
+    '<button class="btn" data-close="1">' + esc(t('c.close')) + '</button><button class="btn primary" data-vsave="' + esc(assetId) + '">' + esc(t('c.save')) + '</button>');
+  if (keepScroll) el('drawerBody').scrollTop = keepScroll;
+  paintPhotos(assetId);
+}
+
+/* read the open drawer back into the record, so a photo upload or delete does not
+   throw away field edits that have not been saved yet */
+function captureValInputs(rec) {
+  document.querySelectorAll('[data-vcore]').forEach((inp) => { rec[inp.dataset.vcore] = inp.value.trim(); });
+  document.querySelectorAll('[data-ev]').forEach((inp) => { rec.evidence[inp.dataset.ev] = inp.value.trim(); });
+  if (!rec.outcome) rec.outcome = 'pending';
+  return rec;
+}
+
+function paintPhotos(assetId) {
+  const rec = STATE.validations.find((v) => v.asset_id === assetId);
+  const grid = document.querySelector('[data-vdrawer]');
+  if (!rec || !grid) return;
+  (rec.photos || []).forEach((p) => {
+    const cell = grid.querySelector('[data-ph="' + p.id + '"]');
+    if (!cell) return;
+    const img = cell.querySelector('img');
+    PH.get(p.id).then((url) => {
+      if (!url) return;
+      if (img) img.src = url;
+      else {
+        const src = document.querySelector('[data-src="' + p.id + '"]');
+        if (src) src.src = url;
+      }
+    });
+  });
+}
+
+function openValidation(assetId) {
+  syncValidations(STATE);
+  if (!STATE.validations.some((v) => v.asset_id === assetId)) STATE.validations.push(newValidation(assetId));
+  DRAWER = { entity: 'validation', id: assetId };
+  valDrawer(assetId);
+}
+
+function saveValidation(assetId) {
+  const rec = STATE.validations.find((v) => v.asset_id === assetId);
+  const a = STATE.assets.find((x) => x.asset_id === assetId);
+  if (!rec || !a) return;
+  captureValInputs(rec);
+  const today = new Date().toISOString().slice(0, 10);
+  rec.updatedAt = today;
+  /* the register keeps a single Survey column: a completed visit writes it back */
+  if (rec.outcome === 'surveyed') {
+    a.survey = 'yes';
+    if (!rec.checkedAt) rec.checkedAt = today;
+    if (!a.verified) a.verified = rec.checkedAt;
+  }
+  save();
+  closeDrawer();
+  renderView();
+  toast(t('dv.saved'));
+}
+
+/* live completion while typing, without re-rendering the inputs under the cursor */
+function refreshValScore(assetId) {
+  const rec = STATE.validations.find((v) => v.asset_id === assetId);
+  if (!rec) return;
+  const tmp = { plannedDate: rec.plannedDate, pic: rec.pic, outcome: rec.outcome, evidence: {}, photos: rec.photos || [] };
+  Object.keys(rec.evidence || {}).forEach((k) => { tmp.evidence[k] = rec.evidence[k]; });
+  document.querySelectorAll('[data-vcore]').forEach((inp) => { tmp[inp.dataset.vcore] = inp.value.trim(); });
+  document.querySelectorAll('[data-ev]').forEach((inp) => { tmp.evidence[inp.dataset.ev] = inp.value.trim(); });
+  const s = valScore(tmp);
+  const set = (id, txt) => { const n = document.getElementById(id); if (n) n.textContent = txt; };
+  const bar = (id, w) => { const n = document.getElementById(id); if (n) n.style.width = Math.max(0, Math.min(100, Math.round(w))) + '%'; };
+  set('dvBig', s.total + '%');
+  set('dvEvN', s.evN + '/' + s.evT); bar('dvEvBar', s.ev * 100);
+  set('dvCoreN', s.coreN + '/3'); bar('dvCoreBar', (s.coreN / 3) * 100);
+  set('dvPhN', String(s.phN)); bar('dvPhBar', s.phN ? 100 : 0);
+}
+
+async function addPhotos(assetId, files) {
+  const rec = STATE.validations.find((v) => v.asset_id === assetId);
+  if (!rec || !files || !files.length) return;
+  captureValInputs(rec);
+  toast(t('dv.compressing'));
+  let added = 0, rejected = 0;
+  for (let i = 0; i < files.length; i++) {
+    const f = files[i];
+    const isJpg = /jpe?g/i.test(f.type || '') || /\.jpe?g$/i.test(f.name || '');
+    if (!isJpg) { rejected++; continue; }
+    try {
+      const out = await shrinkToJpeg(f, 720, 0.62);
+      const id = 'ph' + Date.now().toString(36) + Math.floor(Math.random() * 1000);
+      const stored = await PH.put(id, out.blob);
+      if (!stored) { rejected++; continue; }
+      rec.photos.push({ id: id, w: out.w, h: out.h, bytes: out.blob.size });
+      added++;
+    } catch (e) { rejected++; }
+  }
+  if (added) { rec.updatedAt = new Date().toISOString().slice(0, 10); save(); }
+  valDrawer(assetId);
+  toast(added ? added + ' ' + (added === 1 ? t('dv.photoOne') : t('dv.photoMany')) : (rejected ? t('dv.badType') : t('dv.badFile')));
+}
+
+function removePhoto(assetId, photoId) {
+  const rec = STATE.validations.find((v) => v.asset_id === assetId);
+  if (!rec) return;
+  captureValInputs(rec);
+  rec.photos = (rec.photos || []).filter((p) => p.id !== photoId);
+  PH.del(photoId);
+  rec.updatedAt = new Date().toISOString().slice(0, 10);
+  save();
+  valDrawer(assetId);
 }
 
 /* ================= EVENTS ================= */
@@ -2094,7 +2625,16 @@ function bindEvents() {
     const add = e.target.closest('[data-add]');
     if (add) { openForm(add.dataset.add, null); return; }
     const row = e.target.closest('tr[data-entity]');
-    if (row) { openDetail(row.dataset.entity, row.dataset.id); return; }
+    if (row) {
+      if (row.dataset.entity === 'validation') { openValidation(row.dataset.id); return; }
+      openDetail(row.dataset.entity, row.dataset.id); return;
+    }
+    const vup = e.target.closest('[data-vup]');
+    if (vup) { const inp = document.querySelector('[data-vphoto]'); if (inp) inp.click(); return; }
+    const vphdel = e.target.closest('[data-vphoto-del]');
+    if (vphdel) { removePhoto(vphdel.dataset.vasset, vphdel.dataset.vphotoDel); return; }
+    const vsave = e.target.closest('[data-vsave]');
+    if (vsave) { saveValidation(vsave.dataset.vsave); return; }
     const oo = e.target.closest('[data-open-owner]');
     if (oo) { openDetail('owner', oo.dataset.openOwner); return; }
     const mp = e.target.closest('[data-map-open]');
@@ -2113,7 +2653,7 @@ function bindEvents() {
         inp.click();
       }
       if (act.dataset.act === 'reset') {
-        if (confirm(t('c.confirmReset'))) { STATE = seedData(); save(); toast(t('c.resetDone')); renderView(); }
+        if (confirm(t('c.confirmReset'))) { STATE = seedData(); syncValidations(STATE); save(); toast(t('c.resetDone')); renderView(); }
       }
       return;
     }
@@ -2127,6 +2667,13 @@ function bindEvents() {
   });
 
   document.addEventListener('change', (e) => {
+    const vphoto = e.target.closest('[data-vphoto]');
+    if (vphoto) { addPhotos(vphoto.dataset.vphoto, vphoto.files); vphoto.value = ''; return; }
+    if (e.target.closest('[data-ev]') || e.target.closest('[data-vcore]')) {
+      const box = e.target.closest('[data-vdrawer]');
+      if (box) refreshValScore(box.dataset.vdrawer);
+      return;
+    }
     const sel = e.target.closest('[data-sel]');
     if (sel) {
       FILTER[sel.dataset.sel] = FILTER[sel.dataset.sel] || {};
@@ -2137,6 +2684,11 @@ function bindEvents() {
   });
 
   document.addEventListener('input', (e) => {
+    if (e.target.closest('[data-ev]') || e.target.closest('[data-vcore]')) {
+      const box = e.target.closest('[data-vdrawer]');
+      if (box) refreshValScore(box.dataset.vdrawer);
+      return;
+    }
     const q = e.target.closest('[data-q]');
     if (q) {
       const key = q.dataset.q;
@@ -2217,7 +2769,7 @@ function init() {
   try {
     const qp = new URLSearchParams(location.search);
     const v = qp.get('v');
-    if (['dashboard', 'assets', 'services', 'glossary', 'settings'].includes(v)) VIEW = v;
+    if (['dashboard', 'assets', 'validation', 'services', 'glossary', 'settings'].includes(v)) VIEW = v;
     const tb = qp.get('tab');
     if (tb && TAB[v] !== undefined) TAB[v] = tb;
     if (qp.get('lang') === 'id') LANG = 'id';
