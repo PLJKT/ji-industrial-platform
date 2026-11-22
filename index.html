@@ -2381,10 +2381,10 @@ function viewValidation() {
   const at100 = all.filter((r) => r.score >= 100).length;
 
   const cols = [
-    { w: '11%', label: 'ID' }, { w: '6%', label: t('F.blok') }, { w: '18%', label: t('F.name') },
+    { w: '11%', label: 'ID' }, { w: '6%', label: t('F.blok') }, { w: '17%', label: t('F.name') },
     { w: '5%', label: t('F.zone') }, { w: '8%', label: t('dv.col.plan') },
     { w: '10%', label: t('dv.col.pic') }, { w: '9%', label: t('dv.col.result') },
-    { w: '12%', label: t('dv.col.comp') }, { w: '6%', label: t('dv.col.photo'), align: 'right' },
+    { w: '12%', label: t('dv.col.comp') }, { w: '7%', label: t('dv.col.photo'), align: 'right' },
     { w: '8%', label: t('dv.col.updated') }, { w: '7%', label: t('dv.col.reg') },
   ];
   const p = paginate('validation', rows, 12);
