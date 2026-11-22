@@ -284,6 +284,18 @@ td.date{white-space:nowrap;color:var(--muted);font-size:12px}
 .dv-ref{font-size:10.5px;color:var(--faint);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .dv-note{font-size:11px;color:var(--faint);margin-top:8px;line-height:1.55}
 .dv-tag{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-right:4px}
+/* land-area range: two typed bounds beside the search box */
+.rng{display:flex;align-items:center;gap:6px;background:#FFF;border:1px solid var(--line);border-radius:var(--radius);padding:5px 9px;font-size:11.5px;color:var(--muted);white-space:nowrap}
+.rng b{font-weight:600;color:var(--text)}
+.rng input{width:62px;border:0;outline:0;background:transparent;font-size:12px;text-align:right;color:var(--text);font-variant-numeric:tabular-nums}
+.rng input::-webkit-outer-spin-button,.rng input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.rng input[type=number]{-moz-appearance:textfield;appearance:textfield}
+.rng .sep{color:var(--faint)}
+.rng .u{color:var(--faint)}
+.rngx{border:0;background:none;color:var(--muted);font-size:14px;line-height:1;padding:0 0 0 1px;cursor:pointer}
+.rngx:hover{color:var(--text)}
+/* derived value shown in place of an editable input */
+.derived{display:flex;align-items:center;gap:8px;background:#FCFBF8;border:1px solid var(--line);border-radius:var(--radius);padding:6px 9px;font-size:11.5px;color:var(--muted)}
 @media (max-width:1180px){.dv-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:980px){.pgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.dv-row{grid-template-columns:130px minmax(0,1fr) 64px}}
 @media (max-width:560px){.pgrid{grid-template-columns:1fr}.dv-kpis{grid-template-columns:1fr}}
@@ -409,6 +421,9 @@ const STR = {
   'c.close': ['Close', 'Tutup'],
   'c.search': ['Search', 'Cari'],
   'c.all': ['All', 'Semua'],
+  'c.min': ['Min', 'Min'],
+  'c.max': ['Max', 'Maks'],
+  'c.clear': ['Clear', 'Bersihkan'],
   'c.export': ['Export', 'Ekspor'],
   'c.new': ['New record', 'Catatan baru'],
   'c.edit': ['Edit', 'Ubah'],
@@ -442,7 +457,7 @@ const STR = {
   'v.validation.title': ['Data validation', 'Validasi data'],
   'v.validation.sub': ['One row per asset that is not yet surveyed: planned survey, person in charge, result, evidence in register format and photo proof.', 'Satu baris per aset yang belum disurvei: rencana survei, penanggung jawab, hasil, bukti dalam format register, dan bukti foto.'],
 
-  'dv.note': ['Every asset still marked Survey = No in the register is queued here automatically. Completion = 50% evidence coverage + 30% schedule and result + 20% photo proof. Setting the result to Surveyed writes Survey = Yes back to the register.', 'Setiap aset yang masih bertanda Survey = No pada register otomatis masuk antrean di sini. Penyelesaian = 50% cakupan bukti + 30% jadwal dan hasil + 20% bukti foto. Menetapkan hasil Surveyed menulis Survey = Yes kembali ke register.'],
+  'dv.note': ['Every asset queued here comes from the register automatically, and the register\'s Survey column is read back from this page: it reads Yes only when the result below is Surveyed. Completion = 50% evidence coverage + 30% schedule and result + 20% photo proof.', 'Setiap aset di antrean ini berasal dari register secara otomatis, dan kolom Survey pada register dibaca kembali dari halaman ini: Yes hanya bila hasil di bawah adalah Surveyed. Penyelesaian = 50% cakupan bukti + 30% jadwal dan hasil + 20% bukti foto.'],
   'dv.kpi.queue': ['In queue', 'Dalam antrean'],
   'dv.kpi.queueFoot': ['not yet surveyed in the register', 'belum disurvei pada register'],
   'dv.kpi.scheduled': ['Scheduled', 'Sudah dijadwalkan'],
@@ -495,7 +510,7 @@ const STR = {
   'dv.regYes': ['Survey = Yes in the register', 'Survey = Yes pada register'],
   'dv.ref': ['Register', 'Register'],
   'dv.openHint': ['Open a row to record the schedule, evidence and photos.', 'Buka satu baris untuk mencatat jadwal, bukti, dan foto.'],
-  'dv.queueNote': ['The queue is derived from the register: an asset leaves it only when its Survey column is set to Yes.', 'Antrean diturunkan dari register: aset keluar hanya bila kolom Survey diatur ke Yes.'],
+  'dv.queueNote': ['The queue is derived from the register: an asset leaves it only when its result here is set to Surveyed, which is what makes the register Survey column read Yes.', 'Antrean diturunkan dari register: aset keluar hanya bila hasilnya di sini diatur ke Surveyed, yang membuat kolom Survey pada register bernilai Yes.'],
   'dv.inQueue': ['Queued', 'Dalam antrean'],
   'dv.cleared': ['Registered', 'Terdaftar'],
 
@@ -585,6 +600,7 @@ const STR = {
   'a.filterZone': ['Zone', 'Zona'],
   'a.filterType': ['Building type', 'Jenis bangunan'],
   'a.filterClass': ['Class', 'Kelas'],
+  'a.landRange': ['Land', 'Tanah'],
   'a.col.build': ['Build m²', 'Bangunan m²'],
   'a.col.power': ['Power kVA', 'Daya kVA'],
   'a.col.price': ['Asking price', 'Harga penawaran'],
@@ -686,6 +702,7 @@ const STR = {
   'st.rules.2': ['Status, stage and category are stored as codes, so switching language never leaves half a record in the other tongue.', 'Status, tahap, dan kategori disimpan sebagai kode, sehingga berganti bahasa tidak pernah menyisakan separuh catatan dalam bahasa lain.'],
   'st.rules.3': ['Required fields are validated before anything is written; the record stays unsaved until the missing field is filled.', 'Kolom wajib divalidasi sebelum apa pun ditulis; catatan tetap belum tersimpan sampai kolom yang kosong diisi.'],
   'st.rules.4': ['Export a JSON snapshot before reloading the seed, before clearing browser storage, and at the end of each reporting month.', 'Ekspor snapshot JSON sebelum memuat ulang data dasar, sebelum menghapus penyimpanan peramban, dan pada akhir setiap bulan pelaporan.'],
+  'st.rules.5': ['The Survey column is not edited by hand. It reads Yes only when the asset result on Data validation is set to Surveyed, and No in every other case.', 'Kolom Survey tidak diubah manual. Nilainya Yes hanya bila hasil aset pada Validasi data diatur ke Surveyed, dan No pada semua keadaan lain.'],
 
   'f.asset': ['Asset record', 'Catatan aset'],
   'f.owner': ['Owner record', 'Catatan pemilik'],
@@ -803,6 +820,8 @@ const STR = {
   'F.industry': ['Industry', 'Industri'],
   'F.located': ['Location identification', 'Identifikasi lokasi'],
   'F.survey': ['Survey', 'Survei'],
+  'f.derivedSurvey': ['Read only · set in Data validation', 'Hanya baca · diatur di Validasi data'],
+  'dv.derivedTag': ['from Data validation', 'dari Validasi data'],
   'F.zone': ['Zone', 'Zona'],
   'F.btype': ['Building type', 'Jenis bangunan'],
   'F.area': ['Required area (m²)', 'Luas dibutuhkan (m²)'],
@@ -1185,7 +1204,24 @@ function filterRows(rows, key, fields) {
   const f = FILTER[key] || {};
   let out = rows;
   Object.keys(f).forEach((k) => {
-    if (k !== 'q' && k !== 'sort' && f[k]) out = out.filter((r) => String(r[k]) === String(f[k]));
+    if (k === 'q' || k === 'sort') return;
+    if (k.indexOf('min.') === 0 || k.indexOf('max.') === 0) return; /* typed bounds, handled below */
+    if (f[k]) out = out.filter((r) => String(r[k]) === String(f[k]));
+  });
+  /* numeric bounds typed beside the search box: min.<field> and max.<field>.
+     A record with no value for that field drops out once a bound is set. */
+  Object.keys(f).forEach((k) => {
+    const raw = f[k];
+    if (raw == null || String(raw).trim() === '') return;
+    const n = Number(raw);
+    if (!isFinite(n)) return;
+    if (k.indexOf('min.') === 0) {
+      const fl = k.slice(4);
+      out = out.filter((r) => r[fl] != null && String(r[fl]).trim() !== '' && Number(r[fl]) >= n);
+    } else if (k.indexOf('max.') === 0) {
+      const fl = k.slice(4);
+      out = out.filter((r) => r[fl] != null && String(r[fl]).trim() !== '' && Number(r[fl]) <= n);
+    }
   });
   const q = (f.q || '').toLowerCase().trim();
   if (q) out = out.filter((r) => fields.some((fl) => String(r[fl] == null ? '' : r[fl]).toLowerCase().includes(q)));
@@ -1422,6 +1458,13 @@ function viewAssets() {
       <div class="card flat">
         <div class="toolbar">
           <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg><input data-q="assets" placeholder="${esc(t('c.search'))}" value="${esc(f.q || '')}"></div>
+          <div class="rng"><b>${esc(t('a.landRange'))}</b>
+            <input data-num="assets" data-f="min.land" type="number" min="0" step="100" placeholder="${esc(t('c.min'))}" aria-label="${esc(t('F.land') + ' ' + t('c.min'))}" value="${esc(f['min.land'] == null ? '' : f['min.land'])}">
+            <span class="sep">–</span>
+            <input data-num="assets" data-f="max.land" type="number" min="0" step="100" placeholder="${esc(t('c.max'))}" aria-label="${esc(t('F.land') + ' ' + t('c.max'))}" value="${esc(f['max.land'] == null ? '' : f['max.land'])}">
+            <span class="u">m²</span>
+            ${(f['min.land'] || f['max.land']) ? '<button class="rngx" data-rngclear="assets" title="' + esc(t('c.clear')) + '">×</button>' : ''}
+          </div>
           <select data-sel="assets" data-f="status"><option value="">${esc(t('a.filterStatus'))}: ${esc(t('c.all'))}</option>${statusOpts.map((s) => `<option value="${s}" ${f.status === s ? 'selected' : ''}>${esc(E('status', s))}</option>`).join('')}</select>
           <select data-sel="assets" data-f="kawasan"><option value="">${esc(t('a.filterKawasan'))}: ${esc(t('c.all'))}</option>${estOpts.map((s) => `<option value="${s}" ${f.kawasan === s ? 'selected' : ''}>${esc(s)}</option>`).join('')}</select>
           <select data-sel="assets" data-f="zone"><option value="">${esc(t('a.filterZone'))}: ${esc(t('c.all'))}</option>${Object.keys(ENUM.zone).map((s) => `<option value="${s}" ${f.zone === s ? 'selected' : ''}>${esc(E('zone', s))}</option>`).join('')}</select>
@@ -1759,7 +1802,7 @@ function viewSettings() {
         <button class="btn danger" style="flex:0 0 auto" data-act="reset">${esc(t('st.reset'))}</button></div>
     </div>
     <div class="card"><div class="card-head" style="margin-bottom:4px"><h3>${esc(t('st.rules.title'))}</h3></div>
-      ${ruleRow(1)}${ruleRow(2)}${ruleRow(3)}${ruleRow(4)}
+      ${ruleRow(1)}${ruleRow(2)}${ruleRow(3)}${ruleRow(4)}${ruleRow(5)}
     </div>
     </div>
     <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
@@ -1803,7 +1846,7 @@ const E_TYPES = {
       { k: 'availableFrom', t: 'date', sec: 'commercial' }, { k: 'condition', t: 'select', g: 'condition', sec: 'commercial' },
       { k: 'retrofit', t: 'number', sec: 'commercial' },
       { k: 'quality', t: 'number', sec: 'quality' }, { k: 'verified', t: 'date', sec: 'quality' },
-      { k: 'survey', t: 'select', g: 'yesno', sec: 'quality' },
+      { k: 'survey', t: 'select', g: 'yesno', sec: 'quality', derived: 1 },
       { k: 'access', t: 'select', g: 'access', sec: 'quality' }, { k: 'notes', t: 'textarea', sec: 'quality' },
     ],
   },
@@ -1981,7 +2024,10 @@ function openDetail(entity, id) {
   const rec = (STATE[meta.coll] || []).find((r) => String(r[meta.idKey]) === String(id));
   if (!rec) return;
   DRAWER = { entity: entity, id: id };
-  const body = '<dl class="kv">' + meta.fields.map((f) => '<dt>' + esc(t(f.label || ('F.' + f.k))) + '</dt><dd>' + showVal(rec, f.k, f) + '</dd>').join('') + '</dl>';
+  const body = '<dl class="kv">' + meta.fields.map((f) => {
+    const note = f.derived ? ' <span style="color:var(--faint);font-size:10.5px">· ' + esc(t('dv.derivedTag')) + '</span>' : '';
+    return '<dt>' + esc(t(f.label || ('F.' + f.k))) + '</dt><dd>' + showVal(rec, f.k, f) + note + '</dd>';
+  }).join('') + '</dl>';
   const extra = entity === 'plant' ? plantDetailExtra(rec) : entity === 'asset' ? assetDetailExtra(rec) : '';
   el('drawerTitle').textContent = t(meta.title);
   el('drawerSub').textContent = recTitle(entity, rec);
@@ -2002,7 +2048,11 @@ function openForm(entity, id) {
   const fields = meta.fields.map((f) => {
     const val = rec[f.k] == null ? '' : rec[f.k];
     let input = '';
-    if (f.t === 'select') {
+    if (f.derived) {
+      /* not typed by hand: the value is read from another record, shown here for context */
+      input = '<div class="derived">' + chipFor(f.g || 'yesno', (f.g === 'yesno' ? (val === 'yes' ? 'yes' : 'no') : val) || 'no')
+        + '<span>' + esc(t('f.derivedSurvey')) + '</span></div>';
+    } else if (f.t === 'select') {
       const opts = f.opts || Object.keys(ENUM[f.g] || {});
       input = '<select data-f="' + f.k + '"' + (f.req ? ' data-req="1"' : '') + '><option value="">' + esc(t('c.select')) + '</option>'
         + opts.map((o) => '<option value="' + esc(o) + '"' + (String(val) === String(o) ? ' selected' : '') + '>' + esc(f.opts ? o : E(f.g, o)) + '</option>').join('') + '</select>';
@@ -2090,6 +2140,8 @@ function deleteRecord() {
   if (!meta) return;
   if (!confirm(t('c.confirmDelete'))) return;
   STATE[meta.coll] = STATE[meta.coll].filter((r) => String(r[meta.idKey]) !== String(DRAWER.id));
+  /* a removed asset cannot keep a validation row behind */
+  if (DRAWER.entity === 'asset') STATE.validations = (STATE.validations || []).filter((v) => String(v.asset_id) !== String(DRAWER.id));
   save();
   closeDrawer();
   toast(t('c.deleted'));
@@ -2201,6 +2253,19 @@ function newValidation(assetId) {
   return { asset_id: assetId, plannedDate: '', pic: '', outcome: 'pending', checkedAt: '', findings: '', evidence: emptyEvidence(), photos: [], updatedAt: '' };
 }
 
+/* Survey is no longer an editable register field. It is the result of the validation
+   record for that asset: Yes only when the result there is Surveyed, No otherwise.
+   applySurvey rewrites the stored flag after every enrolment, save and import, so the
+   register column, its filter and these KPIs all read from one source. */
+function surveyOf(assetId, state) {
+  const s = state || STATE;
+  const v = (s.validations || []).find((x) => x.asset_id === assetId);
+  return v && v.outcome === 'surveyed' ? 'yes' : 'no';
+}
+function applySurvey(state) {
+  (state.assets || []).forEach((a) => { a.survey = surveyOf(a.asset_id, state); });
+}
+
 /* Auto-enrolment. Every asset still marked Survey = No in the register gets a
    validation record; records are never dropped, so the history of a visit stays
    visible after the asset itself has been marked as surveyed. */
@@ -2209,6 +2274,16 @@ function syncValidations(state) {
   state.validations = Array.isArray(state.validations) ? state.validations : [];
   const ids = new Set(state.validations.filter((v) => v && v.asset_id).map((v) => v.asset_id));
   let added = 0;
+  /* a row that read Yes before Survey became derived keeps that visit as a Surveyed
+     record, so deriving below does not push an already-visited asset back into the queue */
+  state.assets.forEach((a) => {
+    if (a.survey === 'yes' && !ids.has(a.asset_id)) {
+      const v = newValidation(a.asset_id);
+      v.outcome = 'surveyed';
+      v.checkedAt = a.verified || '';
+      state.validations.push(v); ids.add(a.asset_id); added++;
+    }
+  });
   state.assets.filter((a) => a.survey !== 'yes').forEach((a) => {
     if (!ids.has(a.asset_id)) { state.validations.push(newValidation(a.asset_id)); ids.add(a.asset_id); added++; }
   });
@@ -2218,6 +2293,7 @@ function syncValidations(state) {
     if (!v.outcome) v.outcome = 'pending';
     Object.keys(emptyEvidence()).forEach((k) => { if (v.evidence[k] == null) v.evidence[k] = ''; });
   });
+  applySurvey(state);
   return added;
 }
 
@@ -2548,12 +2624,12 @@ function saveValidation(assetId) {
   captureValInputs(rec);
   const today = new Date().toISOString().slice(0, 10);
   rec.updatedAt = today;
-  /* the register keeps a single Survey column: a completed visit writes it back */
+  /* the register keeps a single Survey column, and it is derived from this result */
   if (rec.outcome === 'surveyed') {
-    a.survey = 'yes';
     if (!rec.checkedAt) rec.checkedAt = today;
     if (!a.verified) a.verified = rec.checkedAt;
   }
+  applySurvey(STATE);
   save();
   closeDrawer();
   renderView();
@@ -2624,6 +2700,14 @@ function bindEvents() {
     if (tab) { TAB[tab.dataset.tab] = tab.dataset.t; PAGE[tab.dataset.tab + '_' + tab.dataset.t] = 1; renderView(); return; }
     const add = e.target.closest('[data-add]');
     if (add) { openForm(add.dataset.add, null); return; }
+    const rngc = e.target.closest('[data-rngclear]');
+    if (rngc) {
+      const k = rngc.dataset.rngclear;
+      if (FILTER[k]) { delete FILTER[k]['min.land']; delete FILTER[k]['max.land']; }
+      PAGE[k] = 1;
+      renderView();
+      return;
+    }
     const row = e.target.closest('tr[data-entity]');
     if (row) {
       if (row.dataset.entity === 'validation') { openValidation(row.dataset.id); return; }
@@ -2701,6 +2785,21 @@ function bindEvents() {
         const again = document.querySelector('[data-q="' + key + '"]');
         if (again) { again.focus(); const v = again.value; again.setSelectionRange(v.length, v.length); }
       }, 320);
+      return;
+    }
+    /* typed numeric bounds (land area range) */
+    const num = e.target.closest('[data-num]');
+    if (num) {
+      const key = num.dataset.num, fld = num.dataset.f;
+      FILTER[key] = FILTER[key] || {};
+      FILTER[key][fld] = num.value;
+      PAGE[key] = 1;
+      clearTimeout(qTimer);
+      qTimer = setTimeout(() => {
+        renderView();
+        const again = document.querySelector('[data-num="' + key + '"][data-f="' + fld + '"]');
+        if (again) { again.focus(); const v = again.value; try { again.setSelectionRange(v.length, v.length); } catch (err) { /* number inputs vary */ } }
+      }, 340);
       return;
     }
     if (e.target.id === 'globalSearch') {

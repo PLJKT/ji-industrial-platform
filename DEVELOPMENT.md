@@ -93,8 +93,12 @@ space from the widest content column (owner name), then re-check the rendered he
 
 `paginate(key, rows, size)` reads/stores `PAGE[key]`; `filterRows(rows, key, fields)` reads
 `FILTER[key]`; toolbar controls are declared as `data-sel="<view>" data-f="<field>"` and a search
-box as `data-q="<view>"`, so `bindEvents` needs no per-view code. Filters with custom semantics
-(completion bands, ranges) adjust `rows` inside the view function before pagination.
+box as `data-q="<view>"`, so `bindEvents` needs no per-view code. Numeric bounds use the same store
+under the reserved keys `min.<field>` / `max.<field>`: `filterRows` skips those keys in the string
+pass, then drops any row outside `>= min` / `<= max` (either bound alone works, and a blank field
+fails both). Markup is `data-num="<view>" data-f="min.land"`, and a clear button carries
+`data-rngclear="<view>:<field>"`. Filters with custom semantics (completion bands) adjust `rows`
+inside the view function before pagination.
 
 `chipFor(group, code)`, `kpiCard(label, value, foot, tone)`, `emptyRow(cols)`, `toast(msg)`,
 `openDrawer(title, sub, bodyHtml, footerHtml)` / `closeDrawer()`. Drawer content goes into
@@ -120,11 +124,15 @@ itself.
 `{asset_id, plannedDate, pic, outcome, checkedAt, findings, evidence{}, photos[], updatedAt}`.
 Outcome codes live in `ENUM.voutcome` (`pending`, `scheduled`, `surveyed`, `blocked`, `mismatch`).
 
-**Enrolment.** `syncValidations(state)` is idempotent: it adds a blank record for every asset whose
-`survey !== 'yes'`, backfills missing evidence keys, photo arrays and outcome, and never deletes a
-record. It runs from `loadData`, the seed branch, `viewValidation`, `openValidation`, `importJson`
-and the reset path. Records outliving their queue membership is intentional — the visit history
-stays visible after the register row turns to `Survey = Yes`.
+**Enrolment.** `syncValidations(state)` is idempotent and gives every asset a record, so the page
+holds one row per asset (203 today: 200 queued, 3 `surveyed`). Order of work: canonicalise the array,
+convert a legacy register row that already reads `survey === 'yes'` but has no record into a
+`surveyed` record (visit kept, row not re-queued), add a blank record for every remaining asset,
+backfill evidence keys / photo arrays / outcome, `applySurvey`, return the number added. It runs from
+`loadData`, the seed branch, the reset path, `importJson`, `saveForm`, `viewValidation`,
+`openValidation` and `saveValidation`. Records outliving their queue membership is intentional — the
+visit history stays visible after the register row turns to `Survey = Yes`. `deleteRecord` drops the
+asset's validation row with the asset.
 
 **Evidence set.** `valFields()` is `E_TYPES.asset.fields` minus `VAL_SKIP` (`asset_id`, `survey`,
 `verified` — those live in the schedule block), 37 fields today. Keys, order and section headings are
@@ -154,10 +162,17 @@ thumbnail grid; `PH.forget` / `PH.del` revoke it. If IndexedDB is unavailable th
 `PH.broken`, counts the upload as rejected and continues — the page never fails hard. A typical
 phone photo lands at 720 px on the long side and 5–120 KB.
 
-**Write-back.** `saveValidation` sets `asset.survey = 'yes'` when the outcome is `surveyed`, fills
-`checkedAt` (defaulting to today) and `verified` when empty. Write-back is one-way: no code path
-turns the register's Survey column back to `No`, because the register keeps a single Survey column
-and the page must never disagree with it.
+**One-way derivation.** The register's Survey column is a derived mirror: `surveyOf(assetId, state)`
+returns `'yes'` only when a record exists with `outcome === 'surveyed'`, else `'no'`, and
+`applySurvey(state)` rewrites `asset.survey` for every asset. `saveValidation` still fills `checkedAt`
+(today by default) and `verified` when the outcome is `surveyed`, then calls `applySurvey`, and
+`syncValidations` ends with the same call, so load, seed, import, reset and every save agree. Do
+not reintroduce a direct `asset.survey = 'yes'` write anywhere else — changing the outcome and letting
+`applySurvey` run is the only supported path, and it also works backwards (changing `surveyed` back to
+`pending` returns the row to `No`). `E_TYPES.asset.fields` marks `survey` with `derived: 1`;
+`openForm` then renders a read-only `.derived` block (chip plus `f.derivedSurvey`) instead of an input,
+`saveForm` never sees that key and keeps the stored value, and `openDetail` appends `dv.derivedTag`
+after the value so the source of the flag is visible.
 
 **List.** `viewValidation` joins assets and owners, applies zone, building type, outcome,
 completion-band and free-text filters, sorts through `VAL_SORTS` (completion low to high by default,

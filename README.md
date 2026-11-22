@@ -78,7 +78,7 @@ machinery & automation, electronics & electrical, chemicals, automotive componen
 furniture, building materials, logistics & warehousing, trade & distribution, services &
 consulting, finance & investment, private individual and other.
 
-Each asset row also carries two bilingual Yes/No statuses. **Location identification** is derived from the resolved road coordinate: Yes when the record has a road-level pin, No when the road is still pending. **Survey** records whether someone has visited the factory site to verify the register's data (area, condition, contact, terms) against the physical premises; it is a manual flag, defaulting to No until that site check is done. Of the 203 records, 3 are marked surveyed from the yellow-highlighted rows in the ledger screenshots; the rest are No. It can be edited in the asset record.
+Each asset row also carries two bilingual Yes/No statuses. **Location identification** is derived from the resolved road coordinate: Yes when the record has a road-level pin, No when the road is still pending. **Survey** is derived, not typed: it reads the result recorded on the Data validation page and is Yes only when that asset's validation record is set to Surveyed, so a register row can never claim a site visit that the validation page has not recorded. Nothing is editable in the asset record: the field renders as a read-only chip with a "set in Data validation" hint. Of the 203 records, 3 rows that already read Yes in the ledger carry a matching surveyed validation record and stay Yes; the other 200 sit in the validation queue and read No until that visit is recorded.
 
 The asset detail drawer embeds a Google Maps frame only when the record's location is
 identified: the frame pins that single asset by its stored coordinates, and a link opens the
@@ -110,6 +110,13 @@ high, building area, land area, zone, building type, clear height, connected pow
 availability date.
 Asking price is normalised to Rp per m² using building area when the record is quoted as a total, so
 one ranking holds across both quoting conventions.
+
+Next to the search box the register carries a manual land-area range (`Land — Min / Max — m²`): both
+boxes are optional and independent, either bound alone works, and `×` clears both. The test is
+`>= min` and `<= max` against the recorded land area in m², so a 10,000–20,000 filter returns only
+rows inside that band; a row whose land area is blank drops out as soon as either bound is set, because
+an unknown area cannot be confirmed to fall inside the range. Values are integers as recorded; the box
+does not round or guess. Filters compose with search, industry, zone and status.
 
 `plants` holds design capacity as reported by the operator (this collection feeds only the hidden utility view): estate, plant / unit, phase, treatment
 stream (WTP, WWTP or solid waste), technology, design capacity with its original unit (`Lps` or `m³/day`),
@@ -166,16 +173,18 @@ hazardous waste, estate management, people, supply chain, and finance and insura
 The **Data validation** page (`?v=validation`) records the field check of each asset that is not yet
 surveyed. It is derived from the register, not a second register:
 
-- **Automatic enrolment.** Every asset whose register row still says `Survey = No` gets a validation
-  record on load (`syncValidations`). Today that is 200 of 203; the 3 already surveyed stay out.
-  New assets added through the form are enrolled on the next save. Records are never deleted when an
-  asset is later surveyed, so the visit history stays visible and the row keeps showing
-  `Survey = Yes` in the Register column.
+- **Automatic enrolment.** Every asset gets a validation record on load (`syncValidations`), so the
+  page always holds one row per asset: 203 today, of which 200 are still in the queue and 3 already
+  carry a `Surveyed` result. New assets added through the form are enrolled on the next save. Rows
+  that read `Survey = Yes` in the register before Survey became derived are converted once into a
+  `surveyed` record, so the visit is not lost and the row does not re-enter the queue. Records are
+  never deleted when an asset is later surveyed, so the visit history stays visible.
 - **Schedule and result.** Planned survey date, person in charge, result (`Pending`, `Scheduled`,
   `Surveyed`, `Access blocked`, `Data mismatch`), actual survey date and findings / discrepancies.
-  Setting the result to `Surveyed` writes `Survey = Yes` back to the register (and fills the
-  verification date when it is empty); the register keeps the single Survey column, so the page can
-  never disagree with it.
+  This page is the only place the outcome is set. `Surveyed` fills the verification date when it is
+  empty and, on every save, the register's Survey column is recomputed from the stored results
+  (`applySurvey`): Yes only where a record reads `Surveyed`, No everywhere else. The column is
+  read-only in the asset record and detail drawer, so the two views can never disagree.
 - **Evidence in register format.** The evidence block reuses the asset register field list — same
   keys, order and section headings (identity, physical, compliance, commercial, quality) — with
   `asset_id`, `survey` and `verified` handled in the schedule block instead. Under each field the
