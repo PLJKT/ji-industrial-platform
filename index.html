@@ -1130,6 +1130,8 @@ function loadData() {
         (parsed.leads || []).forEach((l) => { if (l.source == null) l.source = 'real'; });
         (parsed.metrics || []).forEach((m) => { if (m.source == null) m.source = 'real'; });
         parsed.validations = parsed.validations || [];
+        /* the register starts from zero: drop the results carried in from hand-ticked rows */
+        resetSurveyOnce(parsed);
         syncValidations(parsed);
         return parsed;
       }
@@ -1200,6 +1202,30 @@ function paginate(key, rows, size) {
   return { slice: rows.slice((page - 1) * size, page * size), pager: pagerHtml(key, rows.length, page, size) };
 }
 
+/* numeric bounds typed beside a search box: min.<field> and max.<field>. A record with
+   no value for that field drops out once a bound is set, because an unknown value cannot
+   be confirmed to sit inside the range. `get(row, field)` lets a view whose rows wrap an
+   asset read the number from the nested record. */
+function applyBounds(rows, f, get) {
+  Object.keys(f).forEach((k) => {
+    const raw = f[k];
+    if (raw == null || String(raw).trim() === '') return;
+    const n = Number(raw);
+    if (!isFinite(n)) return;
+    const side = k.indexOf('min.') === 0 ? 'min' : k.indexOf('max.') === 0 ? 'max' : '';
+    if (!side) return;
+    const fl = k.slice(4);
+    rows = rows.filter((r) => {
+      const val = get ? get(r, fl) : r[fl];
+      if (val == null || String(val).trim() === '') return false;
+      const v = Number(val);
+      if (!isFinite(v)) return false;
+      return side === 'min' ? v >= n : v <= n;
+    });
+  });
+  return rows;
+}
+
 function filterRows(rows, key, fields) {
   const f = FILTER[key] || {};
   let out = rows;
@@ -1208,21 +1234,7 @@ function filterRows(rows, key, fields) {
     if (k.indexOf('min.') === 0 || k.indexOf('max.') === 0) return; /* typed bounds, handled below */
     if (f[k]) out = out.filter((r) => String(r[k]) === String(f[k]));
   });
-  /* numeric bounds typed beside the search box: min.<field> and max.<field>.
-     A record with no value for that field drops out once a bound is set. */
-  Object.keys(f).forEach((k) => {
-    const raw = f[k];
-    if (raw == null || String(raw).trim() === '') return;
-    const n = Number(raw);
-    if (!isFinite(n)) return;
-    if (k.indexOf('min.') === 0) {
-      const fl = k.slice(4);
-      out = out.filter((r) => r[fl] != null && String(r[fl]).trim() !== '' && Number(r[fl]) >= n);
-    } else if (k.indexOf('max.') === 0) {
-      const fl = k.slice(4);
-      out = out.filter((r) => r[fl] != null && String(r[fl]).trim() !== '' && Number(r[fl]) <= n);
-    }
-  });
+  out = applyBounds(out, f, null);
   const q = (f.q || '').toLowerCase().trim();
   if (q) out = out.filter((r) => fields.some((fl) => String(r[fl] == null ? '' : r[fl]).toLowerCase().includes(q)));
   return out;
@@ -2266,25 +2278,31 @@ function applySurvey(state) {
   (state.assets || []).forEach((a) => { a.survey = surveyOf(a.asset_id, state); });
 }
 
-/* Auto-enrolment. Every asset still marked Survey = No in the register gets a
-   validation record; records are never dropped, so the history of a visit stays
-   visible after the asset itself has been marked as surveyed. */
+/* One-time zeroing. Survey used to be ticked by hand in the register, and the first
+   build of this page converted those three rows into `surveyed` records. The register
+   starts from zero instead: on the first load of this build every result returns to
+   Pending (checkedAt cleared) so all 203 rows read No until a visit is recorded here.
+   Evidence, photos and findings already typed on this page are kept. */
+function resetSurveyOnce(state) {
+  if (!state || state.surveyFromZero) return 0;
+  let n = 0;
+  (state.validations || []).forEach((v) => {
+    if (!v) return;
+    if (v.outcome && v.outcome !== 'pending') { v.outcome = 'pending'; v.checkedAt = ''; n++; }
+  });
+  state.surveyFromZero = 1;
+  return n;
+}
+
+/* Auto-enrolment. The page holds one record per asset: every asset without a record gets
+   a blank one, whatever its register flag says, because that flag is now derived from
+   here. Records are never dropped, so a visit's history stays visible. */
 function syncValidations(state) {
   if (!state || !Array.isArray(state.assets)) return 0;
   state.validations = Array.isArray(state.validations) ? state.validations : [];
   const ids = new Set(state.validations.filter((v) => v && v.asset_id).map((v) => v.asset_id));
   let added = 0;
-  /* a row that read Yes before Survey became derived keeps that visit as a Surveyed
-     record, so deriving below does not push an already-visited asset back into the queue */
   state.assets.forEach((a) => {
-    if (a.survey === 'yes' && !ids.has(a.asset_id)) {
-      const v = newValidation(a.asset_id);
-      v.outcome = 'surveyed';
-      v.checkedAt = a.verified || '';
-      state.validations.push(v); ids.add(a.asset_id); added++;
-    }
-  });
-  state.assets.filter((a) => a.survey !== 'yes').forEach((a) => {
     if (!ids.has(a.asset_id)) { state.validations.push(newValidation(a.asset_id)); ids.add(a.asset_id); added++; }
   });
   state.validations.forEach((v) => {
@@ -2444,7 +2462,8 @@ function viewValidation() {
   if (f.outcome) rows = rows.filter((r) => (r.rec.outcome || 'pending') === f.outcome);
   if (f.comp === 'zero') rows = rows.filter((r) => r.score === 0);
   else if (f.comp === 'done') rows = rows.filter((r) => r.score >= 100);
-  else if (f.comp === 'part') rows = rows.filter((r) => r.score > 0 && r.score < 100);
+  if (f.comp === 'part') rows = rows.filter((r) => r.score > 0 && r.score < 100);
+  rows = applyBounds(rows, f, (r, fl) => (fl === 'land' ? r.a.land : r[fl]));
   const q = (f.q || '').toLowerCase().trim();
   if (q) rows = rows.filter((r) => [r.a.asset_id, r.name, r.a.blok, r.a.zone, r.plan, r.rec.pic, r.rec.findings].some((x) => String(x == null ? '' : x).toLowerCase().includes(q)));
   const sortKey = f.sort || 'compAsc';
@@ -2457,17 +2476,19 @@ function viewValidation() {
   const at100 = all.filter((r) => r.score >= 100).length;
 
   const cols = [
-    { w: '11%', label: 'ID' }, { w: '6%', label: t('F.blok') }, { w: '17%', label: t('F.name') },
-    { w: '5%', label: t('F.zone') }, { w: '8%', label: t('dv.col.plan') },
+    { w: '11%', label: 'ID' }, { w: '6%', label: t('F.blok') }, { w: '15%', label: t('F.name') },
+    { w: '5%', label: t('F.zone') }, { w: '6%', label: t('F.land'), align: 'right' },
+    { w: '8%', label: t('dv.col.plan') },
     { w: '10%', label: t('dv.col.pic') }, { w: '9%', label: t('dv.col.result') },
-    { w: '12%', label: t('dv.col.comp') }, { w: '7%', label: t('dv.col.photo'), align: 'right' },
-    { w: '8%', label: t('dv.col.updated') }, { w: '7%', label: t('dv.col.reg') },
+    { w: '11%', label: t('dv.col.comp') }, { w: '6%', label: t('dv.col.photo'), align: 'right' },
+    { w: '7%', label: t('dv.col.updated') }, { w: '6%', label: t('dv.col.reg') },
   ];
   const p = paginate('validation', rows, 12);
   const body = p.slice.map((r) => `<tr data-entity="validation" data-id="${esc(r.a.asset_id)}">
       <td class="mono">${esc(r.a.asset_id)}</td><td class="mono">${esc(r.a.blok || '—')}</td>
       <td><div class="oname">${esc(r.name || '—')}</div><div class="osub">${esc(r.a.owner_id || '—')}</div></td>
       <td class="mono">${esc(r.a.zone ? E('zone', r.a.zone) : '—')}</td>
+      <td class="num">${fmtArea(r.a.land)}</td>
       <td class="date">${esc(fmtDate(r.plan))}</td>
       <td>${esc(r.rec.pic || '—')}</td>
       <td>${valChip(r.rec.outcome || 'pending')}</td>
@@ -2487,6 +2508,13 @@ function viewValidation() {
   <div class="card flat">
     <div class="toolbar">
       <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg><input data-q="validation" placeholder="${esc(t('c.search'))}" value="${esc(f.q || '')}"></div>
+      <div class="rng"><b>${esc(t('a.landRange'))}</b>
+        <input data-num="validation" data-f="min.land" type="number" min="0" step="100" placeholder="${esc(t('c.min'))}" aria-label="${esc(t('F.land') + ' ' + t('c.min'))}" value="${esc(f['min.land'] == null ? '' : f['min.land'])}">
+        <span class="sep">–</span>
+        <input data-num="validation" data-f="max.land" type="number" min="0" step="100" placeholder="${esc(t('c.max'))}" aria-label="${esc(t('F.land') + ' ' + t('c.max'))}" value="${esc(f['max.land'] == null ? '' : f['max.land'])}">
+        <span class="u">m²</span>
+        ${(f['min.land'] || f['max.land']) ? '<button class="rngx" data-rngclear="validation" title="' + esc(t('c.clear')) + '">×</button>' : ''}
+      </div>
       <select data-sel="validation" data-f="zone"><option value="">${esc(t('a.filterZone'))}: ${esc(t('c.all'))}</option>${Object.keys(ENUM.zone).map((s) => `<option value="${s}" ${f.zone === s ? 'selected' : ''}>${esc(E('zone', s))}</option>`).join('')}</select>
       <select data-sel="validation" data-f="btype"><option value="">${esc(t('a.filterType'))}: ${esc(t('c.all'))}</option>${Object.keys(ENUM.btype).map((s) => `<option value="${s}" ${f.btype === s ? 'selected' : ''}>${esc(E('btype', s))}</option>`).join('')}</select>
       <select data-sel="validation" data-f="outcome"><option value="">${esc(t('dv.f.result'))}: ${esc(t('c.all'))}</option>${Object.keys(ENUM.voutcome).map((s) => `<option value="${s}" ${f.outcome === s ? 'selected' : ''}>${esc(E('voutcome', s))}</option>`).join('')}</select>

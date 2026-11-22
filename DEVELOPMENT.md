@@ -95,10 +95,12 @@ space from the widest content column (owner name), then re-check the rendered he
 `FILTER[key]`; toolbar controls are declared as `data-sel="<view>" data-f="<field>"` and a search
 box as `data-q="<view>"`, so `bindEvents` needs no per-view code. Numeric bounds use the same store
 under the reserved keys `min.<field>` / `max.<field>`: `filterRows` skips those keys in the string
-pass, then drops any row outside `>= min` / `<= max` (either bound alone works, and a blank field
-fails both). Markup is `data-num="<view>" data-f="min.land"`, and a clear button carries
-`data-rngclear="<view>:<field>"`. Filters with custom semantics (completion bands) adjust `rows`
-inside the view function before pagination.
+pass and then calls `applyBounds(rows, f, get)`, which drops any row outside `>= min` / `<= max`
+(either bound alone works, and a blank field fails both). The optional `get(row, field)` lets a view
+whose rows wrap another record read the number from the nested object (Data validation passes
+`r.a.land`). Markup is `data-num="<view>" data-f="min.land"`, and a clear button carries
+`data-rngclear="<view>"`. Filters with custom semantics (completion bands) adjust `rows` inside the
+view function before pagination.
 
 `chipFor(group, code)`, `kpiCard(label, value, foot, tone)`, `emptyRow(cols)`, `toast(msg)`,
 `openDrawer(title, sub, bodyHtml, footerHtml)` / `closeDrawer()`. Drawer content goes into
@@ -124,15 +126,21 @@ itself.
 `{asset_id, plannedDate, pic, outcome, checkedAt, findings, evidence{}, photos[], updatedAt}`.
 Outcome codes live in `ENUM.voutcome` (`pending`, `scheduled`, `surveyed`, `blocked`, `mismatch`).
 
-**Enrolment.** `syncValidations(state)` is idempotent and gives every asset a record, so the page
-holds one row per asset (203 today: 200 queued, 3 `surveyed`). Order of work: canonicalise the array,
-convert a legacy register row that already reads `survey === 'yes'` but has no record into a
-`surveyed` record (visit kept, row not re-queued), add a blank record for every remaining asset,
-backfill evidence keys / photo arrays / outcome, `applySurvey`, return the number added. It runs from
-`loadData`, the seed branch, the reset path, `importJson`, `saveForm`, `viewValidation`,
-`openValidation` and `saveValidation`. Records outliving their queue membership is intentional — the
-visit history stays visible after the register row turns to `Survey = Yes`. `deleteRecord` drops the
-asset's validation row with the asset.
+**Enrolment.** `syncValidations(state)` is idempotent and gives every asset a record, whatever its
+register flag says — the flag is derived from here, so record existence cannot depend on it. It
+canonicalises the array, adds a blank record for every asset without one, backfills evidence keys /
+photo arrays / outcome, then `applySurvey`, and returns the number added. It runs from `loadData`,
+the seed branch, the reset path, `importJson`, `saveForm`, `viewValidation`, `openValidation` and
+`saveValidation`. Records outliving their queue membership is intentional — the visit history stays
+visible after the register row turns to `Survey = Yes`. `deleteRecord` drops the asset's validation
+row with the asset.
+
+**Zero baseline.** `resetSurveyOnce(state)` runs once, from `loadData`'s stored-state branch only
+(gated by `state.surveyFromZero`, so imports and later saves are untouched): every non-`pending`
+outcome returns to `pending` and `checkedAt` is cleared, while evidence, photos, findings and dates
+stay. It clears the results the first build had carried over from hand-ticked register rows, so the
+whole register starts at No. Bumping `LS_KEY` would lose real edits — use a one-time migration like
+this instead.
 
 **Evidence set.** `valFields()` is `E_TYPES.asset.fields` minus `VAL_SKIP` (`asset_id`, `survey`,
 `verified` — those live in the schedule block), 37 fields today. Keys, order and section headings are
@@ -175,10 +183,12 @@ not reintroduce a direct `asset.survey = 'yes'` write anywhere else — changing
 after the value so the source of the flag is visible.
 
 **List.** `viewValidation` joins assets and owners, applies zone, building type, outcome,
-completion-band and free-text filters, sorts through `VAL_SORTS` (completion low to high by default,
-so untouched rows surface first), shows 12 rows, and prints four KPIs: in queue, scheduled, result
-recorded and average completion. The global search box and the New button are hidden on this view,
-since the queue is derived and rows are opened, not created.
+completion-band, land-area bounds and free-text filters, sorts through `VAL_SORTS` (completion low to
+high by default, so untouched rows surface first), shows 12 rows, and prints four KPIs: in queue,
+scheduled, result recorded and average completion. The rows wrap the asset (`r.a`), so bounds go
+through `applyBounds(rows, FILTER.validation, (r, fl) => fl === 'land' ? r.a.land : r[fl])`; the land
+figure is also a column, so a filtered queue is verifiable on screen. The global search box and the
+New button are hidden on this view, since the queue is derived and rows are opened, not created.
 
 ## 8. Adding a view
 

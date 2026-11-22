@@ -78,7 +78,7 @@ machinery & automation, electronics & electrical, chemicals, automotive componen
 furniture, building materials, logistics & warehousing, trade & distribution, services &
 consulting, finance & investment, private individual and other.
 
-Each asset row also carries two bilingual Yes/No statuses. **Location identification** is derived from the resolved road coordinate: Yes when the record has a road-level pin, No when the road is still pending. **Survey** is derived, not typed: it reads the result recorded on the Data validation page and is Yes only when that asset's validation record is set to Surveyed, so a register row can never claim a site visit that the validation page has not recorded. Nothing is editable in the asset record: the field renders as a read-only chip with a "set in Data validation" hint. Of the 203 records, 3 rows that already read Yes in the ledger carry a matching surveyed validation record and stay Yes; the other 200 sit in the validation queue and read No until that visit is recorded.
+Each asset row also carries two bilingual Yes/No statuses. **Location identification** is derived from the resolved road coordinate: Yes when the record has a road-level pin, No when the road is still pending. **Survey** is derived, not typed: it reads the result recorded on the Data validation page and is Yes only when that asset's validation record is set to Surveyed, so a register row can never claim a site visit that the validation page has not recorded. Nothing is editable in the asset record: the field renders as a read-only chip with a "set in Data validation" hint. The register starts from zero — all 203 rows read No, including the 3 that the ledger screenshots marked yellow as verified, because a tick in a spreadsheet is not a recorded field visit: those rows keep their Last verified date and are queued like the rest, and each one reads Yes only after its validation result is set to Surveyed.
 
 The asset detail drawer embeds a Google Maps frame only when the record's location is
 identified: the frame pins that single asset by its stored coordinates, and a link opens the
@@ -174,11 +174,12 @@ The **Data validation** page (`?v=validation`) records the field check of each a
 surveyed. It is derived from the register, not a second register:
 
 - **Automatic enrolment.** Every asset gets a validation record on load (`syncValidations`), so the
-  page always holds one row per asset: 203 today, of which 200 are still in the queue and 3 already
-  carry a `Surveyed` result. New assets added through the form are enrolled on the next save. Rows
-  that read `Survey = Yes` in the register before Survey became derived are converted once into a
-  `surveyed` record, so the visit is not lost and the row does not re-enter the queue. Records are
-  never deleted when an asset is later surveyed, so the visit history stays visible.
+  page always holds one row per asset — 203 today, all of them in the queue. New assets added through
+  the form are enrolled on the next save. The register starts from zero: on the first load after this
+  build every result is returned to `Pending` (one-time, `resetSurveyOnce`), which also clears the
+  three results that the earlier build had carried over from hand-ticked rows. Evidence, photos,
+  findings and dates already recorded on this page are kept. Records are never deleted when an asset
+  is surveyed, so the visit history stays visible.
 - **Schedule and result.** Planned survey date, person in charge, result (`Pending`, `Scheduled`,
   `Surveyed`, `Access blocked`, `Data mismatch`), actual survey date and findings / discrepancies.
   This page is the only place the outcome is set. `Surveyed` fills the verification date when it is
@@ -199,8 +200,10 @@ surveyed. It is derived from the register, not a second register:
   5 MB localStorage quota for the register itself. Photos can be removed individually; unsaved field
   edits survive an upload or delete.
 - **List controls.** KPIs (in queue, scheduled, result recorded, average completion), then search,
+  the same land-area range as the register (`Land — Min / Max — m²`, either bound alone, `×` clears),
   zone, building type, result and completion-band filters, sorting (completion low to high / high to
-  low, planned date, recently updated) and 12 rows per page.
+  low, planned date, recently updated) and 12 rows per page. The land figure sits on the row itself,
+  so a filtered queue can be checked without opening each record.
 - **Storage.** `STATE.validations[]` with one record per asset: `asset_id`, `plannedDate`, `pic`,
   `outcome`, `checkedAt`, `findings`, `evidence{}`, `photos[]`, `updatedAt`. Local storage key
   `ji_platform_v13`. Photo blobs are browser-local and are not part of the exported JSON, which
