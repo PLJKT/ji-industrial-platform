@@ -7,10 +7,20 @@ Bilingual English (default) and Indonesian, purpose-built for internal operating
 
 ## What this is
 
-A single-page static system. No server, no account, no database. Records live in the browser's
+A single-page static system. No server, no database; the only account is the local sign-in described
+below. Records live in the browser's
 `localStorage` under the key `ji_platform_v13`; the language choice lives under `ji_lang`.
 Data can be exported to a JSON snapshot and re-imported on another device. Validation photos are
 browser-local Blobs in IndexedDB and travel with the browser profile, not with the JSON snapshot.
+
+**Sign in.** The page opens on a sign-in card and stays locked until the right username and password
+are typed; the session is kept per tab (`sessionStorage` key `ji_session`), so a reload in the same
+tab stays open and closing the tab signs out. A small account line in the header shows the signed-in
+name with a log-out icon, and the card carries its own EN / ID switch so the language can be chosen
+before signing in. This is a front gate, not authentication: the console is a static file, so the
+credential sits in `index.html` (`AUTH`) and anyone who can read the file can read it. It keeps the
+register out of casual view; real protection would need a server that checks the password before
+serving the data.
 
 | View | Purpose | Records |
 | --- | --- | --- |

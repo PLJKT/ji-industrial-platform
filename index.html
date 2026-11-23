@@ -256,6 +256,28 @@ td.date{white-space:nowrap;color:var(--muted);font-size:12px}
 .settings-row .txt b{display:block;font-size:13px;margin-bottom:3px}
 .settings-row .txt span{font-size:11.5px;color:var(--muted)}
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#F3F1EC;padding:10px 18px;font-size:12px;opacity:0;pointer-events:none;transition:.2s;z-index:95;border-left:2px solid #D8A24A}
+
+/* ---------- sign in ---------- */
+.gate{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:var(--paper);padding:24px;overflow:auto}
+.gate[hidden]{display:none}
+html.locked{overflow:hidden}
+.gate-card{width:100%;max-width:354px;background:var(--card);border:1px solid var(--line);border-radius:4px;padding:28px 26px 22px;box-shadow:0 26px 70px rgba(14,26,43,.13)}
+.gate-brand{display:flex;align-items:center;gap:11px;padding-bottom:16px;border-bottom:1px solid var(--line-2);margin-bottom:20px}
+.gate-brand .monogram{border-color:rgba(14,26,43,.28);color:var(--ink);width:32px;height:32px;font-size:15px;background:#FBF9F5}
+.gate-name{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--text)}
+.gate-sub{font-size:10.5px;color:var(--muted);margin-top:3px}
+.gate-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.gate-title{font-family:Georgia,"Times New Roman",serif;font-size:22px;font-weight:500;letter-spacing:-.01em;margin:0}
+.gate-lb{display:block;font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin:0 0 5px}
+.gate-in{width:100%;height:37px;border:1px solid var(--line);background:#FFF;border-radius:var(--radius);padding:0 11px;font-size:13px;margin-bottom:13px}
+.gate-in:focus{outline:0;border-color:#BFB4A0;box-shadow:0 0 0 3px rgba(216,162,74,.15)}
+.gate-err{min-height:16px;font-size:11.5px;color:var(--red);margin:-3px 0 7px}
+.gate-btn{width:100%;justify-content:center;height:37px;font-size:12.5px;letter-spacing:.04em}
+.gate-note{margin:13px 0 0;font-size:10.5px;color:var(--faint);line-height:1.6;text-align:center}
+.acct{display:inline-flex;align-items:center;gap:2px;font-size:11.5px;color:var(--muted)}
+.acct b{font-weight:600;color:var(--text);font-size:12px}
+.acct-out{padding:4px 5px;border-color:transparent;background:transparent;color:var(--muted)}
+.acct-out:hover{background:#FFF;border-color:var(--line);color:var(--text)}
 .toast.on{opacity:1;transform:translateX(-50%)}
 
 /* ---------- data validation ---------- */
@@ -348,6 +370,28 @@ td.date{white-space:nowrap;color:var(--muted);font-size:12px}
 </style>
 </head>
 <body>
+<div class="gate" id="gate">
+  <form class="gate-card" id="gateForm" autocomplete="off" novalidate>
+    <div class="gate-brand">
+      <div class="monogram">JI</div>
+      <div>
+        <div class="gate-name" id="gateName">JI Platform</div>
+        <div class="gate-sub" id="gateSub">Industrial operations</div>
+      </div>
+    </div>
+    <div class="gate-head">
+      <h1 class="gate-title" id="gateTitle">Sign in</h1>
+      <div class="lang" id="gateLang"></div>
+    </div>
+    <label class="gate-lb" for="gateUser" id="gateUserLb">Username</label>
+    <input class="gate-in" id="gateUser" type="text" autocomplete="username" spellcheck="false" autocapitalize="off">
+    <label class="gate-lb" for="gatePass" id="gatePassLb">Password</label>
+    <input class="gate-in" id="gatePass" type="password" autocomplete="current-password">
+    <div class="gate-err" id="gateErr" role="alert"></div>
+    <button class="btn primary gate-btn" id="gateBtn" type="submit"><span id="gateBtnTxt">Sign in</span></button>
+    <p class="gate-note" id="gateNote"></p>
+  </form>
+</div>
 <div class="app">
   <aside class="side">
     <div class="brand">
@@ -377,6 +421,7 @@ td.date{white-space:nowrap;color:var(--muted);font-size:12px}
           <input id="globalSearch" type="search" autocomplete="off">
         </div>
         <div class="lang" id="langSwitch"></div>
+        <div class="acct"><b id="acctUser">admin</b><button class="btn ghost acct-out" id="btnLogout" title="Log out" aria-label="Log out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 12H4M8 8l-4 4 4 4M14 4h5a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-5"/></svg></button></div>
         <button class="btn" id="btnExport"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg><span id="btnExportTxt">Export</span></button>
         <button class="btn primary" id="btnNew"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5v14M5 12h14"/></svg><span id="btnNewTxt">New</span></button>
       </div>
@@ -430,6 +475,15 @@ const STR = {
   'c.delete': ['Delete', 'Hapus'],
   'c.total': ['records', 'catatan'],
   'c.prev': ['Previous', 'Sebelumnya'],
+
+  'lg.title': ['Sign in', 'Masuk'],
+  'lg.user': ['Username', 'Nama pengguna'],
+  'lg.pass': ['Password', 'Kata sandi'],
+  'lg.btn': ['Sign in', 'Masuk'],
+  'lg.err': ['Wrong username or password.', 'Nama pengguna atau kata sandi salah.'],
+  'lg.note': ['Internal console. Sign-in is kept for this tab only.', 'Konsol internal. Sesi masuk hanya berlaku untuk tab ini.'],
+  'lg.out': ['Log out', 'Keluar'],
+  'lg.welcome': ['Signed in as admin', 'Masuk sebagai admin'],
   'c.next': ['Next', 'Berikutnya'],
   'c.none': ['No records match the current filters.', 'Tidak ada catatan yang cocok dengan filter saat ini.'],
   'c.required': ['Required', 'Wajib'],
@@ -2844,6 +2898,8 @@ function bindEvents() {
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
 
   el('btnExport').addEventListener('click', exportJson);
+  el('btnLogout').addEventListener('click', signOut);
+  el('gateForm').addEventListener('submit', (e) => { e.preventDefault(); submitLogin(); });
   el('btnNew').addEventListener('click', () => {
     const entity = VIEW === 'services' ? (TAB.services === 'deals' ? 'deal' : 'lead') : VIEW === 'utilities' ? (TAB.utilities === 'readings' ? 'metric' : 'plant') : VIEW === 'assets' ? (TAB.assets === 'demands' ? 'demand' : 'asset') : 'asset';
     openForm(entity, null);
@@ -2873,12 +2929,72 @@ function bindEvents() {
   window.addEventListener('resize', () => { CH.forEach((c) => { try { c.resize(); } catch (e) {} }); });
 }
 
+/* ================= SIGN IN ================= */
+/* The console is one static file with no backend, so this is a front gate, not authentication:
+   it keeps the register out of casual view and scopes the session to one browser tab. Everything
+   it compares lives in this file, so treat the credential as a lock on a glass door — real
+   protection would need a server that checks the password before serving the data. */
+const AUTH = { user: 'admin', pass: 'admin@123' };
+const SESSION_KEY = 'ji_session';
+
+function signedIn() {
+  try { return sessionStorage.getItem(SESSION_KEY) === AUTH.user; } catch (e) { return false; }
+}
+function renderGate() {
+  if (!el('gate')) return;
+  el('gateName').textContent = t('app.name');
+  el('gateSub').textContent = t('app.brandSub');
+  el('gateTitle').textContent = t('lg.title');
+  el('gateUserLb').textContent = t('lg.user');
+  el('gatePassLb').textContent = t('lg.pass');
+  el('gateUser').placeholder = t('lg.user');
+  el('gatePass').placeholder = t('lg.pass');
+  el('gateBtnTxt').textContent = t('lg.btn');
+  el('gateBtn').setAttribute('aria-label', t('lg.btn'));
+  el('gateNote').textContent = t('lg.note');
+  el('btnLogout').title = t('lg.out');
+  el('btnLogout').setAttribute('aria-label', t('lg.out'));
+  el('gateLang').innerHTML = '<button data-lang="en" class="' + (LANG === 'en' ? 'on' : '') + '">EN</button><button data-lang="id" class="' + (LANG === 'id' ? 'on' : '') + '">ID</button>';
+}
+function showGate(on) {
+  const g = el('gate');
+  if (!g) return;
+  g.hidden = !on;
+  document.documentElement.classList.toggle('locked', on);
+  if (on) {
+    el('gateErr').textContent = '';
+    el('gateUser').value = '';
+    el('gatePass').value = '';
+    setTimeout(() => { try { el('gateUser').focus(); } catch (e) { /* headless */ } }, 40);
+  }
+}
+function submitLogin() {
+  const u = String(el('gateUser').value || '').trim();
+  const p = String(el('gatePass').value || '');
+  if (u === AUTH.user && p === AUTH.pass) {
+    try { sessionStorage.setItem(SESSION_KEY, u); } catch (e) { /* storage blocked: this load stays open */ }
+    el('gateErr').textContent = '';
+    showGate(false);
+    toast(t('lg.welcome'));
+    return;
+  }
+  el('gateErr').textContent = t('lg.err');
+  el('gatePass').value = '';
+  el('gatePass').focus();
+}
+function signOut() {
+  try { sessionStorage.removeItem(SESSION_KEY); } catch (e) { /* nothing to clear */ }
+  closeDrawer();
+  showGate(true);
+}
+
 /* ================= INIT ================= */
 function setLang(l) {
   LANG = l === 'id' ? 'id' : 'en';
   try { localStorage.setItem('ji_lang', LANG); } catch (e) { /* storage unavailable */ }
   renderNav();
   renderView();
+  renderGate();
 }
 
 let INITIALIZED = false;
@@ -2904,6 +3020,8 @@ function init() {
   bindEvents();
   renderNav();
   renderView();
+  renderGate();
+  showGate(!signedIn());
 }
 
 document.addEventListener('DOMContentLoaded', init);

@@ -44,8 +44,9 @@ Navigate by banner, never by line number.
 | `EXPORT / IMPORT` | `exportJson`, `importJson` |
 | `NAV & RENDER` | `ICONS`, `DRAWER`, `renderNav`, `renderView`, `go` |
 | `DATA VALIDATION` | the whole field-verification page: enrolment, scoring, photo pipeline, drawer |
-| `EVENTS` | `bindEvents()` — three delegated listeners (click, change, input) and the search debounce |
-| `INIT` | `setLang`, `init()` — i18n parity check, `?v=` / `?tab=` / `?lang=` handling, first render |
+| `EVENTS` | `bindEvents()` — three delegated listeners (click, change, input), the search debounce and the gate form submit |
+| `SIGN IN` | `AUTH`, `SESSION_KEY`, `signedIn`, `renderGate`, `showGate`, `submitLogin`, `signOut` |
+| `INIT` | `setLang`, `init()` — i18n parity check, `?v=` / `?tab=` / `?lang=` handling, first render, gate state |
 
 ## 3. Data and storage
 
@@ -241,7 +242,25 @@ Two pitfalls worth remembering:
 8. Open `https://pljkt.github.io/ji-industrial-platform/?v=<view>` with a cache-busting query and
    confirm the title, the row count, the drawer and the language switch.
 
-## 11. Known limits
+## 11. Sign in gate
+
+`AUTH = { user, pass }` holds the one credential pair, and `sessionStorage.ji_session` holds the
+signed-in name for this tab only. `signedIn()` reads that key; `init()` renders the gate copy
+(`renderGate`) and calls `showGate(!signedIn())`, which also toggles `html.locked` so the page behind
+does not scroll. The card is `<div class="gate">` placed before `.app`, z-index 100 — above the
+drawer (70) and toast (95) — and its form submits through `submitLogin()`; a wrong pair clears the
+password, prints `lg.err` and keeps focus in the field, a correct one stores the name, hides the gate
+and toasts `lg.welcome`. The header carries the signed-in name plus a log-out icon (`signOut()` clears
+the key, closes any drawer and re-locks). The card has its own EN / ID switch (`#gateLang`) using the
+same `data-lang` delegation as the header, and `setLang` re-renders the gate because otherwise the
+locked page would keep the old language.
+
+This is deliberately a front gate, not authentication: it is a static file, the credential is in
+plain sight in this source, and anyone can read `localStorage` or open the JSON export. Keep the
+wording in the UI honest ("internal console") rather than implying access control. Real protection
+requires serving the data from a backend that checks a password or an SSO session first.
+
+## 12. Known limits
 
 - Photos live in the browser profile. They survive reloads and JSON export/import on the same
   machine, but a different browser, a cleared profile or a JSON moved to another device arrives with
