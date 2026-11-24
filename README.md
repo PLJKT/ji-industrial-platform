@@ -14,13 +14,21 @@ Data can be exported to a JSON snapshot and re-imported on another device. Valid
 browser-local Blobs in IndexedDB and travel with the browser profile, not with the JSON snapshot.
 
 **Sign in.** The page opens on a sign-in card and stays locked until the right username and password
-are typed; the session is kept per tab (`sessionStorage` key `ji_session`), so a reload in the same
-tab stays open and closing the tab signs out. A small account line in the header shows the signed-in
-name with a log-out icon, and the card carries its own EN / ID switch so the language can be chosen
-before signing in. This is a front gate, not authentication: the console is a static file, so the
-credential sits in `index.html` (`AUTH`) and anyone who can read the file can read it. It keeps the
-register out of casual view; real protection would need a server that checks the password before
-serving the data.
+are typed. Two accounts exist: `admin` / `admin@123` (Administrator) and `coordinator` /
+`coordinator@1234` (Coordinator). The session is kept per tab (`sessionStorage` key `ji_session`)
+as a small record of account, role, sign-in time and session id, so a reload in the same tab stays
+open and closing the tab signs out. A small account line in the header shows the signed-in name with
+a log-out icon, and the card carries its own EN / ID switch so the language can be chosen before
+signing in.
+
+**Access log.** Every sign-in, sign-out, reopened tab session and failed attempt is appended to
+`ji_access_log` in localStorage (newest first, capped at 300 entries) with the account, role,
+timestamp in WIB and the session id; a sign-out also records how long the session lasted. Settings →
+*Access log* lists the last eight entries and can clear the list. The log is browser-local: each
+device keeps its own, and clearing browser data erases it. This whole gate is still a front door, not
+authentication: the console is a static file, so the credentials sit in `index.html` (`ACCOUNTS`) and
+anyone who can read the file can read them. Real protection would need a server that checks the
+password before serving the data.
 
 | View | Purpose | Records |
 | --- | --- | --- |

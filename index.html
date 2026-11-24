@@ -484,7 +484,7 @@ const STR = {
   'lg.err': ['Wrong username or password.', 'Nama pengguna atau kata sandi salah.'],
   'lg.note': ['Internal console. Sign-in is kept for this tab only.', 'Konsol internal. Sesi masuk hanya berlaku untuk tab ini.'],
   'lg.out': ['Log out', 'Keluar'],
-  'lg.welcome': ['Signed in as admin', 'Masuk sebagai admin'],
+  'lg.welcome': ['Signed in', 'Masuk sebagai'],
   'c.next': ['Next', 'Berikutnya'],
   'c.none': ['No records match the current filters.', 'Tidak ada catatan yang cocok dengan filter saat ini.'],
   'c.required': ['Required', 'Wajib'],
@@ -760,7 +760,7 @@ const STR = {
   'st.reset': ['Reload register seed', 'Muat ulang data dasar'],
   'st.resetDesc': ['Removes local edits and reloads the built-in register.', 'Menghapus perubahan lokal dan memuat ulang data dasar bawaan.'],
   'st.storage': ['Storage status', 'Status penyimpanan'],
-  'st.storageDesc': ['Local browser storage, no server and no account. Clearing browser data removes records.', 'Penyimpanan peramban lokal, tanpa server dan tanpa akun. Menghapus data peramban akan menghapus catatan.'],
+  'st.storageDesc': ['Local browser storage, no server. Records and the access log live in this browser; clearing browser data removes both.', 'Penyimpanan peramban lokal, tanpa server. Catatan dan log akses tersimpan di peramban ini; menghapus data peramban akan menghapus keduanya.'],
   'st.about': ['About this build', 'Tentang versi ini'],
   'st.aboutDesc': ['Static single-page build for GitHub Pages. Charts use ECharts; no analytics, no external calls except the chart library.', 'Versi statis satu halaman untuk GitHub Pages. Grafik memakai ECharts; tanpa analitik, tanpa panggilan eksternal selain pustaka grafik.'],
   'st.version': ['Version', 'Versi'],
@@ -771,6 +771,21 @@ const STR = {
   'st.own.utilities': ['Plant readings and compliance', 'Pembacaan instalasi dan kepatuhan'],
   'st.own.teamAssets': ['Asset management', 'Manajemen aset'],
   'st.own.teamServices': ['One-stop service office', 'Kantor layanan terpadu'],
+  'st.access': ['Access log', 'Log akses'],
+  'st.accessDesc': ['Every sign-in, sign-out, reopened session and failed attempt is stamped here with the account, session id and duration. The log is stored in this browser only, newest first, capped at 300 entries.', 'Setiap masuk, keluar, sesi yang dibuka ulang dan percobaan gagal dicatat di sini dengan akun, id sesi dan durasinya. Log hanya tersimpan di peramban ini, terbaru di atas, maksimal 300 entri.'],
+  'st.accessClear': ['Clear log', 'Hapus log'],
+  'st.accessEmpty': ['No sign-in recorded on this browser yet.', 'Belum ada catatan masuk di peramban ini.'],
+  'st.col.when': ['Time', 'Waktu'],
+  'st.col.who': ['Account', 'Akun'],
+  'st.col.what': ['Event', 'Peristiwa'],
+  'st.col.sid': ['Session', 'Sesi'],
+  'st.col.dur': ['Duration', 'Durasi'],
+  'st.act.in': ['Signed in', 'Masuk'],
+  'st.act.out': ['Signed out', 'Keluar'],
+  'st.act.fail': ['Failed attempt', 'Percobaan gagal'],
+  'st.act.resume': ['Session reopened', 'Sesi dibuka ulang'],
+  'st.confirmLog': ['Clear the access log on this browser?', 'Hapus log akses di peramban ini?'],
+  'st.logCleared': ['Access log cleared', 'Log akses dihapus'],
   'st.own.teamUtilities': ['Plant operations', 'Operasi instalasi'],
   'st.own.edit': ['Edit', 'Ubah'],
   'st.rules.title': ['Data rules', 'Aturan data'],
@@ -1106,6 +1121,26 @@ const fmtRpShort = (n) => {
   if (Math.abs(v) >= 1e9) return 'Rp ' + fmtDec(v / 1e9, 2) + ' bn';
   if (Math.abs(v) >= 1e6) return 'Rp ' + fmtDec(v / 1e6, 1) + (LANG === 'en' ? ' m' : ' jt');
   return fmtRp(v);
+};
+const fmtStamp = (iso) => {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  if (isNaN(d)) return '—';
+  return new Intl.DateTimeFormat(LANG === 'en' ? 'en-GB' : 'id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }).format(d);
+};
+const fmtTime = (iso) => {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (isNaN(d)) return '';
+  return new Intl.DateTimeFormat(LANG === 'en' ? 'en-GB' : 'id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }).format(d);
+};
+const fmtDur = (s) => {
+  if (s == null || s === '') return '—';
+  const v = Math.max(0, Number(s));
+  if (v < 60) return v + 's';
+  const m = Math.floor(v / 60), h = Math.floor(m / 60);
+  if (h) return h + 'h ' + (m % 60) + 'm';
+  return m + 'm ' + (v % 60) + 's';
 };
 const fmtDate = (iso) => {
   if (!iso) return '—';
@@ -2036,7 +2071,26 @@ function viewSettings() {
         ${ownRow(t('st.own.assets'), t('st.own.teamAssets'))}
         ${ownRow(t('st.own.services'), t('st.own.teamServices'))}
       </div>
+      <div class="card">
+        <div class="card-head" style="margin-bottom:6px"><h3>${esc(t('st.access'))}</h3>
+          <button class="btn ghost" style="flex:0 0 auto" data-act="clearlog">${esc(t('st.accessClear'))}</button></div>
+        <p style="margin:0 0 10px;font-size:11.5px;color:var(--muted)">${esc(t('st.accessDesc'))}</p>
+        ${accessHtml()}
+      </div>
     </div></div>`;
+}
+const ACT_LABEL = { in: 'st.act.in', out: 'st.act.out', fail: 'st.act.fail', resume: 'st.act.resume' };
+function accessHtml() {
+  const log = readAccessLog().slice(0, 8);
+  if (!log.length) return '<p style="margin:0;font-size:12px;color:var(--muted)">' + esc(t('st.accessEmpty')) + '</p>';
+  const head = '<tr><th>' + esc(t('st.col.when')) + '</th><th>' + esc(t('st.col.who')) + '</th><th>' + esc(t('st.col.what')) + '</th><th>' + esc(t('st.col.sid')) + '</th><th style="text-align:right">' + esc(t('st.col.dur')) + '</th></tr>';
+  const rows = log.map((e) => '<tr>'
+    + '<td style="white-space:nowrap"><div class="mono" style="font-size:11px">' + esc(fmtDate(e.at)) + '</div><div style="font-size:10.5px;color:var(--muted)">' + esc(fmtTime(e.at)) + ' WIB</div></td>'
+    + '<td>' + esc(e.user || '—') + '<div class="osub">' + esc(e.role || '—') + '</div></td>'
+    + '<td>' + esc(t(ACT_LABEL[e.ev] || 'st.act.in')) + '</td>'
+    + '<td class="mono" style="font-size:10.5px">' + esc(e.sid || '—') + '</td>'
+    + '<td class="num" style="text-align:right">' + esc(e.ev === 'out' ? fmtDur(e.dur) : '—') + '</td></tr>').join('');
+  return '<div class="tbl-wrap"><table style="min-width:560px"><thead>' + head + '</thead><tbody>' + rows + '</tbody></table></div>';
 }
 
 /* ================= FIELD SCHEMA ================= */
@@ -3109,6 +3163,9 @@ function bindEvents() {
         inp.onchange = () => { if (inp.files && inp.files[0]) importJson(inp.files[0]); };
         inp.click();
       }
+      if (act.dataset.act === 'clearlog') {
+        if (confirm(t('st.confirmLog'))) { try { localStorage.removeItem(ACCESS_KEY); } catch (e) { /* blocked */ } toast(t('st.logCleared')); renderView(); }
+      }
       if (act.dataset.act === 'reset') {
         if (confirm(t('c.confirmReset'))) { STATE = seedData(); syncValidations(STATE); save(); toast(t('c.resetDone')); renderView(); }
       }
@@ -3225,12 +3282,36 @@ function bindEvents() {
    it keeps the register out of casual view and scopes the session to one browser tab. Everything
    it compares lives in this file, so treat the credential as a lock on a glass door — real
    protection would need a server that checks the password before serving the data. */
-const AUTH = { user: 'admin', pass: 'admin@123' };
+const ACCOUNTS = [
+  { user: 'admin', pass: 'admin@123', role: 'Administrator' },
+  { user: 'coordinator', pass: 'coordinator@1234', role: 'Coordinator' },
+];
+const ACCESS_KEY = 'ji_access_log';
+const ACCESS_MAX = 300;
+function accountFor(u, p) {
+  return ACCOUNTS.find((a) => a.user === u && a.pass === p) || null;
+}
+function readAccessLog() {
+  try { const v = JSON.parse(localStorage.getItem(ACCESS_KEY) || '[]'); return Array.isArray(v) ? v : []; } catch (e) { return []; }
+}
+function logAccess(ev) {
+  const entry = Object.assign({ at: new Date().toISOString(), tz: 'WIB' }, ev);
+  const log = readAccessLog();
+  log.unshift(entry);
+  try { localStorage.setItem(ACCESS_KEY, JSON.stringify(log.slice(0, ACCESS_MAX))); } catch (e) { /* storage full or blocked */ }
+  return entry;
+}
 const SESSION_KEY = 'ji_session';
 
-function signedIn() {
-  try { return sessionStorage.getItem(SESSION_KEY) === AUTH.user; } catch (e) { return false; }
+function session() {
+  try {
+    const raw = sessionStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    if (raw.charAt(0) === '{') { const s = JSON.parse(raw); return s && s.user ? s : null; }
+    return { user: raw, role: 'Administrator' };
+  } catch (e) { return null; }
 }
+function signedIn() { return !!session(); }
 function renderGate() {
   if (!el('gate')) return;
   el('gateName').textContent = t('app.name');
@@ -3262,19 +3343,34 @@ function showGate(on) {
 function submitLogin() {
   const u = String(el('gateUser').value || '').trim();
   const p = String(el('gatePass').value || '');
-  if (u === AUTH.user && p === AUTH.pass) {
-    try { sessionStorage.setItem(SESSION_KEY, u); } catch (e) { /* storage blocked: this load stays open */ }
+  const acc = accountFor(u, p);
+  if (acc) {
+    const at = new Date().toISOString();
+    const sid = 'S-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+    const ses = { user: acc.user, role: acc.role, at, sid };
+    try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(ses)); } catch (e) { /* storage blocked: this load stays open */ }
+    try { sessionStorage.setItem('ji_resume_sid', sid); } catch (e) { /* storage blocked */ }
+    logAccess({ ev: 'in', user: acc.user, role: acc.role, sid, at });
+    el('acctUser').textContent = acc.user;
     el('gateErr').textContent = '';
     showGate(false);
-    toast(t('lg.welcome'));
+    toast(t('lg.welcome') + ' · ' + acc.user);
     return;
   }
+  logAccess({ ev: 'fail', user: u || '—', role: '—', sid: '—' });
   el('gateErr').textContent = t('lg.err');
   el('gatePass').value = '';
   el('gatePass').focus();
 }
 function signOut() {
+  const ses = session();
+  if (ses) {
+    const secs = Math.max(0, Math.round((Date.now() - new Date(ses.at).getTime()) / 1000));
+    logAccess({ ev: 'out', user: ses.user, role: ses.role || '—', sid: ses.sid || '—', dur: secs });
+  }
   try { sessionStorage.removeItem(SESSION_KEY); } catch (e) { /* nothing to clear */ }
+  try { sessionStorage.removeItem('ji_resume_sid'); } catch (e) { /* nothing to clear */ }
+  el('acctUser').textContent = '—';
   closeDrawer();
   showGate(true);
 }
@@ -3300,6 +3396,15 @@ function init() {
 
   LANG = (function () { try { return localStorage.getItem('ji_lang') === 'id' ? 'id' : 'en'; } catch (e) { return 'en'; } })();
   STATE = loadData();
+  const ses = session();
+  if (ses) {
+    el('acctUser').textContent = ses.user;
+    let fresh = false;
+    try {
+      if (sessionStorage.getItem('ji_resume_sid') !== ses.sid) { sessionStorage.setItem('ji_resume_sid', ses.sid); fresh = true; }
+    } catch (e) { fresh = true; }
+    if (fresh) logAccess({ ev: 'resume', user: ses.user, role: ses.role || '—', sid: ses.sid || '—' });
+  }
   try {
     const qp = new URLSearchParams(location.search);
     const v = qp.get('v');
