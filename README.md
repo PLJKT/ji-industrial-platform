@@ -25,7 +25,7 @@ serving the data.
 | View | Purpose | Records |
 | --- | --- | --- |
 | Operations overview | Two workstream cards, six portfolio KPIs, three charts, a three-phase roadmap, and an action / data attention panel | derived |
-| Asset register | One asset-centric register: each vacant plot joins its owner name, business industry, contact, zone, building type, building area, location identification, survey status, motive, ask price, pressure and KYC, plus matched demand | assets, owners, demands |
+| Industrial registry | One asset-centric register: each vacant plot joins its owner name, business industry, contact, zone, building type, building area, location identification, survey status, motive, ask price, pressure and KYC, plus matched demand | assets, owners, demands |
 | Commercial registry | Separate register for the estate's commercial plots (shophouses, resto and kiosk parcels): plot code, sector, street, block / number, land and building area, name on record, ownership (Owner / GBC / Belum BAST), building type, survey status and source gaps, with its own filters, KPI row and estate map | commercial |
 | Data validation | Field verification queue for every record not yet surveyed — industrial assets and commercial plots on two separate queues: planned date, person in charge, result, evidence in register format, completion score and compressed JPG photo proof | assets, commercial, validations |
 | Service revenue | Paid services sold through the one-stop office, and survey leads | deals, leads |
@@ -254,7 +254,7 @@ surveyed. It is derived from the register, not a second register:
   IndexedDB (`ji_validation_photos`); the record keeps only `{id, w, h, bytes}`. This keeps the
   5 MB localStorage quota for the register itself. Photos can be removed individually; unsaved field
   edits survive an upload or delete.
-- **Two queues, one page.** Segment tabs at the top of the page (`Asset register 203` /
+- **Two queues, one page.** Segment tabs at the top of the page (`Industrial registry 203` /
   `Commercial registry 142`) switch the queue. Each segment keeps its own KPIs, filters and columns:
   the industrial queue greps by zone and building type, the commercial queue by ownership and plot
   code, and neither list can show a record from the other register. The evidence sheet follows the
