@@ -6,7 +6,7 @@ must not be broken, and how to test and publish a change.
 
 ## 1. Shape of the build
 
-One file, `index.html` (~533 KB), no build step, no package manager, no server, no test runner in CI.
+One file, `index.html` (~542 KB), no build step, no package manager, no server, no test runner in CI.
 Everything is inline: CSS in one `<style>` block, data in a JS seed, application code in one
 `<script>` block wrapped in an IIFE. The only external calls are the chart and map libraries
 (ECharts 5.5.0, Leaflet 1.9.4, markercluster 1.5.3) pulled from jsDelivr at runtime.
@@ -32,7 +32,7 @@ Navigate by banner, never by line number.
 | Banner section | Holds |
 | --- | --- |
 | `APP` | The three dictionaries: `STR` string table, `ENUM` code groups, `GLOSS` term definitions |
-| `STATE & HELPERS` | `LS_KEY`, `LANG`, `STATE`, `VIEW`, `TAB`, `PAGE`, `FILTER`, and `t`, `E`, `tl`, `gl`, `fmt*`, `uid`, `nextAssetId` |
+| `STATE & HELPERS` | `LS_KEY`, `COMM_SEED_VERSION`, `LANG`, `STATE`, `VIEW`, `TAB`, `PAGE`, `FILTER`, and `t`, `E`, `tl`, `gl`, `fmt*` (`fmtInt`, `fmtDec`, `fmtArea`, `fmtDate`, `fmtTime`, `fmtStamp`, `fmtDur`), `uid`, `nextAssetId` |
 | `SEED DATA` | `seedData()` — the 203-plot industrial register (`REAL_ASSETS`), the 142-plot commercial register (`REAL_COMMERCIAL`), 185 owners, dummy service samples |
 | `STORAGE` | `loadData()`, `save()` — read, migrate, seed-on-first-run |
 | `SHARED UI` | `openDrawer`, `closeDrawer`, `toast`, `chipFor`, `paginate`, `pagerHtml`, `filterRows`, `termLine` |
@@ -45,7 +45,8 @@ Navigate by banner, never by line number.
 | `NAV & RENDER` | `ICONS`, `DRAWER`, `renderNav`, `renderView`, `go` |
 | `DATA VALIDATION` | the whole field-verification page: enrolment, scoring, photo pipeline, drawer; `valFields(seg)` picks the asset or commercial template, `dvSegTabs` renders the queue switch |
 | `EVENTS` | `bindEvents()` — three delegated listeners (click, change, input), the search debounce and the gate form submit |
-| `SIGN IN` | `AUTH`, `SESSION_KEY`, `signedIn`, `renderGate`, `showGate`, `submitLogin`, `signOut` |
+| `SIGN IN` | `ACCOUNTS`, `accountFor`, `SESSION_KEY`, `session`, `signedIn`, `isAdmin`, `renderGate`, `showGate`, `submitLogin`, `signOut` |
+| `ACCESS LOG` (inside `SIGN IN`) | `ACCESS_KEY`, `ACCESS_MAX`, `readAccessLog`, `logAccess`, `accessHtml`, `ACT_LABEL` — browser-local trail of sign-in / sign-out / resume / failed attempts |
 | `INIT` | `setLang`, `init()` — i18n parity check, `?v=` / `?tab=` / `?lang=` handling, first render, gate state |
 
 ## 3. Data and storage
@@ -64,12 +65,24 @@ change plus the note in `README.md`; the current value must be stated there.
 latitude/longitude, survey, zone, building type, industry, data-source flags), and seeds
 `commercial` from `seedData()` when a store predates the commercial register — that collection is
 reference data owned by the estate layer, so it is restored on load rather than treated as a
-user-edited record — then calls
-`syncValidations(parsed)`. The first-run branch seeds, syncs and writes. Unreadable JSON falls
-through to the seed rather than throwing. `save()` stringifies the whole `STATE`; a quota error
+user-edited record.
+
+That restore is gated by `COMM_SEED_VERSION` (`2026-11-24.exact`), not by `LS_KEY`. When the stored
+`commercialVersion` differs, `loadData()` maps every seeded record onto the stored one by `asset_id`
+and copies only the source-derived keys (`asset_id`, `code`, `kawasan`, `sector`, `blok`, `nomor`,
+`alamat`, `ownerName`, `ownership`, `btype`, `land`, `build`, `lat`, `lon`, `geo`, `geoArea`, `oid`,
+`globalid`, `flags`); price, notes, survey and every other hand-entered value survive. Do not replace
+the collection wholesale: an early build did, and it would have wiped manual commercial edits.
+Records the seed no longer carries are dropped, new ones are added, and `commercialVersion` is then
+written, so the merge runs once per browser and version. The branch ends with `applySurvey(parsed)`,
+and `loadData()` calls `syncValidations(parsed)` for every path.
+
+The first-run branch seeds, syncs and writes. Unreadable JSON falls through to the seed rather than
+throwing. `save()` stringifies the whole `STATE`; a quota error
 raises the `dv.full` toast instead of failing silently.
 
-`exportJson()` writes the entire `STATE` as `ji-platform-YYYY-MM-DD.json`, validations included.
+`exportJson()` writes the entire `STATE` as `ji-platform-YYYY-MM-DD.json`, validations included. The
+access log is deliberately **not** part of `STATE` and never enters the export (section 12).
 `importJson()` guards on the shape (`assets` + `owners`), re-syncs validations, saves and re-renders.
 Validation photos are the one exception: the JSON carries only their metadata, because blobs live
 in IndexedDB (section 7).
@@ -148,8 +161,12 @@ stay. It clears the results the first build had carried over from hand-ticked re
 whole register starts at No. Bumping `LS_KEY` would lose real edits — use a one-time migration like
 this instead.
 
-**Evidence set.** `valFields()` is `E_TYPES.asset.fields` minus `VAL_SKIP` (`asset_id`, `survey`,
-`verified` — those live in the schedule block), 37 fields today. Keys, order and section headings are
+**Evidence set.** `valFields(seg)` returns the template for the queue: `E_TYPES.asset.fields` minus
+`VAL_SKIP` (`asset_id`, `survey`, `verified` — those live in the schedule block), 37 fields today,
+and `E_TYPES.commercial.fields` minus the same three (37 of the 40 identity-first template) when
+`seg === 'com'`. `dvSegTabs` switches the page between the 203 industrial records and the 142
+commercial plots; `emptyEvidence(seg)`, `newValidation(assetId, seg)`, `valScore`, `valEvidenceN`
+and the drawer all read `rec.seg` so one page serves both queues. Keys, order and section headings are
 inherited from the register, so the drawer mirrors the register row field by field. `regHint(k, asset)`
 prints the current register value under each input, formatted the same way the register formats it,
 and is omitted entirely when the register has no value.
@@ -249,23 +266,67 @@ Two pitfalls worth remembering:
 
 ## 11. Sign in gate
 
-`AUTH = { user, pass }` holds the one credential pair, and `sessionStorage.ji_session` holds the
-signed-in name for this tab only. `signedIn()` reads that key; `init()` renders the gate copy
-(`renderGate`) and calls `showGate(!signedIn())`, which also toggles `html.locked` so the page behind
-does not scroll. The card is `<div class="gate">` placed before `.app`, z-index 100 — above the
-drawer (70) and toast (95) — and its form submits through `submitLogin()`; a wrong pair clears the
-password, prints `lg.err` and keeps focus in the field, a correct one stores the name, hides the gate
-and toasts `lg.welcome`. The header carries the signed-in name plus a log-out icon (`signOut()` clears
-the key, closes any drawer and re-locks). The card has its own EN / ID switch (`#gateLang`) using the
-same `data-lang` delegation as the header, and `setLang` re-renders the gate because otherwise the
-locked page would keep the old language.
+`ACCOUNTS` holds the credential pairs and their roles:
 
-This is deliberately a front gate, not authentication: it is a static file, the credential is in
+| User | Password | Role |
+| --- | --- | --- |
+| `admin` | `admin@123` | Administrator |
+| `coordinator` | `coordinator@1234` | Coordinator |
+
+`accountFor(u, p)` is the only place that compares credentials; never test a password inline.
+`sessionStorage.ji_session` holds a JSON session record `{user, role, at, sid}` for this tab only
+(`at` is the ISO sign-in time, `sid` an id such as `S-MWUNBO6M-ASV6`). `session()` parses it and
+tolerates the legacy bare-username string (mapping it to the Administrator role), so an old tab is
+not locked out on deploy; `signedIn()` is `!!session()` and `isAdmin()` is
+`session().role === 'Administrator'`.
+
+`init()` calls `renderGate()` and `showGate(!signedIn())`, which also toggles `html.locked` so the
+page behind does not scroll. The card is `<div class="gate">` placed before `.app`, z-index 100 —
+above the drawer (70) and toast (95) — and its form submits through `submitLogin()`: a correct pair
+stores the session, writes a `ji_resume_sid` marker, appends an `in` entry to the access log, sets
+`#acctUser`, hides the gate and toasts `lg.welcome` with the account name; a wrong pair clears the
+password, prints `lg.err`, keeps focus and appends a `fail` entry. The header carries the signed-in
+name plus a log-out icon (`signOut()` appends an `out` entry with the session duration, clears both
+session keys and re-locks). The card has its own EN / ID switch (`#gateLang`) using the same
+`data-lang` delegation as the header, and `setLang` re-renders the gate because otherwise the locked
+page would keep the old language.
+
+This is deliberately a front gate, not authentication: it is a static file, the credentials are in
 plain sight in this source, and anyone can read `localStorage` or open the JSON export. Keep the
 wording in the UI honest ("internal console") rather than implying access control. Real protection
-requires serving the data from a backend that checks a password or an SSO session first.
+requires serving the data from a backend that checks a password or an SSO session first. Role checks
+such as `isAdmin()` are therefore UI conventions against accidental misuse, **not** a security
+boundary — the data is already readable by anyone who opens the file.
 
-## 12. Known limits
+## 12. Access log
+
+`localStorage.ji_access_log` holds a flat array, newest first, capped at `ACCESS_MAX = 300` entries.
+It sits beside `ji_platform_v13` and is never merged into `STATE`, so `save()`, the JSON export and
+the import path leave it alone; clearing the register seed does not clear it either.
+
+One entry is `{at, tz, ev, user, role, sid, dur?}`:
+
+| Field | Meaning |
+| --- | --- |
+| `at` | ISO timestamp of the event; `tz` is the fixed label `WIB` |
+| `ev` | `in` (credentials accepted), `out` (log-out), `resume` (a tab reopened an existing session), `fail` (wrong user or password) |
+| `user`, `role` | Account that acted; a failed attempt stores the typed username and `role: '—'` |
+| `sid` | Session id from the session record, or `—` for a failure |
+| `dur` | Seconds between sign-in and sign-out, written only on `out` |
+
+`logAccess(ev)` stamps `at` and `tz` when missing, unshifts, and swallows quota errors. `init()`
+reads the session after `loadData()` and writes exactly one `resume` entry per tab and session id —
+the marker is `sessionStorage.ji_resume_sid`, which `submitLogin()` sets to the new `sid`, so a plain
+reload does not duplicate the entry and a fresh sign-in gets its own.
+
+`accessHtml()` renders the last eight entries as a small table (date and time on two lines, account
+with role underneath, event, session id, duration); `viewSettings` places it in the Access log card
+with a *Clear log* button. **Only the Administrator sees that button**, and the click handler in
+`bindEvents` re-checks `isAdmin()` and refuses with `st.adminOnly` even if a button is forged into the
+DOM — both the render and the handler must keep the guard. `t('st.act.*')` translates the event codes;
+adding an event means a new code there and a row in `ACT_LABEL`.
+
+## 13. Known limits
 
 - Photos live in the browser profile. They survive reloads and JSON export/import on the same
   machine, but a different browser, a cleared profile or a JSON moved to another device arrives with
@@ -274,3 +335,5 @@ requires serving the data from a backend that checks a password or an SSO sessio
 - The layout is desktop-first: below roughly 1100 px the tables scroll horizontally. That is
   site-wide behaviour, not a regression in any single view.
 - No automated test suite runs on push. Coverage is the harness plus the live smoke, both manual.
+- The access log (section 12) is per browser, not per estate: two devices produce two unrelated logs,
+  there is no central trail, and clearing browser data erases it.
