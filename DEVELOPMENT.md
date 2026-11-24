@@ -6,7 +6,7 @@ must not be broken, and how to test and publish a change.
 
 ## 1. Shape of the build
 
-One file, `index.html` (~542 KB), no build step, no package manager, no server, no test runner in CI.
+One file, `index.html` (~544 KB), no build step, no package manager, no server, no test runner in CI.
 Everything is inline: CSS in one `<style>` block, data in a JS seed, application code in one
 `<script>` block wrapped in an IIFE. The only external calls are the chart and map libraries
 (ECharts 5.5.0, Leaflet 1.9.4, markercluster 1.5.3) pulled from jsDelivr at runtime.
@@ -32,7 +32,7 @@ Navigate by banner, never by line number.
 | Banner section | Holds |
 | --- | --- |
 | `APP` | The three dictionaries: `STR` string table, `ENUM` code groups, `GLOSS` term definitions |
-| `STATE & HELPERS` | `LS_KEY`, `COMM_SEED_VERSION`, `LANG`, `STATE`, `VIEW`, `TAB`, `PAGE`, `FILTER`, and `t`, `E`, `tl`, `gl`, `fmt*` (`fmtInt`, `fmtDec`, `fmtArea`, `fmtDate`, `fmtTime`, `fmtStamp`, `fmtDur`), `uid`, `nextAssetId` |
+| `STATE & HELPERS` | `LS_KEY`, `COMM_SEED_VERSION`, `DV_SEG_KEY`, `LANG`, `STATE`, `VIEW`, `TAB`, `PAGE`, `FILTER`, `dvSegPref`, `setDvSeg`, and `t`, `E`, `tl`, `gl`, `fmt*` (`fmtInt`, `fmtDec`, `fmtArea`, `fmtDate`, `fmtTime`, `fmtStamp`, `fmtDur`), `uid`, `nextAssetId` |
 | `SEED DATA` | `seedData()` — the 203-plot industrial register (`REAL_ASSETS`), the 142-plot commercial register (`REAL_COMMERCIAL`), 185 owners, dummy service samples |
 | `STORAGE` | `loadData()`, `save()` — read, migrate, seed-on-first-run |
 | `SHARED UI` | `openDrawer`, `closeDrawer`, `toast`, `chipFor`, `paginate`, `pagerHtml`, `filterRows`, `termLine` |
@@ -43,11 +43,11 @@ Navigate by banner, never by line number.
 | `FIELD SCHEMA` | `E_TYPES`, `openDetail`, `openForm`, `saveForm`, `deleteRecord`, `initAllMap`, `assetDetailExtra` |
 | `EXPORT / IMPORT` | `exportJson`, `importJson` |
 | `NAV & RENDER` | `ICONS`, `DRAWER`, `renderNav`, `renderView`, `go` |
-| `DATA VALIDATION` | the whole field-verification page: enrolment, scoring, photo pipeline, drawer; `valFields(seg)` picks the asset or commercial template, `dvSegTabs` renders the queue switch |
+| `DATA VALIDATION` | the whole field-verification page: enrolment, scoring, photo pipeline, drawer; `valFields(seg)` picks the asset or commercial template, `dvSegTabs` renders the queue switch, `viewValidationCom` is the commercial twin, and the registry entry buttons use `data-dvopen` |
 | `EVENTS` | `bindEvents()` — three delegated listeners (click, change, input), the search debounce and the gate form submit |
 | `SIGN IN` | `ACCOUNTS`, `accountFor`, `SESSION_KEY`, `session`, `signedIn`, `isAdmin`, `renderGate`, `showGate`, `submitLogin`, `signOut` |
 | `ACCESS LOG` (inside `SIGN IN`) | `ACCESS_KEY`, `ACCESS_MAX`, `readAccessLog`, `logAccess`, `accessHtml`, `ACT_LABEL` — browser-local trail of sign-in / sign-out / resume / failed attempts |
-| `INIT` | `setLang`, `init()` — i18n parity check, `?v=` / `?tab=` / `?lang=` handling, first render, gate state |
+| `INIT` | `setLang`, `init()` — i18n parity check, `?v=` / `?tab=` / `?lang=` / `?seg=` handling, first render, gate state |
 
 ## 3. Data and storage
 
@@ -141,12 +141,13 @@ itself.
 
 ## 7. Data validation module
 
-`STATE.validations[]` holds one record per queued asset:
-`{asset_id, plannedDate, pic, outcome, checkedAt, findings, evidence{}, photos[], updatedAt}`.
+`STATE.validations[]` holds one record per queued register record:
+`{asset_id, seg, plannedDate, pic, outcome, checkedAt, findings, evidence{}, photos[], updatedAt}`.
+`seg` is `ind` or `com` and decides which template, queue and scoring denominator the record uses.
 Outcome codes live in `ENUM.voutcome` (`pending`, `scheduled`, `surveyed`, `blocked`, `mismatch`).
 
-**Enrolment.** `syncValidations(state)` is idempotent and gives every asset a record, whatever its
-register flag says — the flag is derived from here, so record existence cannot depend on it. It
+**Enrolment.** `syncValidations(state)` is idempotent and gives every register record a record — all
+203 assets and all 142 commercial plots — whatever its register flag says — the flag is derived from here, so record existence cannot depend on it. It
 canonicalises the array, adds a blank record for every asset without one, backfills evidence keys /
 photo arrays / outcome, then `applySurvey`, and returns the number added. It runs from `loadData`,
 the seed branch, the reset path, `importJson`, `saveForm`, `viewValidation`, `openValidation` and
@@ -224,6 +225,14 @@ scheduled, result recorded and average completion. The rows wrap the asset (`r.a
 through `applyBounds(rows, FILTER.validation, (r, fl) => fl === 'land' ? r.a.land : r[fl])`; the land
 figure is also a column, so a filtered queue is verifiable on screen. The global search box and the
 New button are hidden on this view, since the queue is derived and rows are opened, not created.
+
+**Commercial twin.** `viewValidationCom` mirrors the industrial view against `STATE.commercial`: same
+scoring (`valScore`), same 12-row paging, same four KPIs, but ownership (Owner / GBC / Belum BAST),
+result, completion-band and land bounds instead of zone and building type, and 11 columns keyed to the
+commercial register (plot code, sector, name on record, ownership, land, plan, PIC, result, done,
+proof). Rows carry `r.a` as the commercial record, so `regHint` and the drawer compare against the
+commercial fields; `dv.noteCom` states that visits are stored on the `JI-CML` record and travel with
+the JSON export. The industrial queue keeps `dv.note`.
 
 ## 8. Adding a view
 
@@ -303,6 +312,10 @@ session keys and re-locks). The card has its own EN / ID switch (`#gateLang`) us
 `data-lang` delegation as the header, and `setLang` re-renders the gate because otherwise the locked
 page would keep the old language.
 
+Both accounts can open both registers and both validation queues; the only role difference today is
+that `isAdmin()` gates the *Clear log* action. Do not build a data permission on `role` without first
+moving the check to a backend — section 13's caveat applies.
+
 This is deliberately a front gate, not authentication: it is a static file, the credentials are in
 plain sight in this source, and anyone can read `localStorage` or open the JSON export. Keep the
 wording in the UI honest ("internal console") rather than implying access control. Real protection
@@ -349,3 +362,6 @@ adding an event means a new code there and a row in `ACT_LABEL`.
 - No automated test suite runs on push. Coverage is the harness plus the live smoke, both manual.
 - The access log (section 12) is per browser, not per estate: two devices produce two unrelated logs,
   there is no central trail, and clearing browser data erases it.
+- The validation queue's segment preference (`ji_dv_seg`) and the validation records themselves are
+  browser-local like the register. Export/import carries the records, but not the UI preference or
+  the photos.
