@@ -269,6 +269,10 @@ surveyed. It is derived from the register, not a second register:
   code, and neither list can show a record from the other register. The evidence sheet follows the
   segment too — the commercial queue fills the commercial template (sector / block / number, land and
   building area, ownership) instead of the asset template.
+- **Entry points and memory.** Both registers carry a `Data validation` button with the register
+  count that opens its own queue, and a record drawer carries the same button for that plot or asset.
+  The queue remembers the last segment in `localStorage.ji_dv_seg`, so it reopens where the user left
+  off, and `?v=validation&seg=com` deep-links straight to the commercial queue.
 - **List controls.** KPIs (in queue, scheduled, result recorded, average completion), then search,
   the same land-area range as the register (`Land — Min / Max — m²`, either bound alone, `×` clears),
   zone, building type, result and completion-band filters, sorting (completion low to high / high to

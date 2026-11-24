@@ -587,6 +587,7 @@ const STR = {
   'c.commLand': ['Land total', 'Total luas tanah'],
   'c.commBuild': ['Building total', 'Total luas bangunan'],
   'c.commNote': ['Commercial plots are a separate collection from the 203 industrial assets; survey and validation run on their own queue. Areas are stored exactly as the source layer reports them, including .5 m² fractions.', 'Kavling komersial adalah koleksi terpisah dari 203 aset industri; survei dan validasi berjalan pada antrean sendiri. Luas disimpan persis seperti yang dilaporkan layer sumber, termasuk pecahan ,5 m².'],
+  'dv.noteCom': ['This queue mirrors the Commercial registry automatically: every visit, evidence field and photo is stored against its JI-CML record, survives a reload and travels with the JSON export. The registry reads Survey = Yes only when the result here is Surveyed.', 'Antrean ini mencerminkan Register komersial secara otomatis: setiap kunjungan, kolom bukti dan foto disimpan pada catatan JI-CML-nya, tetap ada setelah muat ulang dan ikut dalam ekspor JSON. Register membaca Survey = Yes hanya bila hasil di sini adalah Surveyed.'],
   'c.commFlag': ['Source gap', 'Celah data'],
   'c.commMapAll': ['All commercial plots', 'Semua kavling komersial'],
 
@@ -1053,6 +1054,17 @@ let TAB = { assets: 'assets', services: 'deals', utilities: 'capacity' };
 let PAGE = {};
 let FILTER = {};
 let SEEN = {};
+/* which register the validation queue opens on: remembered across reloads, default industrial */
+const DV_SEG_KEY = 'ji_dv_seg';
+function dvSegPref() {
+  try { return localStorage.getItem(DV_SEG_KEY) === 'com' ? 'com' : 'ind'; } catch (e) { return 'ind'; }
+}
+function setDvSeg(seg) {
+  const s = seg === 'com' ? 'com' : 'ind';
+  try { localStorage.setItem(DV_SEG_KEY, s); } catch (e) { /* storage blocked */ }
+  FILTER.validation = FILTER.validation || {};
+  FILTER.validation.seg = s;
+}
 
 const el = (id) => document.getElementById(id);
 const esc = (s) => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -1606,7 +1618,7 @@ function viewAssets() {
     }).join('') || emptyRow(cols.length);
     const located = STATE.assets.filter((a) => a.geo === 'road' && a.lat !== '' && a.lon !== '');
     const pendingN = STATE.assets.length - located.length;
-    const htmlView = tabs + termLine(['occupancy', 'clearance', 'serviceCharge', 'deposit', 'escalation', 'located', 'survey', 'zone', 'btype']) + `<div class="sec-head" style="margin-top:0"><p>${esc(t('a.descAssets'))}</p><div><button class="btn primary" data-add="asset">${esc(t('a.addAsset'))}</button></div></div>
+    const htmlView = tabs + termLine(['occupancy', 'clearance', 'serviceCharge', 'deposit', 'escalation', 'located', 'survey', 'zone', 'btype']) + `<div class="sec-head" style="margin-top:0"><p>${esc(t('a.descAssets'))}</p><div><button class="btn" data-dvopen="ind">${esc(t('nav.validation'))} · ${fmtInt(counts.assets)}</button> <button class="btn primary" data-add="asset">${esc(t('a.addAsset'))}</button></div></div>
       <div class="card flat">
         <div class="toolbar">
           <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg><input data-q="assets" placeholder="${esc(t('c.search'))}" value="${esc(f.q || '')}"></div>
@@ -1734,7 +1746,7 @@ function viewCommercial() {
       ${kpiCard(t('c.commSold'), fmtInt(nOwner), fmtInt(all.length ? Math.round(100 * nOwner / all.length) : 0) + '%', 't')}
       ${kpiCard(t('c.commLand'), fmtArea(landSum) + ' m²', fmtArea(buildSum) + ' m² · ' + t('c.commBuild'), '')}
     </div>
-    <div style="font-size:11.5px;color:var(--muted);margin:-4px 0 14px">${esc(t('c.commNote'))}</div>
+    <div class="sec-head" style="margin:-4px 0 14px"><p style="font-size:11.5px;color:var(--muted)">${esc(t('c.commNote'))}</p><div><button class="btn" data-dvopen="com">${esc(t('nav.validation'))} · ${fmtInt(all.length)}</button></div></div>
     <div class="card flat">
       <div class="toolbar">
         <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg><input data-q="commercial" placeholder="${esc(t('c.search'))}" value="${esc(f.q || '')}"></div>
@@ -2342,7 +2354,10 @@ function openDetail(entity, id) {
   el('drawerTitle').textContent = t(meta.title);
   el('drawerSub').textContent = recTitle(entity, rec);
   el('drawerBody').innerHTML = body + extra;
+  const valBtn = (entity === 'asset' || entity === 'commercial')
+    ? '<button class="btn ghost" data-vrec="' + esc(id) + '">' + esc(t('nav.validation')) + '</button>' : '';
   el('drawerFoot').innerHTML = '<button class="btn" data-close="1">' + esc(t('c.close')) + '</button>'
+    + valBtn
     + '<button class="btn danger" data-del="' + esc(id) + '">' + esc(t('c.delete')) + '</button>'
     + '<button class="btn primary" data-edit="' + esc(id) + '">' + esc(t('c.edit')) + '</button>';
   el('scrim').classList.add('on');
@@ -2812,7 +2827,7 @@ function viewValidationCom() {
       <td>${valBar(r.score)}</td>
       <td>${fmtInt(r.ph || 0)}${r.upd ? ' · ' + esc(fmtDate(r.upd)) : ''}</td></tr>`).join('') || emptyRow(cols.length);
 
-  el('view').innerHTML = dvSegTabs('com') + `<div class="notice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg><div>${esc(t('c.commNote'))}</div></div>
+  el('view').innerHTML = dvSegTabs('com') + `<div class="notice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg><div>${esc(t('dv.noteCom'))}</div></div>
   <div class="dv-kpis">
     ${kpiCard(t('dv.kpi.queue'), fmtInt(queued), t('dv.kpi.queueFoot'), '')}
     ${kpiCard(t('dv.kpi.scheduled'), fmtInt(sched), t('dv.kpi.scheduledFoot'), '')}
@@ -2832,7 +2847,9 @@ function viewValidationCom() {
 }
 
 function viewValidation() {
-  if ((FILTER.validation || {}).seg === 'com') return viewValidationCom();
+  FILTER.validation = FILTER.validation || {};
+  if (!FILTER.validation.seg) FILTER.validation.seg = dvSegPref();
+  if (FILTER.validation.seg === 'com') return viewValidationCom();
   if (syncValidations(STATE)) save();
   const ownerMap = new Map(STATE.owners.map((o) => [o.id, o]));
   const assetMap = new Map(STATE.assets.map((a) => [a.asset_id, a]));
@@ -2943,7 +2960,7 @@ function evidenceHtml(rec, a) {
     const full = f.t === 'textarea' || ['alamat', 'permits', 'notes', 'contact'].includes(f.k);
     const hint = regHint(f.k, a);
     const hintHtml = hint && hint !== '—' ? '<div class="dv-ref" title="' + esc(t('dv.ref') + ': ' + hint) + '">' + esc(t('dv.ref')) + ': ' + esc(hint) + '</div>' : '';
-    return head + '<div class="field' + (full ? ' full' : '') + '"><label>' + esc(t('F.' + f.k)) + '</label>' + input + hintHtml + '</div>';
+    return head + '<div class="field' + (full ? ' full' : '') + '"><label>' + esc(t(f.label || ('F.' + f.k))) + '</label>' + input + hintHtml + '</div>';
   }).join('');
 }
 
@@ -3113,8 +3130,7 @@ function bindEvents() {
     if (nav) { go(nav.dataset.view); return; }
     const dvseg = e.target.closest('[data-dvseg]');
     if (dvseg) {
-      FILTER.validation = FILTER.validation || {};
-      FILTER.validation.seg = dvseg.dataset.dvseg;
+      setDvSeg(dvseg.dataset.dvseg);
       if (dvseg.dataset.dvseg === 'com') { FILTER.validation.ownership = ''; FILTER.validation.comp = ''; }
       PAGE.validation = 1;
       renderView();
@@ -3122,6 +3138,19 @@ function bindEvents() {
     }
     const tab = e.target.closest('[data-tab]');
     if (tab) { TAB[tab.dataset.tab] = tab.dataset.t; PAGE[tab.dataset.tab + '_' + tab.dataset.t] = 1; renderView(); return; }
+    const dvopen = e.target.closest('[data-dvopen]');
+    if (dvopen) {
+      setDvSeg(dvopen.dataset.dvopen);
+      PAGE.validation = 1;
+      go('validation');
+      return;
+    }
+    const vrec = e.target.closest('[data-vrec]');
+    if (vrec) {
+      setDvSeg(String(vrec.dataset.vrec).indexOf('JI-CML-') === 0 ? 'com' : 'ind');
+      openValidation(vrec.dataset.vrec);
+      return;
+    }
     const add = e.target.closest('[data-add]');
     if (add) { openForm(add.dataset.add, null); return; }
     const rngc = e.target.closest('[data-rngclear]');
@@ -3411,7 +3440,9 @@ function init() {
   try {
     const qp = new URLSearchParams(location.search);
     const v = qp.get('v');
-    if (['dashboard', 'assets', 'validation', 'services', 'glossary', 'settings'].includes(v)) VIEW = v;
+    if (['dashboard', 'assets', 'commercial', 'validation', 'services', 'glossary', 'settings'].includes(v)) VIEW = v;
+    const sg = qp.get('seg');
+    if (sg === 'com' || sg === 'ind') setDvSeg(sg);
     const tb = qp.get('tab');
     if (tb && TAB[v] !== undefined) TAB[v] = tb;
     if (qp.get('lang') === 'id') LANG = 'id';

@@ -166,7 +166,19 @@ this instead.
 and `E_TYPES.commercial.fields` minus the same three (37 of the 40 identity-first template) when
 `seg === 'com'`. `dvSegTabs` switches the page between the 203 industrial records and the 142
 commercial plots; `emptyEvidence(seg)`, `newValidation(assetId, seg)`, `valScore`, `valEvidenceN`
-and the drawer all read `rec.seg` so one page serves both queues. Keys, order and section headings are
+and the drawer all read `rec.seg` so one page serves both queues.
+
+**Queue selection and entry points.** The active segment lives in `FILTER.validation.seg`; `setDvSeg()`
+also writes `localStorage.ji_dv_seg` (key `DV_SEG_KEY`), and `viewValidation()` falls back to that
+preference when the view opens without a segment, so a reload reopens the queue the user left. Both
+registers carry a `[data-dvopen]` button with their record count, and every asset / commercial drawer
+carries `[data-vrec]`; both handlers call `setDvSeg()` before `go('validation')` or `openValidation()`,
+so the queue and the drawer always agree on the register. `?v=validation&seg=com` (or `seg=ind`) is
+the shareable deep link; `?v=commercial` is in the whitelist for the same reason.
+
+**Labels.** `evidenceHtml` prints `t(f.label || ('F.' + f.k))`. Commercial fields reuse the `c.*`
+labels (`c.code`, `c.sector`, `c.ownerName`), so a raw `F.code` on screen means a template entry lost
+its `label` — fix the schema, do not add a duplicate `F.*` string. Keys, order and section headings are
 inherited from the register, so the drawer mirrors the register row field by field. `regHint(k, asset)`
 prints the current register value under each input, formatted the same way the register formats it,
 and is omitted entirely when the register has no value.
