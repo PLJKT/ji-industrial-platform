@@ -192,11 +192,24 @@ collection (`STATE.commercial`), so their count, area totals and survey queue ne
   the full extract of that layer, not a screen scrape.
 - **Field mapping.** `kav_ref` → plot code, `sec_nme` → sector, `str_nme` → street, `str_blk` /
   `str_num` → block and number, `cus_nme` → name on record, `status_kepemilikan` → ownership,
-  `hos_typ` → building type, `lnd_are` / `bld_are` → land and building area (whole m²), polygon
+  `hos_typ` → building type, `lnd_are` / `bld_are` → land and building area (exact m², one decimal where the layer
+  carries a fraction), polygon
   rings → WGS84 centroid for the map. Every record carries an internal id `JI-CML-26-nnnn`, assigned
   in the layer's object-id order, plus the layer's `objectid` and `globalid` for traceability.
-- **Totals.** 142 plots across 12 sectors; land 7,814 m², building 17,858 m²; ownership Owner 114,
-  GBC 20, Belum BAST 8. All 142 carry a resolved centroid, so the commercial map has no pending pins.
+- **Totals.** 142 plots across 12 sectors; land 7,806 m², building 17,865.5 m²; ownership Owner 114,
+  GBC 20, Belum BAST 8. Both totals are straight sums of the layer's own values, so the 33 plots
+  whose land or building area ends in .5 m² keep their fraction instead of being rounded; the
+  register reconciles to the square metre, not to a rounded figure.
+- **Values are copied, never cleaned.** Codes, blocks and numbers keep the layer's exact characters,
+  including letters that sit inside a number (`38.NGARYA.000.008O`, `8I`, `2I`) and the single-space
+  values on the four Hollywood Junction rows. Each such row carries a *Source gap* flag
+  (`letter O/I in code`, `letter O/I in number`, `duplicate parcel in source`), so a 0/O or 1/I can be
+  checked against the source without guessing. `BAST` is *Berita Acara Serah Terima*, the signed
+  handover certificate; *Belum BAST* means it has not been signed yet and the plot is still carried
+  by the developer. The term is also defined in the glossary.
+- **Rebuild marker.** `COMM_SEED_VERSION` (`2026-11-24.exact`) refreshes `STATE.commercial` from the
+  seed once per browser, so a copy saved under the older rounded build is replaced on next load; the
+  survey and validation records live in their own collection and are re-applied, not lost.
 - **Source gaps kept visible rather than invented.** Four Hollywood Junction rows arrive with no
   code, street, block, building type or area (only number and ownership); 19 rows carry no name on
   record; one code (`55.HOLCEN.GF0.1819`) appears twice because the layer holds the same parcel
