@@ -207,9 +207,11 @@ collection (`STATE.commercial`), so their count, area totals and survey queue ne
   checked against the source without guessing. `BAST` is *Berita Acara Serah Terima*, the signed
   handover certificate; *Belum BAST* means it has not been signed yet and the plot is still carried
   by the developer. The term is also defined in the glossary.
-- **Rebuild marker.** `COMM_SEED_VERSION` (`2026-11-24.exact`) refreshes `STATE.commercial` from the
-  seed once per browser, so a copy saved under the older rounded build is replaced on next load; the
-  survey and validation records live in their own collection and are re-applied, not lost.
+- **Rebuild marker.** `COMM_SEED_VERSION` (`2026-11-24.exact`) refreshes the source-derived fields of
+  `STATE.commercial` once per browser: a copy saved under the older rounded build has its code, sector,
+  block, number, street, owner, ownership, building type, both areas, centroid and flags replaced from the
+  seed, while price, notes, survey and every other hand-entered field are kept. Survey and validation
+  records live in their own collection and are re-applied, not lost.
 - **Source gaps kept visible rather than invented.** Four Hollywood Junction rows arrive with no
   code, street, block, building type or area (only number and ownership); 19 rows carry no name on
   record; one code (`55.HOLCEN.GF0.1819`) appears twice because the layer holds the same parcel
