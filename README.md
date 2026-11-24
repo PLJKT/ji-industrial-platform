@@ -24,7 +24,8 @@ signing in.
 **Access log.** Every sign-in, sign-out, reopened tab session and failed attempt is appended to
 `ji_access_log` in localStorage (newest first, capped at 300 entries) with the account, role,
 timestamp in WIB and the session id; a sign-out also records how long the session lasted. Settings →
-*Access log* lists the last eight entries and can clear the list. The log is browser-local: each
+*Access log* lists the last eight entries; only the Administrator account can clear the list, the
+Coordinator sees it read-only and a forged clear request is refused in the click handler. The log is browser-local: each
 device keeps its own, and clearing browser data erases it. This whole gate is still a front door, not
 authentication: the console is a static file, so the credentials sit in `index.html` (`ACCOUNTS`) and
 anyone who can read the file can read them. Real protection would need a server that checks the

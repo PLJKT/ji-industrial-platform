@@ -786,6 +786,7 @@ const STR = {
   'st.act.resume': ['Session reopened', 'Sesi dibuka ulang'],
   'st.confirmLog': ['Clear the access log on this browser?', 'Hapus log akses di peramban ini?'],
   'st.logCleared': ['Access log cleared', 'Log akses dihapus'],
+  'st.adminOnly': ['Only an administrator can clear the access log.', 'Hanya administrator yang dapat menghapus log akses.'],
   'st.own.teamUtilities': ['Plant operations', 'Operasi instalasi'],
   'st.own.edit': ['Edit', 'Ubah'],
   'st.rules.title': ['Data rules', 'Aturan data'],
@@ -2073,7 +2074,7 @@ function viewSettings() {
       </div>
       <div class="card">
         <div class="card-head" style="margin-bottom:6px"><h3>${esc(t('st.access'))}</h3>
-          <button class="btn ghost" style="flex:0 0 auto" data-act="clearlog">${esc(t('st.accessClear'))}</button></div>
+          ${isAdmin() ? '<button class="btn ghost" style="flex:0 0 auto" data-act="clearlog">' + esc(t('st.accessClear')) + '</button>' : ''}</div>
         <p style="margin:0 0 10px;font-size:11.5px;color:var(--muted)">${esc(t('st.accessDesc'))}</p>
         ${accessHtml()}
       </div>
@@ -3164,6 +3165,7 @@ function bindEvents() {
         inp.click();
       }
       if (act.dataset.act === 'clearlog') {
+        if (!isAdmin()) { toast(t('st.adminOnly')); return; }
         if (confirm(t('st.confirmLog'))) { try { localStorage.removeItem(ACCESS_KEY); } catch (e) { /* blocked */ } toast(t('st.logCleared')); renderView(); }
       }
       if (act.dataset.act === 'reset') {
@@ -3312,6 +3314,7 @@ function session() {
   } catch (e) { return null; }
 }
 function signedIn() { return !!session(); }
+function isAdmin() { const s = session(); return !!s && s.role === 'Administrator'; }
 function renderGate() {
   if (!el('gate')) return;
   el('gateName').textContent = t('app.name');
