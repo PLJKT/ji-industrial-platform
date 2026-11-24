@@ -26,7 +26,8 @@ serving the data.
 | --- | --- | --- |
 | Operations overview | Two workstream cards, six portfolio KPIs, three charts, a three-phase roadmap, and an action / data attention panel | derived |
 | Asset register | One asset-centric register: each vacant plot joins its owner name, business industry, contact, zone, building type, building area, location identification, survey status, motive, ask price, pressure and KYC, plus matched demand | assets, owners, demands |
-| Data validation | Field verification queue for every asset not yet surveyed: planned date, person in charge, result, evidence in register format, completion score and compressed JPG photo proof | assets, validations |
+| Commercial registry | Separate register for the estate's commercial plots (shophouses, resto and kiosk parcels): plot code, sector, street, block / number, land and building area, name on record, ownership (Owner / GBC / Belum BAST), building type, survey status and source gaps, with its own filters, KPI row and estate map | commercial |
+| Data validation | Field verification queue for every record not yet surveyed — industrial assets and commercial plots on two separate queues: planned date, person in charge, result, evidence in register format, completion score and compressed JPG photo proof | assets, commercial, validations |
 | Service revenue | Paid services sold through the one-stop office, and survey leads | deals, leads |
 | ~~Water & waste~~ | Hidden from navigation in this release. The plants / metrics register, efficiency indicator framework and readings view are kept in the code and data for future re-enablement | plants, metrics (retained) |
 | Glossary | Regulatory and technical terms with definitions in both languages | 34 entries |
@@ -178,15 +179,44 @@ estate tariffs, the Jababeka CODB schedule and shared-utility SEZ sources: permi
 compliance, energy and power, clean water supply, environmental treatment, solid and
 hazardous waste, estate management, people, supply chain, and finance and insurance.
 
+## Commercial register
+
+The **Commercial registry** (`?v=commercial`) holds the estate's commercial plots in their own
+collection (`STATE.commercial`), so their count, area totals and survey queue never mix with the
+203 industrial assets.
+
+- **Source.** The live estate dashboard *Kavling Komersial* layer
+  (`GBC_Sales/Kavling_Commercial_Sold_V2_View`, the ArcGIS feature layer behind
+  `tmaps.jababeka.com`), read on 24 Nov 2026. The layer's own count is 142 — identical to the
+  dashboard tile *Total Kavling Komersial 142* and to the rows sampled on screen. The register is
+  the full extract of that layer, not a screen scrape.
+- **Field mapping.** `kav_ref` → plot code, `sec_nme` → sector, `str_nme` → street, `str_blk` /
+  `str_num` → block and number, `cus_nme` → name on record, `status_kepemilikan` → ownership,
+  `hos_typ` → building type, `lnd_are` / `bld_are` → land and building area (whole m²), polygon
+  rings → WGS84 centroid for the map. Every record carries an internal id `JI-CML-26-nnnn`, assigned
+  in the layer's object-id order, plus the layer's `objectid` and `globalid` for traceability.
+- **Totals.** 142 plots across 12 sectors; land 7,814 m², building 17,858 m²; ownership Owner 114,
+  GBC 20, Belum BAST 8. All 142 carry a resolved centroid, so the commercial map has no pending pins.
+- **Source gaps kept visible rather than invented.** Four Hollywood Junction rows arrive with no
+  code, street, block, building type or area (only number and ownership); 19 rows carry no name on
+  record; one code (`55.HOLCEN.GF0.1819`) appears twice because the layer holds the same parcel
+  object twice. Each such row is flagged in the *Source gap* column and in the detail drawer. The
+  register keeps all 142 rows so the total still reconciles with the dashboard; the duplicates are
+  left for the estate's own cleanup rather than silently merged.
+- **Template.** The commercial record repeats the industrial 40-field template section for section
+  (identity, physical, compliance, commercial, quality), with the identity block filed by sector /
+  block / number / plot code instead of zone and owner id. Fields the layer does not carry (floors,
+  clearance, power, water, permits, price terms, quality) stay blank until the field check.
+- **Scope note.** The dashboard's occupancy pie (Kosong / Booking / Sold / Lost) is computed on a
+  different field of another layer; it is not the ownership status carried here, so the two
+  numbers are not compared in this view.
+
 ## Data validation
 
 The **Data validation** page (`?v=validation`) records the field check of each asset that is not yet
 surveyed. It is derived from the register, not a second register:
 
-- **Automatic enrolment.** Every asset gets a validation record on load (`syncValidations`), so the
-  page always holds one row per asset — 203 today, all of them in the queue. New assets added through
-  the form are enrolled on the next save. The register starts from zero: on the first load after this
-  build every result is returned to `Pending` (one-time, `resetSurveyOnce`), which also clears the
+- **Automatic enrolment.** Every register record gets a validation record on load (`syncValidations`): the 203 industrial assets and the 142 commercial plots, so the page always holds one row per record on the queue it belongs to. New records added through a form are enrolled on the next save. The industrial register starts from zero: on the first load after this build every result is returned to `Pending` (one-time, `resetSurveyOnce`), which also clears the
   three results that the earlier build had carried over from hand-ticked rows. Evidence, photos,
   findings and dates already recorded on this page are kept. Records are never deleted when an asset
   is surveyed, so the visit history stays visible.
@@ -209,12 +239,19 @@ surveyed. It is derived from the register, not a second register:
   IndexedDB (`ji_validation_photos`); the record keeps only `{id, w, h, bytes}`. This keeps the
   5 MB localStorage quota for the register itself. Photos can be removed individually; unsaved field
   edits survive an upload or delete.
+- **Two queues, one page.** Segment tabs at the top of the page (`Asset register 203` /
+  `Commercial registry 142`) switch the queue. Each segment keeps its own KPIs, filters and columns:
+  the industrial queue greps by zone and building type, the commercial queue by ownership and plot
+  code, and neither list can show a record from the other register. The evidence sheet follows the
+  segment too — the commercial queue fills the commercial template (sector / block / number, land and
+  building area, ownership) instead of the asset template.
 - **List controls.** KPIs (in queue, scheduled, result recorded, average completion), then search,
   the same land-area range as the register (`Land — Min / Max — m²`, either bound alone, `×` clears),
   zone, building type, result and completion-band filters, sorting (completion low to high / high to
   low, planned date, recently updated) and 12 rows per page. The land figure sits on the row itself,
   so a filtered queue can be checked without opening each record.
-- **Storage.** `STATE.validations[]` with one record per asset: `asset_id`, `plannedDate`, `pic`,
+- **Storage.** `STATE.validations[]` with one record per register record: `asset_id`, `seg`
+  (`ind` or `com`), `plannedDate`, `pic`,
   `outcome`, `checkedAt`, `findings`, `evidence{}`, `photos[]`, `updatedAt`. Local storage key
   `ji_platform_v13`. Photo blobs are browser-local and are not part of the exported JSON, which
   carries the metadata only.

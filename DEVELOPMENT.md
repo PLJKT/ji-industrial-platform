@@ -6,7 +6,7 @@ must not be broken, and how to test and publish a change.
 
 ## 1. Shape of the build
 
-One file, `index.html` (~392 KB), no build step, no package manager, no server, no test runner in CI.
+One file, `index.html` (~533 KB), no build step, no package manager, no server, no test runner in CI.
 Everything is inline: CSS in one `<style>` block, data in a JS seed, application code in one
 `<script>` block wrapped in an IIFE. The only external calls are the chart and map libraries
 (ECharts 5.5.0, Leaflet 1.9.4, markercluster 1.5.3) pulled from jsDelivr at runtime.
@@ -33,25 +33,27 @@ Navigate by banner, never by line number.
 | --- | --- |
 | `APP` | The three dictionaries: `STR` string table, `ENUM` code groups, `GLOSS` term definitions |
 | `STATE & HELPERS` | `LS_KEY`, `LANG`, `STATE`, `VIEW`, `TAB`, `PAGE`, `FILTER`, and `t`, `E`, `tl`, `gl`, `fmt*`, `uid`, `nextAssetId` |
-| `SEED DATA` | `seedData()` — the 203-plot register, 185 owners, dummy service samples |
+| `SEED DATA` | `seedData()` — the 203-plot industrial register (`REAL_ASSETS`), the 142-plot commercial register (`REAL_COMMERCIAL`), 185 owners, dummy service samples |
 | `STORAGE` | `loadData()`, `save()` — read, migrate, seed-on-first-run |
 | `SHARED UI` | `openDrawer`, `closeDrawer`, `toast`, `chipFor`, `paginate`, `pagerHtml`, `filterRows`, `termLine` |
 | `METRICS` / `DASHBOARD` | KPI derivation, chart helpers, overview view |
 | `TABLE PRIMITIVE` | `tableHtml`, `emptyRow`, `kpiCard` |
-| `ASSETS VIEW` / `SERVICES VIEW` / `UTILITIES VIEW` | `viewAssets`, `viewServices`, `viewUtilities` (retained, hidden from navigation) |
+| `ASSETS VIEW` / `COMMERCIAL VIEW` / `SERVICES VIEW` / `UTILITIES VIEW` | `viewAssets`, `viewCommercial` (own collection, own sort list `COMM_SORTS`, ownership chips), `viewServices`, `viewUtilities` (retained, hidden from navigation) |
 | `GLOSSARY` / `SETTINGS` | `viewGlossary`, `viewSettings` |
 | `FIELD SCHEMA` | `E_TYPES`, `openDetail`, `openForm`, `saveForm`, `deleteRecord`, `initAllMap`, `assetDetailExtra` |
 | `EXPORT / IMPORT` | `exportJson`, `importJson` |
 | `NAV & RENDER` | `ICONS`, `DRAWER`, `renderNav`, `renderView`, `go` |
-| `DATA VALIDATION` | the whole field-verification page: enrolment, scoring, photo pipeline, drawer |
+| `DATA VALIDATION` | the whole field-verification page: enrolment, scoring, photo pipeline, drawer; `valFields(seg)` picks the asset or commercial template, `dvSegTabs` renders the queue switch |
 | `EVENTS` | `bindEvents()` — three delegated listeners (click, change, input), the search debounce and the gate form submit |
 | `SIGN IN` | `AUTH`, `SESSION_KEY`, `signedIn`, `renderGate`, `showGate`, `submitLogin`, `signOut` |
 | `INIT` | `setLang`, `init()` — i18n parity check, `?v=` / `?tab=` / `?lang=` handling, first render, gate state |
 
 ## 3. Data and storage
 
-`STATE` is one plain object: `owners`, `assets`, `demands`, `deals`, `leads`, `plants`, `metrics`
-and `validations`. Nothing is derived at rest — views compute joins, KPIs and scores at render time.
+`STATE` is one plain object: `owners`, `assets`, `commercial`, `demands`, `deals`, `leads`, `plants`,
+`metrics` and `validations`. `assets` and `commercial` are two separate collections on purpose: the
+industrial register is never widened by commercial plots, and every join, KPI and queue keys off
+`asset_id`, which is `JI-CKR-26-nnnn` for assets and `JI-CML-26-nnnn` for commercial records. Nothing is derived at rest — views compute joins, KPIs and scores at render time.
 
 The store key is `ji_platform_v13` (`LS_KEY`). **Bump the version digit whenever a stored shape
 changes meaning** — a new collection, a renamed field, a new enum code that old records cannot
@@ -59,7 +61,10 @@ carry — so every browser reseeds instead of reading a half-migrated record. A 
 change plus the note in `README.md`; the current value must be stated there.
 
 `loadData()` reads the key, repairs missing fields on older records (price basis, geo status,
-latitude/longitude, survey, zone, building type, industry, data-source flags), then calls
+latitude/longitude, survey, zone, building type, industry, data-source flags), and seeds
+`commercial` from `seedData()` when a store predates the commercial register — that collection is
+reference data owned by the estate layer, so it is restored on load rather than treated as a
+user-edited record — then calls
 `syncValidations(parsed)`. The first-run branch seeds, syncs and writes. Unreadable JSON falls
 through to the seed rather than throwing. `save()` stringifies the whole `STATE`; a quota error
 raises the `dv.full` toast instead of failing silently.
