@@ -6,7 +6,7 @@ must not be broken, and how to test and publish a change.
 
 ## 1. Shape of the build
 
-One file, `index.html` (~544 KB), no build step, no package manager, no server, no test runner in CI.
+One file, `index.html` (~568 KB), no build step, no package manager, no server, no test runner in CI.
 Everything is inline: CSS in one `<style>` block, data in a JS seed, application code in one
 `<script>` block wrapped in an IIFE. The only external calls are the chart and map libraries
 (ECharts 5.5.0, Leaflet 1.9.4, markercluster 1.5.3) pulled from jsDelivr at runtime.
@@ -36,7 +36,7 @@ Navigate by banner, never by line number.
 | `SEED DATA` | `seedData()` — the 203-plot industrial register (`REAL_ASSETS`), the 142-plot commercial register (`REAL_COMMERCIAL`), 185 owners, dummy service samples |
 | `STORAGE` | `loadData()`, `save()` — read, migrate, seed-on-first-run |
 | `SHARED UI` | `openDrawer`, `closeDrawer`, `toast`, `chipFor`, `paginate`, `pagerHtml`, `filterRows`, `termLine` |
-| `METRICS` / `DASHBOARD` | KPI derivation, chart helpers, overview view |
+| `METRICS` / `DASHBOARD` | `kpis()` (booked vs quoted service value) and `viewDashboard()` — the whole-system snapshot: eight computed KPIs, a nine-module table, four comparison charts and the attention list |
 | `TABLE PRIMITIVE` | `tableHtml`, `emptyRow`, `kpiCard` |
 | `ASSETS VIEW` / `COMMERCIAL VIEW` / `SERVICES VIEW` / `UTILITIES VIEW` | `viewAssets`, `viewCommercial` (own collection, own sort list `COMM_SORTS`, ownership chips), `viewServices`, `viewUtilities` (retained, hidden from navigation) |
 | `GLOSSARY` / `SETTINGS` | `viewGlossary`, `viewSettings` |
@@ -125,6 +125,25 @@ view function before pagination.
 `openDrawer(title, sub, bodyHtml, footerHtml)` / `closeDrawer()`. Drawer content goes into
 `#drawerBody`; any action inside a drawer is a `data-*` attribute handled by the delegated listeners
 — there are no inline `onclick` handlers anywhere.
+
+### Dashboard snapshot contract
+
+`viewDashboard()` is a derived view. It reads `STATE.assets`, `commercial`, `owners`, `demands`,
+`deals`, `leads`, `plants`, `metrics` and `validations` on every render and never stores totals:
+land and building area are summed per register, validation coverage is `surveyed / records`, source
+gaps count only non-empty `flags[]` arrays, and the owners row compares the owner collection with the
+`owner_id` set on assets. The header count sums the nine stored collections; the module table also
+includes Glossary and Settings, which are browser-resident rather than part of `STATE`, so its row
+totals need not equal the header count.
+
+KPI totals must reconcile with the table: adding a module means one `snapRow()` row, one
+`d.row.*` string pair, and including its collection in `totalRecords` when it lives in `STATE`.
+The table columns are 21 / 11 / 56 / 12 = 100; change them by hand and re-check at 1140 px. Chart
+containers are `ch-mix`, `ch-own`, `ch-area`, `ch-val`; `chart()` owns their ECharts instances and
+`clearCharts()` runs before a view swap. `data-tab-to` on a snapshot button sets the remembered
+`TAB[view]` before `go(view)`, which is how the Demand row lands on the Demand tab instead of the
+asset list. A successful sign-in calls `renderView()` after `logAccess()`, so the Settings row shows
+the entry that was just written.
 
 ## 6. Field schema
 
@@ -258,6 +277,7 @@ some modes. Serve the folder with `python -m http.server 8123` and open
 | `make_test.py` | Builds `test_dv.html` from `index.html` with an appended harness (`?t=A` drawer, photo, compression; `?t=B` save, write-back, language switch) |
 | `cdp_test.js` | Drives Chrome headless over CDP (Node 22 with global `WebSocket`), polls `document.title` for harness completion, returns the console log and a screenshot |
 | `cdp_live.js` | Live smoke on the published page: title, row count, KPIs, drawer opens, evidence inputs, photo input, filter, bilingual switch |
+| `cdp_dash.js` | Dashboard regression: KPI labels and values, nine table rows, four chart canvases, absence of the old roadmap / demo strip, console errors, screenshot |
 | `cdp_shot.js` / `cdp_drawer.js` | Clean screenshots of a URL / of the drawer top and bottom for review |
 | `verify_val.py` | Static check: every `STR` entry has two non-empty strings, validation functions exist |
 
@@ -275,14 +295,17 @@ Two pitfalls worth remembering:
 2. `python extract_js.py`, then `node --check check.js`.
 3. Bump `LS_KEY` if the stored shape changed, and update the key in `README.md`.
 4. Local smoke on `8123`: the edited view plus the drawer it opens.
-5. `test_dv.html` harness `?t=A` and `?t=B` when the validation page is affected.
-6. Publish from a temporary clone (the repo has no `.deploy` directory): copy `index.html` in,
+5. On Overview, check the eight KPIs and nine module rows against `localStorage.ji_platform_v13`
+   counts, confirm all four charts draw, and switch to ID — no literal `d.*` / `nav.*` keys should
+   appear and the Demand row must open on its own tab.
+6. `test_dv.html` harness `?t=A` and `?t=B` when the validation page is affected.
+7. Publish from a temporary clone (the repo has no `.deploy` directory): copy `index.html` in,
    commit as `PLJKT`, push `main`.
-7. Verify content, not just the push: fetch
+8. Verify content, not just the push: fetch
    `https://raw.githubusercontent.com/PLJKT/ji-industrial-platform/<commit-sha>/index.html`,
    strip CR, and compare SHA-256 against the local file. They must match. The `/main/` raw URL lags
    a minute or two behind the push; the commit SHA URL is authoritative.
-8. Open `https://pljkt.github.io/ji-industrial-platform/?v=<view>` with a cache-busting query and
+9. Open `https://pljkt.github.io/ji-industrial-platform/?v=<view>` with a cache-busting query and
    confirm the title, the row count, the drawer and the language switch.
 
 ## 11. Sign in gate
@@ -305,7 +328,8 @@ not locked out on deploy; `signedIn()` is `!!session()` and `isAdmin()` is
 page behind does not scroll. The card is `<div class="gate">` placed before `.app`, z-index 100 —
 above the drawer (70) and toast (95) — and its form submits through `submitLogin()`: a correct pair
 stores the session, writes a `ji_resume_sid` marker, appends an `in` entry to the access log, sets
-`#acctUser`, hides the gate and toasts `lg.welcome` with the account name; a wrong pair clears the
+`#acctUser`, hides the gate, re-renders the current view so the Settings access count includes the
+entry just written, and toasts `lg.welcome` with the account name; a wrong pair clears the
 password, prints `lg.err`, keeps focus and appends a `fail` entry. The header carries the signed-in
 name plus a log-out icon (`signOut()` appends an `out` entry with the session duration, clears both
 session keys and re-locks). The card has its own EN / ID switch (`#gateLang`) using the same

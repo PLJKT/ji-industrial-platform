@@ -507,8 +507,8 @@ const STR = {
   'c.showing': ['Showing', 'Menampilkan'],
   'c.of': ['of', 'dari'],
 
-  'v.dashboard.title': ['Operations overview', 'Ringkasan operasional'],
-  'v.dashboard.sub': ['Two strategic workstreams in one place: vacant asset matching and one-stop service revenue.', 'Dua lini strategis dalam satu tempat: pencocokan aset kosong dan pendapatan layanan terpadu.'],
+  'v.dashboard.title': ['System data snapshot', 'Snapshot data sistem'],
+  'v.dashboard.sub': ['Every register, validation queue and service pipeline in one view, computed live from the stored state.', 'Setiap register, antrean validasi dan alur layanan dalam satu tampilan, dihitung langsung dari data tersimpan.'],
   'v.validation.title': ['Data validation', 'Validasi data'],
   'v.validation.sub': ['One row per record that is not yet surveyed — industrial assets and commercial plots on separate queues: planned visit, person in charge, result, evidence in register format and photo proof.', 'Satu baris per catatan yang belum disurvei — aset industri dan kavling komersial pada antrean terpisah: rencana kunjungan, penanggung jawab, hasil, bukti dalam format register, dan bukti foto.'],
 
@@ -625,6 +625,59 @@ const STR = {
   'd.noDemand': ['A-class assets with no matched demand', 'Aset kelas A tanpa permintaan yang cocok'],
   'd.belowTarget': ['plants below the reuse target', 'instalasi di bawah target daur ulang'],
   'd.pipelineValue': ['Weighted pipeline value', 'Nilai alur tertimbang'],
+
+  'd.snap': ['System snapshot', 'Snapshot sistem'],
+  'd.snapNote': ['Every register, queue and data set in the console, generated {stamp} WIB from the stored state. Registers hold real estate data; service contracts and leads are format samples.', 'Setiap register, antrean dan kumpulan data di konsol, dibuat {stamp} WIB dari data tersimpan. Register memuat data properti nyata; kontrak layanan dan prospek adalah contoh format.'],
+  'd.snapMeta': ['{n} records in the store · commercial seed {v}', '{n} catatan di penyimpanan · seed komersial {v}'],
+
+  'd.k.ind': ['Industrial plots', 'Kavling industri'],
+  'd.k.indFoot': ['{land} m² land · {build} m² building', '{land} m² tanah · {build} m² bangunan'],
+  'd.k.com': ['Commercial plots', 'Kavling komersial'],
+  'd.k.comFoot': ['{land} m² land · {build} m² building', '{land} m² tanah · {build} m² bangunan'],
+  'd.k.land': ['Land under management', 'Tanah terkelola'],
+  'd.k.landFoot': ['industrial + commercial · {build} m² building', 'industri + komersial · {build} m² bangunan'],
+  'd.k.owners': ['Owners on record', 'Pemilik tercatat'],
+  'd.k.ownersFoot': ['{n} linked plots · {owners} owners', '{n} kavling tertaut · {owners} pemilik'],
+  'd.k.val': ['Validation coverage', 'Cakupan validasi'],
+  'd.k.valFoot': ['{done} surveyed of {total} · {queue} still queued', '{done} disurvei dari {total} · {queue} masih antre'],
+  'd.k.dem': ['Open demand', 'Permintaan aktif'],
+  'd.k.demFoot': ['{n} linked to a plot', '{n} tertaut ke kavling'],
+  'd.k.rev': ['Service revenue booked', 'Pendapatan layanan tercatat'],
+  'd.k.revFoot': ['{active} active · {done} delivered · {total} contracts', '{active} aktif · {done} selesai · {total} kontrak'],
+  'd.k.gaps': ['Plots with source gaps', 'Kavling dengan celah data'],
+  'd.k.gapsFoot': ['{n} flags in the commercial layer', '{n} tanda pada layer komersial'],
+
+  'd.ch.mix': ['Records by register', 'Catatan per register'],
+  'd.ch.area': ['Area by register', 'Luas per register'],
+  'd.ch.own': ['Commercial ownership', 'Kepemilikan komersial'],
+  'd.ch.val': ['Validation by register', 'Validasi per register'],
+  'd.ch.surveyed': ['Surveyed', 'Sudah disurvei'],
+  'd.ch.scheduled': ['Scheduled', 'Dijadwalkan'],
+  'd.ch.pending': ['Pending', 'Tertunda'],
+
+  'd.tbl.module': ['Module', 'Modul'],
+  'd.tbl.records': ['Records', 'Catatan'],
+  'd.tbl.detail': ['Snapshot', 'Snapshot'],
+  'd.tbl.open': ['Open', 'Buka'],
+  'd.tbl.live': ['Live from stored state', 'Langsung dari data tersimpan'],
+  'd.open': ['Open', 'Buka'],
+  'd.hidden': ['Hidden from menu', 'Tersembunyi'],
+  'd.row.ind': ['{owners} owners · {land} m² land · {build} m² building · {vacant} vacant', '{owners} pemilik · {land} m² tanah · {build} m² bangunan · {vacant} kosong'],
+  'd.row.owners': ['{m} linked plots · {u} owners without a plot', '{m} kavling tertaut · {u} pemilik tanpa kavling'],
+  'd.row.com': ['{sectors} sectors · Owner {owner} / GBC {gbc} / Belum BAST {bast} · {land} m² land · {build} m² building · {gaps} with gaps', '{sectors} sektor · Owner {owner} / GBC {gbc} / Belum BAST {bast} · {land} m² tanah · {build} m² bangunan · {gaps} bercelah'],
+  'd.row.val': ['{done} surveyed · {sched} scheduled · {pending} pending', '{done} disurvei · {sched} dijadwalkan · {pending} tertunda'],
+  'd.row.svc': ['{deals} contracts · {leads} leads · {rev} booked · {quoted} quoted', '{deals} kontrak · {leads} prospek · {rev} tercatat · {quoted} dikutip'],
+  'd.row.dem': ['{open} open · {matched} matched · {closed} closed', '{open} aktif · {matched} cocok · {closed} ditutup'],
+  'd.row.util': ['{plants} plants · {metrics} readings', '{plants} instalasi · {metrics} pembacaan'],
+  'd.row.gloss': ['{terms} terms · {groups} code groups', '{terms} istilah · {groups} grup kode'],
+  'd.row.set': ['access log {n} / {max} · browser-local', 'log akses {n} / {max} · lokal browser'],
+
+  'd.attn.val': ['{n} validation records still pending', '{n} catatan validasi masih tertunda'],
+  'd.attn.valSub': ['{sched} scheduled · {done} surveyed', '{sched} dijadwalkan · {done} disurvei'],
+  'd.attn.gap': ['{n} commercial plots carry source gaps', '{n} kavling komersial memiliki celah data'],
+  'd.attn.gapSub': ['{f} flags raised by the layer import', '{f} tanda dari impor layer'],
+  'd.attn.verify': ['{n} industrial plots have no verification date', '{n} kavling industri tanpa tanggal verifikasi'],
+  'd.attn.verifySub': ['Every row remains queued for a field check.', 'Setiap baris tetap dalam antrean pemeriksaan lapangan.'],
 
   'k.idleArea': ['Idle land area', 'Luas tanah idle'],
   'k.idleArea.foot': ['{n} m² vacant or stopped', '{n} m² kosong atau berhenti'],
@@ -1444,88 +1497,153 @@ function chart(id, option) {
 const AXIS = { axisLine: { lineStyle: { color: '#E1DCD3' } }, axisTick: { show: false }, axisLabel: { color: '#6C727C', fontSize: 11 }, splitLine: { lineStyle: { color: '#EFECE5' } } };
 
 function viewDashboard() {
-  const k = kpis();
-  const statusOrder = ['operating', 'partial', 'stopped', 'vacant'];
-  const statusData = statusOrder.map((s) => ({ name: E('status', s), value: STATE.assets.filter((a) => a.status === s).length, itemStyle: { color: s === 'operating' ? '#2C6E6A' : s === 'partial' ? '#C8861A' : s === 'stopped' ? '#8A8F98' : '#A8452F' } }));
-  const stages = ['lead', 'viewing', 'offer', 'loi', 'dd', 'closed', 'lost'];
-  const stageData = stages.map((s) => STATE.demands.filter((d) => d.stage === s).length);
-  const cats = ['permit', 'energy', 'water', 'environment', 'waste', 'property', 'hr', 'supply', 'finance'];
-  const catData = cats.map((c) => STATE.deals.filter((d) => d.category === c && d.svcStatus !== 'quoted' && d.svcStatus !== 'lost').reduce((s, d) => s + Number(d.value), 0));
+  const ind = STATE.assets || [];
+  const com = STATE.commercial || [];
+  const own = STATE.owners || [];
+  const val = STATE.validations || [];
+  const sum = (rows, field) => rows.reduce((s, x) => s + Number(x[field] || 0), 0);
+  const indLand = sum(ind, 'land'), indBuild = sum(ind, 'build');
+  const comLand = sum(com, 'land'), comBuild = sum(com, 'build');
+  const totalLand = indLand + comLand, totalBuild = indBuild + comBuild;
+  const ownerSet = new Set(own.map((o) => o.id));
+  const linkedPlots = ind.filter((a) => ownerSet.has(a.owner_id)).length;
+  const assetOwnerSet = new Set(ind.map((a) => a.owner_id));
+  const linkedOwnerCount = own.filter((o) => assetOwnerSet.has(o.id)).length;
+  const unlinkedOwners = own.length - linkedOwnerCount;
+  const ownCount = (k) => com.filter((c) => c.ownership === k).length;
+  const statusOrder = ['vacant', 'operating', 'partial', 'stopped'];
+  const indStatus = statusOrder.reduce((o, s) => (o[s] = ind.filter((a) => a.status === s).length, o), {});
+  const segOf = (v) => v.seg || (String(v.asset_id).indexOf('JI-CML-') === 0 ? 'com' : 'ind');
+  const valInd = val.filter((v) => segOf(v) === 'ind');
+  const valCom = val.filter((v) => segOf(v) === 'com');
+  const surveyed = val.filter((v) => v.outcome === 'surveyed').length;
+  const scheduled = val.filter((v) => v.outcome !== 'surveyed' && v.plannedDate).length;
+  const pending = val.length - surveyed;
+  const coverage = val.length ? (100 * surveyed) / val.length : 0;
+  const openDem = STATE.demands.filter((d) => OPEN_STAGES.includes(d.stage));
+  const matched = openDem.filter((d) => d.assetLink).length;
+  const activeDeals = STATE.deals.filter((d) => d.svcStatus === 'active').length;
+  const deliveredDeals = STATE.deals.filter((d) => d.svcStatus === 'delivered').length;
+  const quotedDeals = STATE.deals.filter((d) => d.svcStatus === 'quoted');
+  const quotedValue = quotedDeals.reduce((s, d) => s + Number(d.value || 0), 0);
+  const revenue = STATE.deals
+    .filter((d) => d.svcStatus === 'active' || d.svcStatus === 'delivered')
+    .reduce((s, d) => s + Number(d.value || 0), 0);
+  const gaps = com.reduce((n, c) => n + (Array.isArray(c.flags) ? c.flags.length : 0), 0);
+  const gapped = com.filter((c) => Array.isArray(c.flags) && c.flags.length).length;
+  const sectors = new Set(com.map((c) => String(c.sector || '').trim()).filter(Boolean)).size;
+  const terms = Object.keys(GLOSS || {}).length;
+  const enumGroups = Object.keys(ENUM || {}).length;
+  const accessN = readAccessLog().length;
+  const totalRecords = ind.length + com.length + own.length + STATE.demands.length + STATE.deals.length
+    + STATE.leads.length + STATE.plants.length + STATE.metrics.length + val.length;
+  const stamp = fmtStamp(new Date().toISOString());
+  const unverified = ind.filter((a) => !a.verified).length;
 
-  const stale = STATE.assets.filter((a) => daysAgo(a.verified) > 90);
-  const noDemand = STATE.assets.filter((a) => a.quality >= 75 && !STATE.demands.some((d) => d.assetLink === a.asset_id && OPEN_STAGES.includes(d.stage)));
-
-  const progCard = (view, icon, title, metric, desc, act) => `
-  <div class="prog">
-    <div class="p-top"><div class="p-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">${icon}</svg></div><h3>${esc(title)}</h3></div>
-    <div class="p-metric">${metric}</div>
-    <p>${esc(desc)}</p>
-    <div class="p-act"><button class="btn ghost" data-goto="${view}">${esc(act)}</button></div>
-  </div>`;
+  const cellBtn = (view, tabTo) => `<button class="btn ghost" data-goto="${view}"${tabTo ? ' data-tab-to="' + tabTo + '"' : ''}>${esc(t('d.open'))}</button>`;
+  const snapRow = (label, count, detail, view, tabTo) => `<tr>
+    <td>${esc(label)}</td><td class="num">${fmtInt(count)}</td><td>${esc(detail)}</td>
+    <td>${view ? cellBtn(view, tabTo) : '<span class="hint">' + esc(t('d.hidden')) + '</span>'}</td></tr>`;
+  const cols = [
+    { w: '21%', label: t('d.tbl.module') }, { w: '11%', label: t('d.tbl.records'), align: 'right' },
+    { w: '56%', label: t('d.tbl.detail') }, { w: '12%', label: t('d.tbl.open') },
+  ];
+  const rows = [
+    snapRow(t('nav.assets'), ind.length, t('d.row.ind', { owners: fmtInt(own.length), land: fmtArea(indLand), build: fmtArea(indBuild), vacant: fmtInt(indStatus.vacant || 0) }), 'assets'),
+    snapRow(t('a.tab.owners'), own.length, t('d.row.owners', { m: fmtInt(linkedPlots), u: fmtInt(unlinkedOwners) }), 'assets'),
+    snapRow(t('nav.commercial'), com.length, t('d.row.com', { sectors: fmtInt(sectors), owner: fmtInt(ownCount('Owner')), gbc: fmtInt(ownCount('GBC')), bast: fmtInt(ownCount('Belum BAST')), land: fmtArea(comLand), build: fmtArea(comBuild), gaps: fmtInt(gapped) }), 'commercial'),
+    snapRow(t('nav.validation'), val.length, t('d.row.val', { done: fmtInt(surveyed), sched: fmtInt(scheduled), pending: fmtInt(pending) }), 'validation'),
+    snapRow(t('a.tab.demands'), STATE.demands.length, t('d.row.dem', { open: fmtInt(openDem.length), matched: fmtInt(matched), closed: fmtInt(STATE.demands.length - openDem.length) }), 'assets', 'demands'),
+    snapRow(t('nav.services'), STATE.deals.length + STATE.leads.length, t('d.row.svc', { deals: fmtInt(STATE.deals.length), leads: fmtInt(STATE.leads.length), rev: fmtRpShort(revenue), quoted: fmtRpShort(quotedValue) }), 'services'),
+    snapRow(t('nav.utilities'), STATE.plants.length + STATE.metrics.length, t('d.row.util', { plants: fmtInt(STATE.plants.length), metrics: fmtInt(STATE.metrics.length) }), null),
+    snapRow(t('nav.glossary'), terms, t('d.row.gloss', { terms: fmtInt(terms), groups: fmtInt(enumGroups) }), 'glossary'),
+    snapRow(t('nav.settings'), accessN, t('d.row.set', { n: fmtInt(accessN), max: fmtInt(ACCESS_MAX) }), 'settings'),
+  ].join('');
 
   el('view').innerHTML = `
-  <div class="notice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg><div><b>${esc(t('c.demo'))}</b> — ${esc(t('c.demoText'))}</div></div>
-
-  ${termLine(['occupancy', 'leadscore'])}
-
-  <div class="prog-grid">
-    ${progCard('assets', ICONS.assets, t('d.prog.asset.title'), t('d.prog.asset.metric', { n: fmtInt(k.idle), t: fmtInt(k.total) }), t('d.prog.asset.desc'), t('d.prog.asset.act'))}
-    ${progCard('services', ICONS.services, t('d.prog.service.title'), t('d.prog.service.metric', { n: fmtInt(k.delivered) }), t('d.prog.service.desc'), t('d.prog.service.act'))}
+  <div class="card flat" style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;align-items:center;padding:14px 20px;margin-bottom:16px">
+    <div><b>${esc(t('d.snap'))}</b> — <span class="hint">${esc(t('d.snapNote', { stamp: stamp }))}</span></div>
+    <div class="hint" style="text-align:right;white-space:nowrap">${esc(t('d.snapMeta', { n: fmtInt(totalRecords), v: COMM_SEED_VERSION }))}</div>
   </div>
 
-  <div class="grid g-3" style="margin-bottom:16px">
-    ${kpiCard(t('k.assets'), fmtInt(k.total), t('k.assets.foot', { n: fmtInt(k.total) }), '')}
-    ${kpiCard(t('k.vacant'), pct(k.idleShare, 1), t('k.vacant.foot', { n: fmtInt(k.idle) }), 'r')}
-    ${kpiCard(t('k.idleArea'), fmtArea(k.idleArea) + '<span class="k-unit">m²</span>', t('k.idleArea.foot', { n: fmtArea(k.idleArea) }), '')}
-    ${kpiCard(t('k.pipeline'), fmtInt(k.open), t('k.pipeline.foot', { n: fmtInt(k.matched) }), '')}
-    ${kpiCard(t('k.revenue'), fmtRpShort(k.revenue), t('k.revenue.foot', { n: fmtInt(k.delivered) }), 't')}
-    ${kpiCard(t('k.pipeValue'), fmtRpShort(k.quotedValue), t('k.pipeValue.foot', { n: fmtInt(k.quoted) }), '')}
+  <div class="grid g-4" style="margin-bottom:16px">
+    ${kpiCard(t('d.k.ind'), fmtInt(ind.length), t('d.k.indFoot', { land: fmtArea(indLand), build: fmtArea(indBuild) }), '')}
+    ${kpiCard(t('d.k.com'), fmtInt(com.length), t('d.k.comFoot', { land: fmtArea(comLand), build: fmtArea(comBuild) }), '')}
+    ${kpiCard(t('d.k.land'), fmtArea(totalLand) + '<span class="k-unit">m²</span>', t('d.k.landFoot', { build: fmtArea(totalBuild) }), 't')}
+    ${kpiCard(t('d.k.owners'), fmtInt(own.length), t('d.k.ownersFoot', { n: fmtInt(linkedPlots), owners: fmtInt(own.length) }), '')}
+    ${kpiCard(t('d.k.val'), pct(coverage, 1), t('d.k.valFoot', { done: fmtInt(surveyed), total: fmtInt(val.length), queue: fmtInt(pending) }), 'r')}
+    ${kpiCard(t('d.k.dem'), fmtInt(openDem.length), t('d.k.demFoot', { n: fmtInt(matched) }), '')}
+    ${kpiCard(t('d.k.rev'), fmtRpShort(revenue), t('d.k.revFoot', { active: fmtInt(activeDeals), done: fmtInt(deliveredDeals), total: fmtInt(STATE.deals.length) }), 't')}
+    ${kpiCard(t('d.k.gaps'), fmtInt(gapped), t('d.k.gapsFoot', { n: fmtInt(gaps) }), 'r')}
+  </div>
+
+  <div class="card flat" style="margin-bottom:16px">
+    <div class="card-head" style="padding:14px 20px 0"><h3>${esc(t('d.tbl.module'))} · ${esc(t('d.snap'))}</h3><span class="hint">${esc(t('d.tbl.live'))}</span></div>
+    ${tableHtml(cols, rows, '', 900)}
   </div>
 
   <div class="grid g-2">
-    <div class="card"><div class="card-head"><h3>${esc(t('d.status'))}</h3><span class="hint">${fmtInt(k.total)} ${esc(t('c.total'))}</span></div><div id="ch-status" class="chart"></div></div>
-    <div class="card"><div class="card-head"><h3>${esc(t('d.stage'))}</h3><span class="hint">${fmtInt(STATE.demands.length)} ${esc(t('c.total'))}</span></div><div id="ch-stage" class="chart"></div></div>
+    <div class="card"><div class="card-head"><h3>${esc(t('d.ch.mix'))}</h3><span class="hint">${fmtInt(ind.length + com.length)}</span></div><div id="ch-mix" class="chart"></div></div>
+    <div class="card"><div class="card-head"><h3>${esc(t('d.ch.own'))}</h3><span class="hint">${fmtInt(com.length)}</span></div><div id="ch-own" class="chart"></div></div>
   </div>
 
-  <div class="grid" style="margin-top:16px">
-    <div class="card"><div class="card-head"><h3>${esc(t('d.line'))}</h3><span class="hint">${esc(t('s.kpi.revenue'))} · ${fmtRpShort(k.revenue)}</span></div><div id="ch-line" class="chart tall"></div></div>
+  <div class="grid g-2" style="margin-top:16px">
+    <div class="card"><div class="card-head"><h3>${esc(t('d.ch.area'))}</h3><span class="hint">${fmtArea(totalLand + totalBuild)} m²</span></div><div id="ch-area" class="chart"></div></div>
+    <div class="card"><div class="card-head"><h3>${esc(t('d.ch.val'))}</h3><span class="hint">${fmtInt(val.length)}</span></div><div id="ch-val" class="chart"></div></div>
   </div>
 
-  <div class="sec-head"><div><h2>${esc(t('d.roadmap'))}</h2></div></div>
-  <div class="road">
-    <div class="stage now"><span class="s-tag">${esc(t('d.now'))}</span><div class="s-no">01</div><h4>${esc(t('d.r1.title'))}</h4><p>${esc(t('d.r1.desc'))}</p></div>
-    <div class="stage"><div class="s-no">02</div><h4>${esc(t('d.r2.title'))}</h4><p>${esc(t('d.r2.desc'))}</p></div>
-    <div class="stage"><div class="s-no">03</div><h4>${esc(t('d.r3.title'))}</h4><p>${esc(t('d.r3.desc'))}</p></div>
-  </div>
-
-  <div class="grid" style="margin-top:16px">
-    <div class="card flat">
-      <div class="card-head" style="padding:14px 20px 0"><h3>${esc(t('d.attention'))}</h3></div>
-      <div class="list" style="padding:0 20px 12px">
-        <div class="li"><span class="tag">${esc(t('d.tag.action'))}</span><div class="body"><b>${fmtInt(noDemand.length)} ${esc(t('d.noDemand'))}</b><span>${noDemand.slice(0, 4).map((a) => esc(a.asset_id)).join(' · ') || '—'}</span></div><div class="act"><button class="btn ghost" data-goto="assets">${esc(t('a.tab.assets'))}</button></div></div>
-        <div class="li"><span class="tag">${esc(t('d.tag.data'))}</span><div class="body"><b>${fmtInt(stale.length)} ${esc(t('d.stale'))}</b><span>${stale.slice(0, 4).map((a) => esc(a.asset_id + ' · ' + fmtDate(a.verified))).join('  |  ') || '—'}</span></div><div class="act"><button class="btn ghost" data-goto="assets">${esc(t('a.tab.assets'))}</button></div></div>
-      </div>
-    </div>
+  <div class="sec-head" style="margin-top:22px"><div><h2>${esc(t('d.attention'))}</h2></div></div>
+  <div class="grid">
+    <div class="card flat"><div class="list" style="padding:0 20px 12px">
+      <div class="li"><span class="tag">${esc(t('d.tag.action'))}</span><div class="body"><b>${esc(t('d.attn.val', { n: fmtInt(pending) }))}</b><span>${esc(t('d.attn.valSub', { sched: fmtInt(scheduled), done: fmtInt(surveyed) }))}</span></div><div class="act"><button class="btn ghost" data-goto="validation">${esc(t('nav.validation'))}</button></div></div>
+      <div class="li"><span class="tag">${esc(t('d.tag.data'))}</span><div class="body"><b>${esc(t('d.attn.gap', { n: fmtInt(gapped) }))}</b><span>${esc(t('d.attn.gapSub', { f: fmtInt(gaps) }))}</span></div><div class="act"><button class="btn ghost" data-goto="commercial">${esc(t('nav.commercial'))}</button></div></div>
+      <div class="li"><span class="tag">${esc(t('d.tag.data'))}</span><div class="body"><b>${esc(t('d.attn.verify', { n: fmtInt(unverified) }))}</b><span>${esc(t('d.attn.verifySub'))}</span></div><div class="act"><button class="btn ghost" data-goto="assets">${esc(t('nav.assets'))}</button></div></div>
+    </div></div>
   </div>`;
 
-  chart('ch-status', {
+  chart('ch-mix', {
     tooltip: { trigger: 'item', formatter: (p) => p.name + ': ' + fmtInt(p.value) + ' (' + pct(p.percent, 1) + ')' },
-    legend: { orient: 'vertical', right: 6, top: 'middle', itemWidth: 9, itemHeight: 9, textStyle: { fontSize: 11, color: '#3C4552' } },
-    series: [{ type: 'pie', radius: ['46%', '68%'], center: ['36%', '52%'], avoidLabelOverlap: true, label: { show: false }, itemStyle: { borderColor: '#FFF', borderWidth: 2 }, data: statusData }],
+    legend: { orient: 'vertical', right: 8, top: 'middle', itemWidth: 9, itemHeight: 9, textStyle: { fontSize: 11, color: '#3C4552' } },
+    series: [{ type: 'pie', radius: ['48%', '70%'], center: ['37%', '52%'], label: { show: false }, itemStyle: { borderColor: '#FFF', borderWidth: 2 },
+      data: [
+        { name: t('nav.assets'), value: ind.length, itemStyle: { color: '#182A42' } },
+        { name: t('nav.commercial'), value: com.length, itemStyle: { color: '#A9701C' } },
+      ] }],
   });
-  chart('ch-stage', {
-    grid: { left: 92, right: 24, top: 10, bottom: 22 },
-    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: (ps) => ps[0].name + ': ' + fmtInt(ps[0].value) },
+  const ownData = [
+    { k: 'Owner', c: '#2C6E6A' }, { k: 'GBC', c: '#182A42' }, { k: 'Belum BAST', c: '#C8861A' },
+  ].map((x) => ({ name: t('c.ownership') + ': ' + x.k, value: com.filter((c) => c.ownership === x.k).length, itemStyle: { color: x.c } }));
+  chart('ch-own', {
+    tooltip: { trigger: 'item', formatter: (p) => p.name + ': ' + fmtInt(p.value) + ' (' + pct(p.percent, 1) + ')' },
+    legend: { orient: 'vertical', right: 8, top: 'middle', itemWidth: 9, itemHeight: 9, textStyle: { fontSize: 11, color: '#3C4552' } },
+    series: [{ type: 'pie', radius: ['48%', '70%'], center: ['37%', '52%'], label: { show: false }, itemStyle: { borderColor: '#FFF', borderWidth: 2 }, data: ownData }],
+  });
+  chart('ch-area', {
+    grid: { left: 116, right: 46, top: 16, bottom: 22 },
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: (ps) => ps.map((p) => p.seriesName + ': ' + fmtArea(p.value) + ' m²').join('<br>') },
+    legend: { top: 0, left: 0, itemWidth: 10, itemHeight: 8, textStyle: { fontSize: 10.5, color: '#3C4552' } },
     xAxis: Object.assign({ type: 'value' }, AXIS),
-    yAxis: Object.assign({ type: 'category', data: stages.map((s) => E('stage', s)), inverse: true }, AXIS, { splitLine: { show: false } }),
-    series: [{ type: 'bar', data: stageData, barWidth: 13, itemStyle: { color: '#182A42' }, label: { show: true, position: 'right', fontSize: 11, color: '#6C727C' } }],
+    yAxis: Object.assign({ type: 'category', inverse: true, data: [t('nav.assets'), t('nav.commercial')] }, AXIS, { splitLine: { show: false } }),
+    series: [
+      { name: t('F.land'), type: 'bar', barWidth: 11, itemStyle: { color: '#182A42' }, label: { show: true, position: 'right', fontSize: 10.5, color: '#6C727C', formatter: (p) => fmtArea(p.value) }, data: [indLand, comLand] },
+      { name: t('F.build'), type: 'bar', barWidth: 11, itemStyle: { color: '#A9701C' }, label: { show: true, position: 'right', fontSize: 10.5, color: '#6C727C', formatter: (p) => fmtArea(p.value) }, data: [indBuild, comBuild] },
+    ],
   });
-  chart('ch-line', {
-    grid: { left: 164, right: 74, top: 10, bottom: 16 },
-    tooltip: { trigger: 'axis', formatter: (ps) => ps[0].name + ': ' + fmtRpShort(ps[0].value) },
-    xAxis: Object.assign({}, AXIS, { type: 'value', axisLabel: { show: false }, axisLine: { show: false }, splitLine: { show: false } }),
-    yAxis: Object.assign({}, AXIS, { type: 'category', data: cats.map((c) => E('category', c)), inverse: true, axisLabel: { color: '#3C4552', fontSize: 11, width: 152, overflow: 'truncate' }, splitLine: { show: false } }),
-    series: [{ type: 'bar', data: catData, barWidth: 13, itemStyle: { color: '#A9701C' }, label: { show: true, position: 'right', fontSize: 10.5, color: '#6C727C', formatter: (p) => fmtRpShort(p.value) } }],
+  const valCats = [t('nav.assets'), t('nav.commercial')];
+  const countOutcome = (arr, o) => arr.filter((v) => v.outcome === o).length;
+  const scheduledIn = (arr) => arr.filter((v) => v.outcome !== 'surveyed' && v.plannedDate).length;
+  const pendingIn = (arr) => arr.length - countOutcome(arr, 'surveyed') - scheduledIn(arr);
+  chart('ch-val', {
+    grid: { left: 116, right: 26, top: 26, bottom: 22 },
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    legend: { top: 0, left: 0, itemWidth: 10, itemHeight: 8, textStyle: { fontSize: 10.5, color: '#3C4552' } },
+    xAxis: Object.assign({ type: 'value' }, AXIS),
+    yAxis: Object.assign({ type: 'category', inverse: true, data: valCats }, AXIS, { splitLine: { show: false } }),
+    series: [
+      { name: t('d.ch.surveyed'), type: 'bar', stack: 'v', barWidth: 14, itemStyle: { color: '#2C6E6A' }, data: [countOutcome(valInd, 'surveyed'), countOutcome(valCom, 'surveyed')] },
+      { name: t('d.ch.scheduled'), type: 'bar', stack: 'v', barWidth: 14, itemStyle: { color: '#C8861A' }, data: [scheduledIn(valInd), scheduledIn(valCom)] },
+      { name: t('d.ch.pending'), type: 'bar', stack: 'v', barWidth: 14, itemStyle: { color: '#8A8F98' }, data: [pendingIn(valInd), pendingIn(valCom)], label: { show: true, position: 'right', fontSize: 10.5, color: '#6C727C' } },
+    ],
   });
 }
 function kpiCard(label, value, foot, tone) {
@@ -3183,7 +3301,7 @@ function bindEvents() {
     const pg = e.target.closest('[data-pg]');
     if (pg) { PAGE[pg.dataset.pg] = Number(pg.dataset.to); renderView(); return; }
     const goto = e.target.closest('[data-goto]');
-    if (goto) { go(goto.dataset.goto); return; }
+    if (goto) { if (goto.dataset.tabTo) TAB[goto.dataset.goto] = goto.dataset.tabTo; go(goto.dataset.goto); return; }
     const act = e.target.closest('[data-act]');
     if (act) {
       if (act.dataset.act === 'export') exportJson();
@@ -3386,6 +3504,7 @@ function submitLogin() {
     el('acctUser').textContent = acc.user;
     el('gateErr').textContent = '';
     showGate(false);
+    renderView();
     toast(t('lg.welcome') + ' · ' + acc.user);
     return;
   }

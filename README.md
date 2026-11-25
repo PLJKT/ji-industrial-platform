@@ -33,25 +33,40 @@ password before serving the data.
 
 | View | Purpose | Records |
 | --- | --- | --- |
-| Operations overview | Two workstream cards, six portfolio KPIs, three charts, a three-phase roadmap, and an action / data attention panel | derived |
+| Overview | Whole-system data snapshot: eight derived KPIs, a nine-module register table, four comparison charts, and a live attention panel | derived |
 | Industrial registry | One asset-centric register: each vacant plot joins its owner name, business industry, contact, zone, building type, building area, location identification, survey status, motive, ask price, pressure and KYC, plus matched demand | assets, owners, demands |
 | Commercial registry | Separate register for the estate's commercial plots (shophouses, resto and kiosk parcels): plot code, sector, street, block / number, land and building area, name on record, ownership (Owner / GBC / Belum BAST), building type, survey status and source gaps, with its own filters, KPI row and estate map | commercial |
 | Data validation | Field verification queue for every record not yet surveyed — industrial assets and commercial plots on two separate queues: planned date, person in charge, result, evidence in register format, completion score and compressed JPG photo proof | assets, commercial, validations |
 | Service revenue | Paid services sold through the one-stop office, and survey leads | deals, leads |
 | ~~Water & waste~~ | Hidden from navigation in this release. The plants / metrics register, efficiency indicator framework and readings view are kept in the code and data for future re-enablement | plants, metrics (retained) |
-| Glossary | Regulatory and technical terms with definitions in both languages | 34 entries |
+| Glossary | Regulatory and technical terms with definitions in both languages | 36 entries |
 | Settings | Language, import / export, storage status, record ownership, data rules | — |
 
-## Board-review overview
+## System snapshot overview
 
-The Overview view is arranged for a board-level read, top to bottom:
+The Overview is a live snapshot, not a narrative cover page. Every number is recomputed from
+`STATE` on each render, so the screen always matches the registers, queues and service data behind it:
 
-- A register banner states that the 203 vacant plots come from the 17 Nov 2026 workbook; commercial, compliance and quality fields are blank pending owner verification, while service contracts and leads carry Dummy format samples only.
-- Two workstream cards — vacant asset matching and one-stop service revenue — each show the headline metric, a one-line description and a jump button into the working register.
-- Six KPIs: registered assets, vacant / idle share, idle land area, demand in pipeline, service revenue booked, and quoted service pipeline.
-- Three charts: asset status mix, demand by stage, and revenue by service line.
-- A three-phase roadmap (pilot pool, paid services scale, regional platform with ministry-backed certification) marks the current phase.
-- A "needs attention" panel lists A-class assets with no matched demand and records not verified in the last 90 days.
+- A snapshot strip records the generation time in WIB, the total count across the nine stored
+  collections, and the commercial seed version. It also states the provenance boundary: registers
+  carry real estate data, while service contracts and leads are format samples.
+- Eight KPIs: industrial plots 203 (344,717 m² land / 69,817 m² building), commercial plots 142
+  (7,806 m² land / 17,865.5 m² building), total land 352,523 m² plus 87,682.5 m² building, owners 185
+  with all 203 plots linked, validation coverage 0% (0 surveyed of 345), open demand 0, booked service
+  revenue Rp 775.3 m (5 active / 2 delivered / 10 contracts), and 22 commercial plots carrying source
+  gaps (47 flags).
+- A nine-row module table with record counts and a snapshot line per module: Industrial registry,
+  Owners, Commercial registry (including the Owner 114 / GBC 20 / Belum BAST 8 split), Data validation,
+  Demand, Service revenue (booked and quoted value), Water & waste (retained but hidden), Glossary,
+  and Settings (access-log count against the 300-entry cap). Each row has a shortcut into its view;
+  Demand lands directly on the Demand tab.
+- Four charts: records by register, commercial ownership, land and building area by register, and
+  validation status by register.
+- A needs-attention panel with three data-quality items: 345 validation records still pending, 22
+  commercial plots with source gaps, and 203 industrial plots with no verification date.
+
+The old workstream cards, three-phase roadmap and asset-status pie are removed. The snapshot is
+current-state only; plans and marketing copy do not belong on this page.
 
 ## Language rules
 
